@@ -8,11 +8,12 @@ void setup() {
   strokeCap(SQUARE);
   
   fill(255, 0, 0, 50);
+  strokeWeight(3);
 
   n1 = new Node(100, 100, 5);
   n2 = new Node(200, 200, 5);
 
-  dash(15, 5);  // sets dash size and spacing in pixels
+  dash(20, 10);  // sets dash size and spacing in pixels
 }
 
 void draw() {
@@ -22,7 +23,8 @@ void draw() {
   n2.render();
 
   //drawDashedLine();
-  drawDashedRectangle();
+  //drawDashedRectangle();
+  drawDashedCircle();
 }
 
 
@@ -53,7 +55,10 @@ void drawDashedRectangle() {
   dashRect(n1.x, n1.y, n2.x, n2.y);
 }
 
-
+void drawDashedCircle() {
+  float r = dist(n1.x, n1.y, n2.x, n2.y);
+  dashCirc(n1.x, n1.y, r);
+}
 
 
 

@@ -19,16 +19,20 @@ void dashLine(float x1, float y1, float x2, float y2) {
   float sdx = s.x;
   float sdy = s.y;
 
-  //int spaceDashCount = int( dx / (ddx + sdx) );
-  int spaceDashCount = abs(dx) > abs(dy) ? int( dx / (ddx + sdx) ) : int( dy / (ddy + sdy) );
-
+  int spaceDashCount = abs(dx) > abs(dy) ? 
+      int( dx / (ddx + sdx) ) : 
+      int( dy / (ddy + sdy) );
+  
   float x = x1, y = y1;
+  
+  // Draw full dash + spaces 
   for (int i = 0; i < spaceDashCount; i++) {
     line(x, y, x + ddx, y + ddy);
     x += ddx + sdx;
     y += ddy + sdy;
   }
 
+  // Figure out how to end the line
   if (abs(ddx) < abs(x2 - x)) {
     line(x, y, x + ddx, y + ddy);
   } else {
@@ -83,9 +87,53 @@ void dashRect(float a, float b, float c, float d) {
   quad(a, b,  c, b,  c, d,  a, d);  // since we already did the calculations, quad is faster than rect()
   popStyle();
 
-  //rectImpl(a, b, c, d);  // x1 y1 x2 y2
+  // Draw rect lines (quick and dirty) 
   dashLine(a, b, c, b);
   dashLine(c, b, c, d);
   dashLine(c, d, a, d);
   dashLine(a, d, a, b);
+}
+
+// Drawing a dashed circle is WAY more optimal that doing an ellipse,
+// so added a case here.
+void dashCirc(float x, float y, float r) {
+  float len = TAU * r;
+  
+  int spaceDashCount = int( len / (DASH_LENGTH + DASH_SPACING) );
+  
+  float dang = TAU * DASH_LENGTH / len;
+  float sang = TAU * DASH_SPACING / len;
+  
+  // Draw the fill part
+  pushStyle();
+  noStroke();
+  ellipse(x, y, 2 * r, 2 * r);
+  popStyle();
+  
+  // Draw dashes
+  float ang = 0;
+  pushStyle();
+  noFill();
+  //ellipseMode(CENTER);  // to be improved
+  for (int i = 0; i < spaceDashCount; i++) {
+    arc(x, y, 2 * r, 2 * r, ang, ang + dang, OPEN);
+    ang += dang + sang;    
+  }
+  popStyle();
+   
+  // Figure out how to end...
+  if (ang + dang <= TAU) {
+    arc(x, y, 2 * r, 2 * r, ang, TAU, OPEN);
+  } else {
+    arc(x, y, 2 * r, 2 * r, ang, ang + dang, OPEN);
+  }
+  
+  //// Figure out how to end the line
+  //if (abs(ddx) < abs(x2 - x)) {
+  //  line(x, y, x + ddx, y + ddy);
+  //} else {
+  //  line(x, y, x2, y2);
+  //}
+  
+  
 }

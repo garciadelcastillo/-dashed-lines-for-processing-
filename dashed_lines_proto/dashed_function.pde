@@ -89,12 +89,31 @@ void dashRect(float a, float b, float c, float d) {
   popStyle();
 
   // Draw rect lines (quick and dirty) 
-  dashLine(a, b, c, b);
-  dashLine(c, b, c, d);
-  dashLine(c, d, a, d);
-  dashLine(a, d, a, b);
+  dashQuad(a, b, c, b, c, d, a, d);
 }
 
+void dashQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+  pushStyle();
+  noStroke();
+  quad(x1, y1, x2, y2, x3, y3, x4, y4);
+  popStyle();
+  
+  dashLine(x1, y1, x2, y2);
+  dashLine(x2, y2, x3, y3);
+  dashLine(x3, y3, x4, y4);
+  dashLine(x4, y4, x1, y1);
+}
+
+void dashTriangle(float x1, float y1, float x2, float y2, float x3, float y3) {
+  pushStyle();
+  noStroke();
+  triangle(x1, y1, x2, y2, x3, y3);
+  popStyle();
+  
+  dashLine(x1, y1, x2, y2);
+  dashLine(x2, y2, x3, y3);
+  dashLine(x3, y3, x1, y1);
+}
 
 
 void dashEllipse(float a, float b, float c, float d) {
@@ -129,12 +148,6 @@ void dashEllipse(float a, float b, float c, float d) {
     h = -h;
   }
   
-  //// If almost a circle, save some cycles and draw one
-  //if (abs(w - h) < CIRCLE_EPSILON) {
-  //  dashCirc(x, y, w);
-  //  return;
-  //}
-  
   
   // Turns out, ellipses are a little more complicated than circles!
   // There is no closed form equation to find the length (solution is a double elliptic integral), 
@@ -146,10 +159,7 @@ void dashEllipse(float a, float b, float c, float d) {
   int spaceDashCount = int(len / (DASH_LENGTH + DASH_SPACING));
   float dang = TAU * DASH_LENGTH / len;
   float sang = TAU * DASH_SPACING / len;
-  //println(a + " " + b + " " + c + " " + d);
-  //println(x + " " + y + " " + w + " " + h);
-  //println(len + " " + spaceDashCount + " " + dang + " " + sang);
-  
+
   // Draw the fill part
   pushStyle();
   noStroke();
@@ -191,41 +201,3 @@ float ellipseLength(float a, float b) {
   
   return PI * ( 3 * (a + b) - sqrt((a + 3 * b) * (3 * a + b)) ); 
 }
-
-
-
-//// Drawing a dashed circle is WAY more optimal that doing an ellipse,
-//// so added a case here.
-//void dashCirc(float x, float y, float d) {
-//  float len = PI * d;
-
-//  int spaceDashCount = int( len / (DASH_LENGTH + DASH_SPACING) );
-
-//  float dang = TAU * DASH_LENGTH / len;
-//  float sang = TAU * DASH_SPACING / len;
-
-//  // Draw the fill part
-//  pushStyle();
-//  noStroke();
-//  ellipse(x, y, d, d);
-//  popStyle();
-
-//  // Draw dashes
-//  float ang = 0;
-//  pushStyle();
-//  noFill();
-//  for (int i = 0; i < spaceDashCount; i++) {
-//    arc(x, y, d, d, ang, ang + dang, OPEN);
-//    ang += dang + sang;
-//  }
-
-//  // Figure out how to end...
-//  if (ang + dang <= TAU) {
-//    arc(x, y, d, d, ang, TAU, OPEN);
-//  } else {
-//    arc(x, y, d, d, ang, ang + dang, OPEN);
-//  }
-//  //arc(x, y, d, d, ang, ang + dang <= TAU ? TAU : ang + dang, OPEN);
-  
-//  popStyle();
-//}

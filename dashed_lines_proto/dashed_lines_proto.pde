@@ -1,6 +1,6 @@
 
 
-Node n1, n2;
+Node n1, n2, n3, n4;
 
 
 void setup() {
@@ -12,6 +12,8 @@ void setup() {
 
   n1 = new Node(100, 100, 5);
   n2 = new Node(200, 200, 5);
+  n3 = new Node(300, 100, 5);
+  n4 = new Node(200, 50, 4);
 
   dash(20, 10);  // sets dash size and spacing in pixels
 }
@@ -21,11 +23,14 @@ void draw() {
 
   n1.render();
   n2.render();
+  n3.render();
+  n4.render();
 
   //drawDashedLine();
   //drawDashedRectangle();
-  //drawDashedCircle();
-  drawDashedEllipse();
+  //drawDashedEllipse();
+  //drawDashedQuad();
+  drawDashedTriangle();
   
   
 }
@@ -37,12 +42,18 @@ void mousePressed() {
     n1.dragged = true;
   } else if (n2.inside(mouseX, mouseY)) {
     n2.dragged = true;
+  } else if (n3.inside(mouseX, mouseY)) {
+    n3.dragged = true;
+  } else if (n4.inside(mouseX, mouseY)) {
+    n4.dragged = true;
   }
 }
 
 void mouseReleased() {
   n1.dragged = false;
   n2.dragged = false;
+  n3.dragged = false;
+  n4.dragged = false;
 }
 
 
@@ -58,22 +69,21 @@ void drawDashedRectangle() {
   dashRect(n1.x, n1.y, n2.x, n2.y);
 }
 
-//void drawDashedCircle() {
-//  pushStyle();
-//  ellipseMode(CORNERS);
-//  float r = dist(n1.x, n1.y, n2.x, n2.y);
-//  dashCirc(n1.x, n1.y, 2 * r);
-//  popStyle();
-//}
-
 void drawDashedEllipse() {
   pushStyle();
-  ellipseMode(RADIUS);
-  //float r = dist(n1.x, n1.y, n2.x, n2.y);
+  ellipseMode(CORNERS);
   dashEllipse(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y);
   popStyle();
 }
 
+void drawDashedQuad() {
+  //noFill();
+  dashQuad(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+}
+
+void drawDashedTriangle() {
+  dashTriangle(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
+}
 
 
 

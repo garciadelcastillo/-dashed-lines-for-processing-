@@ -24,7 +24,10 @@ void draw() {
 
   //drawDashedLine();
   //drawDashedRectangle();
-  drawDashedCircle();
+  //drawDashedCircle();
+  drawDashedEllipse();
+  
+  
 }
 
 
@@ -55,10 +58,22 @@ void drawDashedRectangle() {
   dashRect(n1.x, n1.y, n2.x, n2.y);
 }
 
-void drawDashedCircle() {
-  float r = dist(n1.x, n1.y, n2.x, n2.y);
-  dashCirc(n1.x, n1.y, r);
+//void drawDashedCircle() {
+//  pushStyle();
+//  ellipseMode(CORNERS);
+//  float r = dist(n1.x, n1.y, n2.x, n2.y);
+//  dashCirc(n1.x, n1.y, 2 * r);
+//  popStyle();
+//}
+
+void drawDashedEllipse() {
+  pushStyle();
+  ellipseMode(RADIUS);
+  //float r = dist(n1.x, n1.y, n2.x, n2.y);
+  dashEllipse(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y);
+  popStyle();
 }
+
 
 
 

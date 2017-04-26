@@ -30,7 +30,7 @@ void draw() {
   //drawDashedRectangle();
   //drawDashedEllipse();
   //drawDashedQuad();
-  drawDashedTriangle();
+  //drawDashedTriangle();
   
   
 }
@@ -71,7 +71,7 @@ void drawDashedRectangle() {
 
 void drawDashedEllipse() {
   pushStyle();
-  ellipseMode(CORNERS);
+  ellipseMode(RADIUS);
   dashEllipse(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y);
   popStyle();
 }

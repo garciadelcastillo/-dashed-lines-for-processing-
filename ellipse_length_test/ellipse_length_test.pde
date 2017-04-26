@@ -14,10 +14,18 @@ void setup() {
   n2 = new Node(width / 2 + 200, height / 2, 5);
   n3 = new Node(width / 2, height / 2 + 100, 5);
   n4 = new Node(width / 2 + 200, height / 2 + 100, 5);
-  
-  println(TAU * 100);
-  println(ellipseLength(3, 2));
-  println(ellipseLengthE(3, 2));
+
+  //println(System.nanoTime());
+  println(millis());
+  println("Ramanujan: " + ellipseLength(200, 100));
+  //println(System.nanoTime());
+  println(millis());
+  println("Elliptical: " + ellipseLengthE(200, 100));
+  //println(System.nanoTime());
+  println(millis());
+  println("Recursive: " + GetLengthOfEllipse(200, 100, 0.001));
+  //println(System.nanoTime());
+  println(millis());
 }
 
 void draw() {
@@ -35,14 +43,14 @@ void draw() {
   ellipse(n1.x, n1.y, a, b);
   popStyle();
 
-  float x = a * cos(t);
-  float y = b * sin(t);
-  ellipse(n1.x + x, n1.y + y, 5, 5);
-  t += 0.01;
-  if (t > TAU) {
-    t = 0;
-  }
-    
+  //float x = a * cos(t);
+  //float y = b * sin(t);
+  //ellipse(n1.x + x, n1.y + y, 5, 5);
+  //t += 0.01;
+  //if (t > TAU) {
+  //  t = 0;
+  //}
+
   //float alpha = atan(tan(t) * b / a);
   //float alpha2 = atan2(y - n1.y, x - n1.x); 
   ////arc(n1.x, n1.y, 2 * a, 2 * b, 0, alpha);
@@ -61,12 +69,82 @@ void draw() {
   //text("alpha: " + degrees(alpha), 10, 25);
   //text("alpha2: " + degrees(alpha2), 10, 40);
   //popStyle();
+
+  //for (float phi = 0; phi <= PI; phi += PI / 18) {
+  //  ellipse(n1.x + a * cos(phi), n1.y + b * sin(phi), 5, 5);
+  //}
+
+
+
+  //// http://stackoverflow.com/a/20510150/1934487
+  //double theta = 0.0;
+  //double deltaTheta = 0.0001;
+  //double numIntegrals = Math.round(TAU / deltaTheta);
+  //double circ = 0.0;
+  //double dpt = 0.0;
+
+  //// integrate over the ellipse to get the circumference
+  //for (int i = 0; i < numIntegrals; i++) {
+  //  theta += deltaTheta;
+  //  dpt = computeDpt(a, b, theta);
+  //  circ += dpt * deltaTheta;
+  //}
+  //println("circumference = " + (circ));
+  //int n = 20;
+  //int nextPoint
+
+
+  // http://stackoverflow.com/a/20510150/1934487
+  int n = 5;
+  int nextPoint = 0; 
+  double run = 0;
+  double theta = 0.0;
+  double deltaTheta = 0.001;
+  double numIntegrals = Math.round(TAU / deltaTheta);
+  double subIntegral = 0;
+  //double circ = GetLengthOfEllipse(200, 100, deltaTheta);  // more expensive, more precise?
+  double circ = ellipseLength(a, b);  // cheap Ramanujan! :)  
   
-  for (float phi = 0; phi <= PI; phi += PI / 18) {
-    ellipse(n1.x + a * cos(phi), n1.y + b * sin(phi), 5, 5);
+  println("start: " + millis());
+  for (int i = 0; i < numIntegrals; i++) {
+    theta += deltaTheta;
+    subIntegral = n * run / circ;
+    if ((int) subIntegral >= nextPoint) {
+      double x = n1.x + a * Math.cos(theta);
+      double y = n1.y + b * Math.sin(theta);
+      ellipse((float) x, (float) y, 5, 5);
+      nextPoint++;
+    }
+    run += ComputeArcOverAngle(a, b, theta, deltaTheta);
   }
+  
+  println("end: " + millis());
+  
+  //println(frameRate);
 }
 
+
+// http://stackoverflow.com/questions/6972331/how-can-i-generate-a-set-of-points-evenly-distributed-along-the-perimeter-of-an
+private double GetLengthOfEllipse(float a, float b, double deltaAngle)
+{
+  double numIntegrals = Math.round(TAU / deltaAngle);
+  double len = 0.0;
+
+  // integrate over the elipse to get the circumference
+  for (int i = 0; i < numIntegrals; i++) {
+    len += ComputeArcOverAngle(a, b, i * deltaAngle, deltaAngle);
+  }
+  return len;
+}
+
+private double ComputeArcOverAngle(double r1, double r2, double angle, double angleSeg)
+{
+  double dpt_sin = Math.pow(r1 * Math.sin(angle), 2.0);
+  double dpt_cos = Math.pow(r2 * Math.cos(angle), 2.0);
+
+  // Scale the value of distance
+  return angleSeg * Math.sqrt(dpt_sin + dpt_cos);
+}
 
 
 void mousePressed() {
@@ -153,3 +231,6 @@ float ellipseLengthE(float a, float b) {
   }
   return 2 * a * PI * s / v;
 }
+
+// Possible implementation:
+//http://stackoverflow.com/questions/6972331/how-can-i-generate-a-set-of-points-evenly-distributed-along-the-perimeter-of-an

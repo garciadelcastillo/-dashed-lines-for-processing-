@@ -205,47 +205,19 @@ void dashEllipse(float a, float b, float c, float d) {
     }
   }
   popStyle();
+  
+}
 
-
-
-
-  //float len = ellipseLength(0.5 * w, 0.5 * h);
-  //int spaceDashCount = int(len / (DASH_LENGTH + DASH_SPACING));
-  //float dang = TAU * DASH_LENGTH / len;
-  //float sang = TAU * DASH_SPACING / len;
-
-  //// Draw the fill part
-  //pushStyle();
-  //noStroke();
-  //ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
-  //ellipse(x, y, w, h);  
-  ////ellipse(a, b, c, d);  // rely on renderer implementation to do the job
-  //popStyle();
-
-  //// Draw dashes
-  //float ang = 0;
-  //pushStyle();
-  //noFill();
-  //// If using abcd there is something weird with the orientation of the angles
-  //// in the arcs, using this workaround while I figure it out.
-  //ellipseMode(CORNER);
-  //for (int i = 0; i < spaceDashCount; i++) {
-  //  arc(x, y, w, h, ang, ang + dang, OPEN);
-  //  ang += dang + sang;
-  //}
-
-  //// Last dash
-  //if (ang + dang <= TAU) {
-  //  arc(x, y, w, h, ang, TAU, OPEN);
-  //} else {
-  //  arc(x, y, w, h, ang, ang + dang, OPEN);
-  //}
-  //popStyle();
+// Create a dashed arc using Processing same function signature
+// (note that start/stop here refer to the THETA parameter, NOT THE POLAR ANGLE)
+void dashArc(float a, float b, float c, float d, float start, float stop) {
+  dashArc(a, b, c, d, start, stop, 0);
 }
 
 
-// CHEAP AND UNEVEN TEST, IMPROVED
-//void dashEllipse(float a, float b, float c, float d) {
+//// Create a dashed arc using Processing same function signature
+//// (note that start/stop here refer to the THETA parameter, NOT THE POLAR ANGLE)
+//void dashArc(float a, float b, float c, float d, float start, float stop, int mode) {
 //  int ellipseMode = getGraphics().ellipseMode;
 
 //  // From Processing's core, CORNER-oriented vars
@@ -276,8 +248,100 @@ void dashEllipse(float a, float b, float c, float d) {
 //    y += h;
 //    h = -h;
 //  }
+//  float w2 = 0.5 * w, h2 = 0.5 * h;
+  
+//  // Compute theta parameters for start-ends of dashes and gaps
+//  FloatList ts = new FloatList();  // TODO: precompute the size of the t array and create it as an array directly
+//  int id = 0;
+//  float run = 0;
+//  float t = 0;
+//  float dt = 0.01;
+//  float samples = Math.round(TAU / dt);
+//  float len = ellipseCircumference(w2, h2, 0, dt);
+//  float nextL = 0;
+  
+//  println("start: " + millis());
+//  for (int i = 0; i < samples; i++) {
+//    run += ellipseArcDifferential(w2, h2, t, dt);
+//    if ((int) run >= nextL) {
+//      ts.append(t);
+//      nextL += dashes[id % dashes.length];
+//      id++;
+//    }
+//    t += dt;
+//  }
+//  println("end: " + millis());
+//  float[] tsA = ts.array();  // see TODO above
+  
+//  // Draw the fill part
+//  pushStyle();
+//  noStroke();
+//  ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
+//  ellipse(x, y, w, h);  
+//  popStyle();
+  
+//  // Draw dashes
+//  pushStyle();
+//  noFill();
+//  ellipseMode(CORNER);
+//  for (int i = 0; i < tsA.length; i += 2) {
+//    if (i == tsA.length - 1) {
+//      arc(x, y, w, h, tsA[i], TAU);
+//    } else {
+//      arc(x, y, w, h, tsA[i], tsA[i+1]);
+//    }
+//  }
+//  popStyle();
+//}
 
 
+//void dashArc(float a, float b, float c, float d, float start, float stop) {
+//  dashArc(a, b, c, d, start, stop, 0);
+//}
+
+//void dashArc(float a, float b, float c, float d, float start, float stop, int mode) {
+//  int ellipseMode = getGraphics().ellipseMode;
+
+//  // From Processing's core, CORNER-oriented vars
+//  float x = a;
+//  float y = b;
+//  float w = c;
+//  float h = d;
+
+//  if (ellipseMode == CORNERS) {
+//    w = c - a;
+//    h = d - b;
+//  } else if (ellipseMode == RADIUS) {
+//    x = a - c;
+//    y = b - d;
+//    w = c * 2;
+//    h = d * 2;
+//  } else if (ellipseMode == CENTER) {
+//    x = a - c/2f;
+//    y = b - d/2f;
+//  }
+
+//  // make sure the loop will exit before starting while
+//  if (!Float.isInfinite(start) && !Float.isInfinite(stop)) {
+//    // ignore equal and degenerate cases
+//    if (stop > start) {
+//      // make sure that we're starting at a useful point
+//      while (start < 0) {
+//        start += TAU;
+//        stop += TAU;
+//      }
+      
+//      // prevent overrides
+//      if (stop - start > TAU) {
+//        // don't change start, it is visible in PIE mode
+//        stop = start + TAU;
+//      }
+//      dashArcImpl(x, y, w, h, start, stop, mode);
+//    }
+//  }
+//}
+
+//void dashArcImpl(float x, float y, float w, float h, float start, float stop, int mode) {
 //  // Turns out, ellipses are a little more complicated than circles!
 //  // There is no closed form equation to find the length (solution is a double elliptic integral), 
 //  // nor the arc length given an angle...
@@ -317,105 +381,6 @@ void dashEllipse(float a, float b, float c, float d) {
 //  }
 //  popStyle();
 //}
-
-// Find the circunference length of an ellipse using Ramanujan's approximation.
-// a & b are the lengths of the semiaxes.
-// Ramanujan, S. "Modular Equations and Approximations to pi." Quart. J. Pure. Appl. Math. 45, 350-372, 1913-1914. Section 16, Eq. 49
-// https://books.google.com/books?id=oSioAM4wORMC&pg=PA39#v=onepage&q&f=false
-float ellipseLength(float a, float b) {
-  //float k = sqrt(1 - b * b / (a * a));  // ellipse's eccentricity: http://mathworld.wolfram.com/Eccentricity.html
-  //float eps = a * pow(k, 12) / 1048576;
-  //println("eps: " + eps);  // the 
-
-  return PI * ( 3 * (a + b) - sqrt((a + 3 * b) * (3 * a + b)) );
-}
-
-void dashArc(float a, float b, float c, float d, float start, float stop) {
-  dashArc(a, b, c, d, start, stop, 0);
-}
-
-void dashArc(float a, float b, float c, float d, float start, float stop, int mode) {
-  int ellipseMode = getGraphics().ellipseMode;
-
-  // From Processing's core, CORNER-oriented vars
-  float x = a;
-  float y = b;
-  float w = c;
-  float h = d;
-
-  if (ellipseMode == CORNERS) {
-    w = c - a;
-    h = d - b;
-  } else if (ellipseMode == RADIUS) {
-    x = a - c;
-    y = b - d;
-    w = c * 2;
-    h = d * 2;
-  } else if (ellipseMode == CENTER) {
-    x = a - c/2f;
-    y = b - d/2f;
-  }
-
-  // make sure the loop will exit before starting while
-  if (!Float.isInfinite(start) && !Float.isInfinite(stop)) {
-    // ignore equal and degenerate cases
-    if (stop > start) {
-      // make sure that we're starting at a useful point
-      while (start < 0) {
-        start += TAU;
-        stop += TAU;
-      }
-      
-      // prevent overrides
-      if (stop - start > TAU) {
-        // don't change start, it is visible in PIE mode
-        stop = start + TAU;
-      }
-      dashArcImpl(x, y, w, h, start, stop, mode);
-    }
-  }
-}
-
-void dashArcImpl(float x, float y, float w, float h, float start, float stop, int mode) {
-  // Turns out, ellipses are a little more complicated than circles!
-  // There is no closed form equation to find the length (solution is a double elliptic integral), 
-  // nor the arc length given an angle...
-  // In this first test, one of Ramanujan's approximations to the length of the ellipse is used (16#49),
-  // and then the length divided (unequally) into angle increments. 
-  // (To be improved)
-  float len = ellipseLength(0.5 * w, 0.5 * h);
-  int spaceDashCount = int(len / (DASH_LENGTH + DASH_SPACING));
-  float dang = TAU * DASH_LENGTH / len;
-  float sang = TAU * DASH_SPACING / len;
-
-  // Draw the fill part
-  pushStyle();
-  noStroke();
-  ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
-  ellipse(x, y, w, h);  
-  //ellipse(a, b, c, d);  // rely on renderer implementation to do the job
-  popStyle();
-
-  // Draw dashes
-  float ang = 0;
-  pushStyle();
-  noFill();
-  // If using abcd there is something weird with the orientation of the angles
-  // in the arcs, using this workaround while I figure it out.
-  ellipseMode(CORNER);
-  for (int i = 0; i < spaceDashCount; i++) {
-    arc(x, y, w, h, ang, ang + dang, OPEN);
-    ang += dang + sang;
-  }
-
-  // Last dash
-  if (ang + dang <= TAU) {
-    arc(x, y, w, h, ang, TAU, OPEN);
-  } else {
-    arc(x, y, w, h, ang, ang + dang, OPEN);
-  }
-  popStyle();
-}
 
 
 

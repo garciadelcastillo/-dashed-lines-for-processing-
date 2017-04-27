@@ -15,7 +15,7 @@ void setup() {
   n3 = new Node(300, 100, 5);
   n4 = new Node(200, 50, 4);
 
-  dash(20, 10);  // sets dash size and spacing in pixels
+  dash(20, 10, 5, 10);  // sets dash size and spacing in pixels
 }
 
 void draw() {
@@ -28,7 +28,7 @@ void draw() {
 
   //drawDashedLine();
   //drawDashedRectangle();
-  //drawDashedEllipse();
+  drawDashedEllipse();
   //drawDashedQuad();
   //drawDashedTriangle();
   

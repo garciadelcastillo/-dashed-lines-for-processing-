@@ -2,11 +2,24 @@
 float DASH_LENGTH;
 float DASH_SPACING;
 float CIRCLE_EPSILON = 0.1;
+float[] dashes;
 
-void dash(float dashLength, float dashSpacing) {
-  DASH_LENGTH = dashLength;
-  DASH_SPACING = dashSpacing;
+void dash(float d1, float d2) {
+  DASH_LENGTH = d1;
+  DASH_SPACING = d2;
+  dashes = new float[2];
+  dashes[0] = d1;
+  dashes[1] = d2;
 }
+
+void dash(float d1, float d2, float d3, float d4) {
+  dashes = new float[4];
+  dashes[0] = d1;
+  dashes[1] = d2;
+  dashes[2] = d3;
+  dashes[3] = d4;
+}
+
 
 void dashLine(float x1, float y1, float x2, float y2) {
   PVector l = new PVector(x2 - x1, y2 - y1);
@@ -116,6 +129,7 @@ void dashTriangle(float x1, float y1, float x2, float y2, float x3, float y3) {
 }
 
 
+
 void dashEllipse(float a, float b, float c, float d) {
   int ellipseMode = getGraphics().ellipseMode;
 
@@ -147,47 +161,162 @@ void dashEllipse(float a, float b, float c, float d) {
     y += h;
     h = -h;
   }
-
-
-  // Turns out, ellipses are a little more complicated than circles!
-  // There is no closed form equation to find the length (solution is a double elliptic integral), 
-  // nor the arc length given an angle...
-  // In this first test, one of Ramanujan's approximations to the length of the ellipse is used (16#49),
-  // and then the length divided (unequally) into angle increments. 
-  // (To be improved)
-  float len = ellipseLength(0.5 * w, 0.5 * h);
-  int spaceDashCount = int(len / (DASH_LENGTH + DASH_SPACING));
-  float dang = TAU * DASH_LENGTH / len;
-  float sang = TAU * DASH_SPACING / len;
-
+  float w2 = 0.5 * w, h2 = 0.5 * h;
+  
+  // Compute theta parameters for start-ends of dashes and gaps
+  FloatList ts = new FloatList();  // TODO: precompute the size of the t array and create it as an array directly
+  int id = 0;
+  float run = 0;
+  float t = 0;
+  float dt = 0.01;
+  float samples = Math.round(TAU / dt);
+  float len = ellipseCircumference(w2, h2, 0, dt);
+  float nextL = 0;
+  
+  println("start: " + millis());
+  for (int i = 0; i < samples; i++) {
+    run += ellipseArcDifferential(w2, h2, t, dt);
+    if ((int) run >= nextL) {
+      ts.append(t);
+      nextL += dashes[id % dashes.length];
+      id++;
+    }
+    t += dt;
+  }
+  println("end: " + millis());
+  float[] tsA = ts.array();  // see TODO above
+  
   // Draw the fill part
   pushStyle();
   noStroke();
   ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
   ellipse(x, y, w, h);  
-  //ellipse(a, b, c, d);  // rely on renderer implementation to do the job
   popStyle();
-
+  
   // Draw dashes
-  float ang = 0;
   pushStyle();
   noFill();
-  // If using abcd there is something weird with the orientation of the angles
-  // in the arcs, using this workaround while I figure it out.
   ellipseMode(CORNER);
-  for (int i = 0; i < spaceDashCount; i++) {
-    arc(x, y, w, h, ang, ang + dang, OPEN);
-    ang += dang + sang;
-  }
-
-  // Last dash
-  if (ang + dang <= TAU) {
-    arc(x, y, w, h, ang, TAU, OPEN);
-  } else {
-    arc(x, y, w, h, ang, ang + dang, OPEN);
+  for (int i = 0; i < tsA.length; i += 2) {
+    if (i == tsA.length - 1) {
+      arc(x, y, w, h, tsA[i], TAU);
+    } else {
+      arc(x, y, w, h, tsA[i], tsA[i+1]);
+    }
   }
   popStyle();
+
+
+
+
+  //float len = ellipseLength(0.5 * w, 0.5 * h);
+  //int spaceDashCount = int(len / (DASH_LENGTH + DASH_SPACING));
+  //float dang = TAU * DASH_LENGTH / len;
+  //float sang = TAU * DASH_SPACING / len;
+
+  //// Draw the fill part
+  //pushStyle();
+  //noStroke();
+  //ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
+  //ellipse(x, y, w, h);  
+  ////ellipse(a, b, c, d);  // rely on renderer implementation to do the job
+  //popStyle();
+
+  //// Draw dashes
+  //float ang = 0;
+  //pushStyle();
+  //noFill();
+  //// If using abcd there is something weird with the orientation of the angles
+  //// in the arcs, using this workaround while I figure it out.
+  //ellipseMode(CORNER);
+  //for (int i = 0; i < spaceDashCount; i++) {
+  //  arc(x, y, w, h, ang, ang + dang, OPEN);
+  //  ang += dang + sang;
+  //}
+
+  //// Last dash
+  //if (ang + dang <= TAU) {
+  //  arc(x, y, w, h, ang, TAU, OPEN);
+  //} else {
+  //  arc(x, y, w, h, ang, ang + dang, OPEN);
+  //}
+  //popStyle();
 }
+
+
+// CHEAP AND UNEVEN TEST, IMPROVED
+//void dashEllipse(float a, float b, float c, float d) {
+//  int ellipseMode = getGraphics().ellipseMode;
+
+//  // From Processing's core, CORNER-oriented vars
+//  float x = a;
+//  float y = b;
+//  float w = c;
+//  float h = d;
+
+//  if (ellipseMode == CORNERS) {
+//    w = c - a;
+//    h = d - b;
+//  } else if (ellipseMode == RADIUS) {
+//    x = a - c;
+//    y = b - d;
+//    w = c * 2;
+//    h = d * 2;
+//  } else if (ellipseMode == DIAMETER) {  // == CENTER
+//    x = a - c/2f;
+//    y = b - d/2f;
+//  }
+
+//  if (w < 0) {  // undo negative width
+//    x += w;
+//    w = -w;
+//  }
+
+//  if (h < 0) {  // undo negative height
+//    y += h;
+//    h = -h;
+//  }
+
+
+//  // Turns out, ellipses are a little more complicated than circles!
+//  // There is no closed form equation to find the length (solution is a double elliptic integral), 
+//  // nor the arc length given an angle...
+//  // In this first test, one of Ramanujan's approximations to the length of the ellipse is used (16#49),
+//  // and then the length divided (unequally) into angle increments. 
+//  // (To be improved)
+//  float len = ellipseLength(0.5 * w, 0.5 * h);
+//  int spaceDashCount = int(len / (DASH_LENGTH + DASH_SPACING));
+//  float dang = TAU * DASH_LENGTH / len;
+//  float sang = TAU * DASH_SPACING / len;
+
+//  // Draw the fill part
+//  pushStyle();
+//  noStroke();
+//  ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
+//  ellipse(x, y, w, h);  
+//  //ellipse(a, b, c, d);  // rely on renderer implementation to do the job
+//  popStyle();
+
+//  // Draw dashes
+//  float ang = 0;
+//  pushStyle();
+//  noFill();
+//  // If using abcd there is something weird with the orientation of the angles
+//  // in the arcs, using this workaround while I figure it out.
+//  ellipseMode(CORNER);
+//  for (int i = 0; i < spaceDashCount; i++) {
+//    arc(x, y, w, h, ang, ang + dang, OPEN);
+//    ang += dang + sang;
+//  }
+
+//  // Last dash
+//  if (ang + dang <= TAU) {
+//    arc(x, y, w, h, ang, TAU, OPEN);
+//  } else {
+//    arc(x, y, w, h, ang, ang + dang, OPEN);
+//  }
+//  popStyle();
+//}
 
 // Find the circunference length of an ellipse using Ramanujan's approximation.
 // a & b are the lengths of the semiaxes.

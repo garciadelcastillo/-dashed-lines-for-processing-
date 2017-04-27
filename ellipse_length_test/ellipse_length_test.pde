@@ -95,7 +95,7 @@ void draw() {
 
 
   // http://stackoverflow.com/a/20510150/1934487
-  int n = 5;
+  int n = 32;
   int nextPoint = 0; 
   double run = 0;
   double theta = 0.0;
@@ -104,22 +104,22 @@ void draw() {
   double subIntegral = 0;
   //double circ = GetLengthOfEllipse(200, 100, deltaTheta);  // more expensive, more precise?
   double circ = ellipseLength(a, b);  // cheap Ramanujan! :)  
-  
+
   println("start: " + millis());
   for (int i = 0; i < numIntegrals; i++) {
     theta += deltaTheta;
     subIntegral = n * run / circ;
     if ((int) subIntegral >= nextPoint) {
-      double x = n1.x + a * Math.cos(theta);
-      double y = n1.y + b * Math.sin(theta);
-      ellipse((float) x, (float) y, 5, 5);
+      double px = n1.x + a * Math.cos(theta);
+      double py = n1.y + b * Math.sin(theta);
+      ellipse((float) px, (float) py, 5, 5);
       nextPoint++;
     }
     run += ComputeArcOverAngle(a, b, theta, deltaTheta);
   }
-  
+
   println("end: " + millis());
-  
+
   //println(frameRate);
 }
 

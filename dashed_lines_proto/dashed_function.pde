@@ -311,6 +311,8 @@ void dashArc(float a, float b, float c, float d, float start, float stop, int mo
       ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
       arc(x, y, w, h, start, stop);  
       popStyle();
+      
+      // If PIE mode, draw first line
 
       // Draw dashes
       pushStyle();

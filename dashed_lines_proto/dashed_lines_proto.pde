@@ -119,14 +119,3 @@ void drawDashedQuad() {
 void drawDashedTriangle() {
   dashTriangle(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
 }
-
-
-
-/*
-  TODO:
- - At some point, implement offset or something so that animations like this are possible:
- https://www.youtube.com/watch?v=8uZgU3f8p9A
- - Implement variable dash count on all methods
- - Implement CHORD + PIE modes on ellipses...
- 
- */

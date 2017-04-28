@@ -127,11 +127,11 @@ private PVector pointOnEllipseAtAngle(float x, float y, float a, float b, float 
   // Constrain angle
   alpha %= TAU;
 
-  // Convert parameter to polar angle
+  // Convert polar angle to parameter
   float t = atan(tan(alpha) * a / b);
 
   // Adjust atan limits to map t to (0, TAU)
-  if (alpha > HALF_PI && alpha <= 1.5 * PI) {
+  if (alpha >= HALF_PI && alpha <= 1.5 * PI) {
     t += PI;
   } else if (alpha > 1.5 * PI) {
     t = TAU + t;
@@ -173,4 +173,30 @@ private float[] divideEllipse(float a, float b, int n, float precision) {
   //println("end: " + millis());
 
   return ts;
+}
+
+
+private float ellipsePolarToTheta(float a, float b, float alpha) {
+  boolean neg = alpha < 0;
+  if (neg) alpha = -alpha;
+  float rho = alpha % TAU;
+  
+  float t = atan(tan(rho) * a / b);
+
+  // Adjust atan limits to map t to (0, TAU)
+  if (rho >= HALF_PI && rho <= 1.5 * PI) {
+    t += PI;
+  } else if (rho > 1.5 * PI) {
+    t = TAU + t;
+  }
+  
+  // fix quadrants
+  if (alpha > TAU) {
+    t += alpha - rho;
+  }
+  if (neg) {
+    t = -t;
+  }
+  
+  return t;  
 }

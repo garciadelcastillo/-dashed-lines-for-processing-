@@ -162,7 +162,7 @@ void dashEllipse(float a, float b, float c, float d) {
     h = -h;
   }
   float w2 = 0.5 * w, h2 = 0.5 * h;
-  
+
   // Compute theta parameters for start-ends of dashes and gaps
   FloatList ts = new FloatList();  // TODO: precompute the size of the t array and create it as an array directly
   int id = 0;
@@ -172,8 +172,8 @@ void dashEllipse(float a, float b, float c, float d) {
   float samples = Math.round(TAU / dt);
   float len = ellipseCircumference(w2, h2, 0, dt);
   float nextL = 0;
-  
-  println("start: " + millis());
+
+  //println("start: " + millis());
   for (int i = 0; i < samples; i++) {
     run += ellipseArcDifferential(w2, h2, t, dt);
     if ((int) run >= nextL) {
@@ -183,29 +183,28 @@ void dashEllipse(float a, float b, float c, float d) {
     }
     t += dt;
   }
-  println("end: " + millis());
+  //println("end: " + millis());
   float[] tsA = ts.array();  // see TODO above
-  
+
   // Draw the fill part
   pushStyle();
   noStroke();
   ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
   ellipse(x, y, w, h);  
   popStyle();
-  
+
   // Draw dashes
   pushStyle();
   noFill();
   ellipseMode(CORNER);
   for (int i = 0; i < tsA.length; i += 2) {
     if (i == tsA.length - 1) {
-      arc(x, y, w, h, tsA[i], TAU);
+      arc(x, y, w, h, tsA[i], TAU);  // TODO: does this account for 2+ dash/gaps?
     } else {
       arc(x, y, w, h, tsA[i], tsA[i+1]);
     }
   }
   popStyle();
-  
 }
 
 // Create a dashed arc using Processing same function signature
@@ -215,85 +214,191 @@ void dashArc(float a, float b, float c, float d, float start, float stop) {
 }
 
 
-//// Create a dashed arc using Processing same function signature
-//// (note that start/stop here refer to the THETA parameter, NOT THE POLAR ANGLE)
-//void dashArc(float a, float b, float c, float d, float start, float stop, int mode) {
-//  int ellipseMode = getGraphics().ellipseMode;
+// Create a dashed arc using Processing same function signature
+// (note that start/stop here refer to the THETA parameter, NOT THE POLAR ANGLE)
+void dashArc(float a, float b, float c, float d, float start, float stop, int mode) {
+  int ellipseMode = getGraphics().ellipseMode;
 
-//  // From Processing's core, CORNER-oriented vars
-//  float x = a;
-//  float y = b;
-//  float w = c;
-//  float h = d;
+  // From Processing's core, CORNER-oriented vars
+  float x = a;
+  float y = b;
+  float w = c;
+  float h = d;
 
-//  if (ellipseMode == CORNERS) {
-//    w = c - a;
-//    h = d - b;
-//  } else if (ellipseMode == RADIUS) {
-//    x = a - c;
-//    y = b - d;
-//    w = c * 2;
-//    h = d * 2;
-//  } else if (ellipseMode == DIAMETER) {  // == CENTER
-//    x = a - c/2f;
-//    y = b - d/2f;
-//  }
+  if (ellipseMode == CORNERS) {
+    w = c - a;
+    h = d - b;
+  } else if (ellipseMode == RADIUS) {
+    x = a - c;
+    y = b - d;
+    w = c * 2;
+    h = d * 2;
+  } else if (ellipseMode == DIAMETER) {  // == CENTER
+    x = a - c/2f;
+    y = b - d/2f;
+  }
 
-//  if (w < 0) {  // undo negative width
-//    x += w;
-//    w = -w;
-//  }
+  if (w < 0) {  // undo negative width
+    x += w;
+    w = -w;
+  }
 
-//  if (h < 0) {  // undo negative height
-//    y += h;
-//    h = -h;
-//  }
-//  float w2 = 0.5 * w, h2 = 0.5 * h;
+  if (h < 0) {  // undo negative height
+    y += h;
+    h = -h;
+  }
+  float w2 = 0.5 * w, h2 = 0.5 * h;
+
+  // make sure the loop will exit before starting while
+  if (!Float.isInfinite(start) && !Float.isInfinite(stop)) {
+    // ignore equal and degenerate cases
+    if (stop > start) {
+      // make sure that we're starting at a useful point
+      while (start < 0) {
+        start += TWO_PI;
+        stop += TWO_PI;
+      }
+
+      if (stop - start > TWO_PI) {
+        // don't change start, it is visible in PIE mode
+        stop = start + TWO_PI;
+      }
+
+      // TODO: implement modes: CHORD, PIE
+
+      // Compute theta parameters for start-ends of dashes and gaps
+      FloatList ts = new FloatList();  // TODO: precompute the size of the t array and create it as an array directly
+      int id = 0;
+      float run = 0;
+      float t = start;
+      float dt = 0.01;
+      float samples = Math.round((stop - start) / dt);
+      float len = ellipseCircumference(w2, h2, 0, dt);
+      float nextL = 0;
+
+      //println("start: " + millis());
+      for (int i = 0; i < samples; i++) {
+        run += ellipseArcDifferential(w2, h2, t, dt);
+        if ((int) run >= nextL) {
+          ts.append(t);
+          nextL += dashes[id % dashes.length];
+          id++;
+        }
+        t += dt;
+      }
+      //println("end: " + millis());
+      float[] tsA = ts.array();  // see TODO above
+
+      // Draw the fill part
+      pushStyle();
+      noStroke();
+      ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
+      arc(x, y, w, h, start, stop);  
+      popStyle();
+
+      // Draw dashes
+      pushStyle();
+      noFill();
+      ellipseMode(CORNER);
+      for (int i = 0; i < tsA.length; i += 2) {
+        if (i == tsA.length - 1) {
+          arc(x, y, w, h, tsA[i], stop);  // TODO: does this account for 2+ dash/gaps?
+        } else {
+          arc(x, y, w, h, tsA[i], tsA[i+1]);
+        }
+      }
+      popStyle();
+    }
+  }
+}
+
+
+// Create a dashed arc using Processing same function signature,
+// however using start/stop as POLAR ANGLES, not THETA parameters.
+void dashArcPolar(float a, float b, float c, float d, float start, float stop, int mode) {
+
+  //  // Make sure the loop will exit before starting while
+  //  if (!Float.isInfinite(start) && !Float.isInfinite(stop)) {
+  //    // ignore equal and degenerate cases
+  //    if (stop > start) {
+  //      // make sure that we're starting at a useful point
+  //      while (start < 0) {
+  //        start += TAU;
+  //        stop += TAU;
+  //      }
+
+  //      if (stop - start > TAU) {
+  //        // don't change start, it is visible in PIE mode
+  //        stop = start + TAU;
+  //      }
+
+  //      int ellipseMode = getGraphics().ellipseMode;
+  //      float w = c;
+  //      float h = d;
+  //      if (ellipseMode == CORNERS) {
+  //        w = c - a;
+  //        h = d - b;
+  //      } else if (ellipseMode == RADIUS) {
+  //        w = c * 2;
+  //        h = d * 2;
+  //      } 
+  //      if (w < 0) {  // undo negative width
+  //        w = -w;
+  //      }
+  //      if (h < 0) {  // undo negative height
+  //        h = -h;
+  //      }
+  //      float w2 = 0.5 * w;
+  //      float h2 = 0.5 * h;
+
+
+  //      // Convert polar angles to theta parameter
+  //      float thetaStart = atan(tan(start) * w2 / h2);
+  //      float thetaStop = atan(tan(stop) * w2 / h2);
+  //      println("---");
+  //      println(start + " " + stop);
+  //      println(thetaStart + " " + thetaStop);
+
+  //      // Adjust atan limits to map t to (0, TAU), just 
+  //      if (start >= HALF_PI && start <= 1.5 * PI) {
+  //        thetaStart += PI;
+  //      } else if (start > 1.5 * PI) {
+  //        thetaStart = TAU + thetaStart;
+  //      }
+  //      if (stop >= HALF_PI && stop <= 1.5 * PI) {
+  //        thetaStop += PI;
+  //      } else if (stop > 1.5 * PI) {
+  //        thetaStop = TAU + thetaStop;
+  //      }
+  //      println(thetaStart + " " + thetaStop);
+
+  //      dashArc(a, b, c, d, thetaStart, thetaStop, mode);
+  //    }
+  //  }
+
+  int ellipseMode = getGraphics().ellipseMode;
+  float w = c;
+  float h = d;
+  if (ellipseMode == CORNERS) {
+    w = c - a;
+    h = d - b;
+  } else if (ellipseMode == RADIUS) {
+    w = c * 2;
+    h = d * 2;
+  } 
+  if (w < 0) {  // undo negative width
+    w = -w;
+  }
+  if (h < 0) {  // undo negative height
+    h = -h;
+  }
+  float w2 = 0.5 * w;
+  float h2 = 0.5 * h;
   
-//  // Compute theta parameters for start-ends of dashes and gaps
-//  FloatList ts = new FloatList();  // TODO: precompute the size of the t array and create it as an array directly
-//  int id = 0;
-//  float run = 0;
-//  float t = 0;
-//  float dt = 0.01;
-//  float samples = Math.round(TAU / dt);
-//  float len = ellipseCircumference(w2, h2, 0, dt);
-//  float nextL = 0;
-  
-//  println("start: " + millis());
-//  for (int i = 0; i < samples; i++) {
-//    run += ellipseArcDifferential(w2, h2, t, dt);
-//    if ((int) run >= nextL) {
-//      ts.append(t);
-//      nextL += dashes[id % dashes.length];
-//      id++;
-//    }
-//    t += dt;
-//  }
-//  println("end: " + millis());
-//  float[] tsA = ts.array();  // see TODO above
-  
-//  // Draw the fill part
-//  pushStyle();
-//  noStroke();
-//  ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
-//  ellipse(x, y, w, h);  
-//  popStyle();
-  
-//  // Draw dashes
-//  pushStyle();
-//  noFill();
-//  ellipseMode(CORNER);
-//  for (int i = 0; i < tsA.length; i += 2) {
-//    if (i == tsA.length - 1) {
-//      arc(x, y, w, h, tsA[i], TAU);
-//    } else {
-//      arc(x, y, w, h, tsA[i], tsA[i+1]);
-//    }
-//  }
-//  popStyle();
-//}
-
+  float thetaStart = ellipsePolarToTheta(w2, h2, start);
+  float thetaStop = ellipsePolarToTheta(w2, h2, stop);
+  dashArc(a, b, c, d, thetaStart, thetaStop, mode);
+}
 
 //void dashArc(float a, float b, float c, float d, float start, float stop) {
 //  dashArc(a, b, c, d, start, stop, 0);
@@ -330,7 +435,7 @@ void dashArc(float a, float b, float c, float d, float start, float stop) {
 //        start += TAU;
 //        stop += TAU;
 //      }
-      
+
 //      // prevent overrides
 //      if (stop - start > TAU) {
 //        // don't change start, it is visible in PIE mode

@@ -1,9 +1,9 @@
 # TODO LIST
 
 ## IMMEDIATE
-- [ ] Implement CHORD + PIE modes on ellipses...
-- [ ] Implement variable dash pattern on all methods
-- [ ] Rename dashes to dashPattern
+- [x] Implement variable dash pattern on all methods
+- [x] Rename dashes to dashPattern
+- [ ] Implement CHORD + PIE modes on arcs...
 
 - [ ] Develop this into an actual library
 

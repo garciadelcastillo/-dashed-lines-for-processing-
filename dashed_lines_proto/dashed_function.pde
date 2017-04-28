@@ -33,37 +33,6 @@ void dash(float[] ds) {
 
 
 void dashLine(float x1, float y1, float x2, float y2) {
-  //PVector l = new PVector(x2 - x1, y2 - y1);
-  //PVector d = (new PVector(x2 - x1, y2 - y1)).setMag(DASH_LENGTH);
-  //PVector s = (new PVector(x2 - x1, y2 - y1)).setMag(DASH_SPACING);
-
-  //float dx = l.x;
-  //float dy = l.y;
-  //float ddx = d.x;
-  //float ddy = d.y;
-  //float sdx = s.x;
-  //float sdy = s.y;
-
-  //int spaceDashCount = abs(dx) > abs(dy) ? 
-  //  int( dx / (ddx + sdx) ) : 
-  //  int( dy / (ddy + sdy) );
-
-  //float x = x1, y = y1;
-
-  //// Draw full dash + spaces 
-  //for (int i = 0; i < spaceDashCount; i++) {
-  //  line(x, y, x + ddx, y + ddy);
-  //  x += ddx + sdx;
-  //  y += ddy + sdy;
-  //}
-
-  //// Figure out how to end the line
-  //if (abs(ddx) < abs(x2 - x)) {
-  //  line(x, y, x + ddx, y + ddy);
-  //} else {
-  //  line(x, y, x2, y2);
-  //}
-
   // Compute theta parameters for start-ends of dashes and gaps
   FloatList ts = new FloatList();  // TODO: precompute the size of the t array and create it as an array directly
   int id = 0;
@@ -88,7 +57,7 @@ void dashLine(float x1, float y1, float x2, float y2) {
     throw new RuntimeException("t array is size " + ts.size());
   }
     
-  float[] tsA = ts.array();
+  float[] tsA = ts.array();  // TODO: improve the list-array situation
 
   // Draw dashes
   pushStyle();
@@ -99,8 +68,6 @@ void dashLine(float x1, float y1, float x2, float y2) {
   }
   popStyle();
   
-  
-
 }
 
 void dashRect(float a, float b, float c, float d) {

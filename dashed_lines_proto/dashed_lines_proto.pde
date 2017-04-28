@@ -103,19 +103,22 @@ void drawDashedArc() {
   popStyle();
   
   //// Dashed arc implementation: uses same convention
-  //noFill();
-  //stroke(0);
-  //dashArc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
-  
-  // Now custom version using polar angles:
   pushStyle();
-  fill(255, 0, 0, 50);
-  noStroke();
   ellipseMode(RADIUS);
-  //noFill();
+  noFill();
   stroke(0);
-  dashArcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, 0);
+  dashArc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
   popStyle();
+  
+  //// Now custom version using polar angles:
+  //pushStyle();
+  //fill(255, 0, 0, 50);
+  //noStroke();
+  //ellipseMode(RADIUS);
+  ////noFill();
+  //stroke(0);
+  //dashArcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, 0);
+  //popStyle();
 }
 
 void drawDashedQuad() {

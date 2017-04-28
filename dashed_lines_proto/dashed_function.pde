@@ -1,57 +1,106 @@
 
-float DASH_LENGTH;
-float DASH_SPACING;
-float CIRCLE_EPSILON = 0.1;
-float[] dashes;
+
+private float CIRCLE_EPSILON = 0.1;
+private float[] dashPattern = {10, 10};
+
+void dash(float d1) {
+  dashPattern = new float[2];
+  dashPattern[0] = d1;
+  dashPattern[1] = d1;
+}
 
 void dash(float d1, float d2) {
-  DASH_LENGTH = d1;
-  DASH_SPACING = d2;
-  dashes = new float[2];
-  dashes[0] = d1;
-  dashes[1] = d2;
+  dashPattern = new float[2];
+  dashPattern[0] = d1;
+  dashPattern[1] = d2;
 }
 
 void dash(float d1, float d2, float d3, float d4) {
-  dashes = new float[4];
-  dashes[0] = d1;
-  dashes[1] = d2;
-  dashes[2] = d3;
-  dashes[3] = d4;
+  dashPattern = new float[4];
+  dashPattern[0] = d1;
+  dashPattern[1] = d2;
+  dashPattern[2] = d3;
+  dashPattern[3] = d4;
+}
+
+void dash(float[] ds) {
+  if (ds.length % 2 == 1) {
+    throw new RuntimeException("Please provide an even number of dash-gap lengths on dash(float[])");
+  }
+  dashPattern = ds;
 }
 
 
+
 void dashLine(float x1, float y1, float x2, float y2) {
-  PVector l = new PVector(x2 - x1, y2 - y1);
-  PVector d = (new PVector(x2 - x1, y2 - y1)).setMag(DASH_LENGTH);
-  PVector s = (new PVector(x2 - x1, y2 - y1)).setMag(DASH_SPACING);
+  //PVector l = new PVector(x2 - x1, y2 - y1);
+  //PVector d = (new PVector(x2 - x1, y2 - y1)).setMag(DASH_LENGTH);
+  //PVector s = (new PVector(x2 - x1, y2 - y1)).setMag(DASH_SPACING);
 
-  float dx = l.x;
-  float dy = l.y;
-  float ddx = d.x;
-  float ddy = d.y;
-  float sdx = s.x;
-  float sdy = s.y;
+  //float dx = l.x;
+  //float dy = l.y;
+  //float ddx = d.x;
+  //float ddy = d.y;
+  //float sdx = s.x;
+  //float sdy = s.y;
 
-  int spaceDashCount = abs(dx) > abs(dy) ? 
-    int( dx / (ddx + sdx) ) : 
-    int( dy / (ddy + sdy) );
+  //int spaceDashCount = abs(dx) > abs(dy) ? 
+  //  int( dx / (ddx + sdx) ) : 
+  //  int( dy / (ddy + sdy) );
 
-  float x = x1, y = y1;
+  //float x = x1, y = y1;
 
-  // Draw full dash + spaces 
-  for (int i = 0; i < spaceDashCount; i++) {
-    line(x, y, x + ddx, y + ddy);
-    x += ddx + sdx;
-    y += ddy + sdy;
+  //// Draw full dash + spaces 
+  //for (int i = 0; i < spaceDashCount; i++) {
+  //  line(x, y, x + ddx, y + ddy);
+  //  x += ddx + sdx;
+  //  y += ddy + sdy;
+  //}
+
+  //// Figure out how to end the line
+  //if (abs(ddx) < abs(x2 - x)) {
+  //  line(x, y, x + ddx, y + ddy);
+  //} else {
+  //  line(x, y, x2, y2);
+  //}
+
+  // Compute theta parameters for start-ends of dashes and gaps
+  FloatList ts = new FloatList();  // TODO: precompute the size of the t array and create it as an array directly
+  int id = 0;
+  float run = 0;
+  float t = 0;
+  float len = dist(x1, y1, x2, y2);
+  
+  while(run < len) {
+    t = run / len;
+    ts.append(t);
+    run += dashPattern[id % dashPattern.length];
+    id++;
   }
-
-  // Figure out how to end the line
-  if (abs(ddx) < abs(x2 - x)) {
-    line(x, y, x + ddx, y + ddy);
-  } else {
-    line(x, y, x2, y2);
+  
+  // If last t was the startpoint of a dash, close it at the end of the line
+  if (id % 2 == 1) {
+    ts.append(1);
   }
+  
+  // DEV
+  if (ts.size() % 2 == 1) {
+    throw new RuntimeException("t array is size " + ts.size());
+  }
+    
+  float[] tsA = ts.array();
+
+  // Draw dashes
+  pushStyle();
+  float dx = x2 - x1;
+  float dy = y2 - y1;
+  for (int i = 0; i < tsA.length; i += 2) {
+    line(x1 + tsA[i] * dx, y1 + tsA[i] * dy, x1 + tsA[i + 1] * dx, y1 + tsA[i + 1] * dy);
+  }
+  popStyle();
+  
+  
+
 }
 
 void dashRect(float a, float b, float c, float d) {
@@ -178,7 +227,7 @@ void dashEllipse(float a, float b, float c, float d) {
     run += ellipseArcDifferential(w2, h2, t, dt);
     if ((int) run >= nextL) {
       ts.append(t);
-      nextL += dashes[id % dashes.length];
+      nextL += dashPattern[id % dashPattern.length];
       id++;
     }
     t += dt;
@@ -281,7 +330,7 @@ void dashArc(float a, float b, float c, float d, float start, float stop, int mo
         run += ellipseArcDifferential(w2, h2, t, dt);
         if ((int) run >= nextL) {
           ts.append(t);
-          nextL += dashes[id % dashes.length];
+          nextL += dashPattern[id % dashPattern.length];
           id++;
         }
         t += dt;
@@ -337,7 +386,7 @@ void dashArcPolar(float a, float b, float c, float d, float start, float stop, i
   }
   float w2 = 0.5 * w;
   float h2 = 0.5 * h;
-  
+
   float thetaStart = ellipsePolarToTheta(w2, h2, start);
   float thetaStop = ellipsePolarToTheta(w2, h2, stop);
   dashArc(a, b, c, d, thetaStart, thetaStop, mode);

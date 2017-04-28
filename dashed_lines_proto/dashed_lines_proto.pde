@@ -15,6 +15,13 @@ void setup() {
   n4 = new Node(width / 2, height / 2 + 200, 4);
 
   dash(20, 10, 5, 10);  // sets dash size and spacing in pixels
+  
+  // Random set of dash lines
+  //float[] pt = new float[20];
+  //for (int i = 0; i < 20; i++) {
+  //  pt[i] = random(5, 20);
+  //}
+  //dash(pt);
 }
 
 void draw() {
@@ -25,10 +32,10 @@ void draw() {
   n3.render();
   n4.render();
 
-  //drawDashedLine();
+  drawDashedLine();
   //drawDashedRectangle();
   //drawDashedEllipse();
-  drawDashedArc();
+  //drawDashedArc();
   //drawDashedQuad();
   //drawDashedTriangle();
   

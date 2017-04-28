@@ -126,6 +126,7 @@ void drawDashedTriangle() {
   TODO:
  - At some point, implement offset or something so that animations like this are possible:
  https://www.youtube.com/watch?v=8uZgU3f8p9A
- 
+ - Implement variable dash count on all methods
+ - Implement CHORD + PIE modes on ellipses...
  
  */

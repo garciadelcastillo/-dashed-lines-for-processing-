@@ -39,24 +39,24 @@ void dashLine(float x1, float y1, float x2, float y2) {
   float run = 0;
   float t = 0;
   float len = dist(x1, y1, x2, y2);
-  
-  while(run < len) {
+
+  while (run < len) {
     t = run / len;
     ts.append(t);
     run += dashPattern[id % dashPattern.length];
     id++;
   }
-  
+
   // If last t was the startpoint of a dash, close it at the end of the line
   if (id % 2 == 1) {
     ts.append(1);
   }
-  
+
   // DEV
   if (ts.size() % 2 == 1) {
     throw new RuntimeException("t array is size " + ts.size());
   }
-    
+
   float[] tsA = ts.array();  // TODO: improve the list-array situation
 
   // Draw dashes
@@ -67,7 +67,6 @@ void dashLine(float x1, float y1, float x2, float y2) {
     line(x1 + tsA[i] * dx, y1 + tsA[i] * dy, x1 + tsA[i + 1] * dx, y1 + tsA[i + 1] * dy);
   }
   popStyle();
-  
 }
 
 void dashRect(float a, float b, float c, float d) {
@@ -309,15 +308,21 @@ void dashArc(float a, float b, float c, float d, float start, float stop, int mo
       pushStyle();
       noStroke();
       ellipseMode(CORNER);  // all correct vars are already calculated, so why not use them...? :)
-      arc(x, y, w, h, start, stop);  
+      arc(x, y, w, h, start, stop, mode);  
       popStyle();
-      
-      // If PIE mode, draw first line
+
 
       // Draw dashes
       pushStyle();
       noFill();
       ellipseMode(CORNER);
+
+      // If PIE mode, draw center-start line
+      if (mode == PIE) {
+        dashLine(x + w2, y + h2, x + w2 + w2 * cos(start), y + h2 + h2 * sin(start));
+      }
+
+      // Arc dashes
       for (int i = 0; i < tsA.length; i += 2) {
         if (i == tsA.length - 1) {
           arc(x, y, w, h, tsA[i], stop);  // TODO: does this account for 2+ dash/gaps?
@@ -325,6 +330,15 @@ void dashArc(float a, float b, float c, float d, float start, float stop, int mo
           arc(x, y, w, h, tsA[i], tsA[i+1]);
         }
       }
+
+      // If PIE, draw end-center line,
+      // else if CHORD draw end-start line.
+      if (mode == PIE) {
+        dashLine(x + w2 + w2 * cos(stop), y + h2 + h2 * sin(stop), x + w2, y + h2);
+      } else if (mode == CHORD) {
+        dashLine(x + w2 + w2 * cos(stop), y + h2 + h2 * sin(stop), x + w2 + w2 * cos(start), y + h2 + h2 * sin(start));
+      }
+
       popStyle();
     }
   }

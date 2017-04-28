@@ -3,7 +3,7 @@
 ## IMMEDIATE
 - [x] Implement variable dash pattern on all methods
 - [x] Rename dashes to dashPattern
-- [ ] Implement CHORD + PIE modes on arcs...
+- [x] Implement CHORD + PIE modes on arcs...
 
 - [ ] Develop this into an actual library
 

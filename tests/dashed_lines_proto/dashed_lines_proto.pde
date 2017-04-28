@@ -32,10 +32,10 @@ void draw() {
   n3.render();
   n4.render();
 
-  drawDashedLine();
+  //drawDashedLine();
   //drawDashedRectangle();
   //drawDashedEllipse();
-  //drawDashedArc();
+  drawDashedArc();
   //drawDashedQuad();
   //drawDashedTriangle();
   
@@ -94,20 +94,21 @@ void drawDashedArc() {
   line(n1.x, n1.y, n4.x, n4.y);
   popStyle();
   
-  // Processing's native arc: uses thetas instead of polar angles
-  pushStyle();
-  ellipseMode(RADIUS);
-  fill(0, 255, 0, 50);
-  noStroke();
-  arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
-  popStyle();
+  //// Processing's native arc: uses thetas instead of polar angles
+  //pushStyle();
+  //ellipseMode(RADIUS);
+  //fill(0, 255, 0, 50);
+  //noStroke();
+  //arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
+  //popStyle();
   
   //// Dashed arc implementation: uses same convention
   pushStyle();
   ellipseMode(RADIUS);
-  noFill();
+  //noFill();
+  fill(255, 0, 0, 50);
   stroke(0);
-  dashArc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
+  dashArc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
   popStyle();
   
   //// Now custom version using polar angles:

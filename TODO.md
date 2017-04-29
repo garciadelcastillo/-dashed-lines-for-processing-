@@ -5,7 +5,7 @@
 - [x] Rename dashes to dashPattern
 - [x] Implement CHORD + PIE modes on arcs...
 
-- [ ] Develop this into an actual library
+- [x] Develop this into an actual library
 
 - [ ] Implement dashMode()
     - [ ] Design which modes are there and how they work  

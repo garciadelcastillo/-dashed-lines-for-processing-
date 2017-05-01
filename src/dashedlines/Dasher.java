@@ -3,7 +3,7 @@ package dashedlines;
 import processing.core.*;
 import processing.data.*;
 
-public class Dasher implements PConstants {
+public class Dasher {
 
 	public final static String VERSION = "##library.prettyVersion##";
 
@@ -96,13 +96,13 @@ public class Dasher implements PConstants {
 		// From Processing's core
 		float hradius, vradius;
 		switch (rectMode) {
-		case CORNERS:
+		case PApplet.CORNERS:
 			break;
-		case CORNER:
+		case PApplet.CORNER:
 			c += a;
 			d += b;
 			break;
-		case RADIUS:
+		case PApplet.RADIUS:
 			hradius = c;
 			vradius = d;
 			c = a + hradius;
@@ -110,7 +110,7 @@ public class Dasher implements PConstants {
 			a -= hradius;
 			b -= vradius;
 			break;
-		case CENTER:
+		case PApplet.CENTER:
 			hradius = c / 2.0f;
 			vradius = d / 2.0f;
 			c = a + hradius;
@@ -175,15 +175,15 @@ public class Dasher implements PConstants {
 		float w = c;
 		float h = d;
 
-		if (ellipseMode == CORNERS) {
+		if (ellipseMode == PApplet.CORNERS) {
 			w = c - a;
 			h = d - b;
-		} else if (ellipseMode == RADIUS) {
+		} else if (ellipseMode == PApplet.RADIUS) {
 			x = a - c;
 			y = b - d;
 			w = c * 2;
 			h = d * 2;
-		} else if (ellipseMode == DIAMETER) { // == CENTER
+		} else if (ellipseMode == PApplet.DIAMETER) { // == CENTER
 			x = a - c / 2f;
 			y = b - d / 2f;
 		}
@@ -207,7 +207,7 @@ public class Dasher implements PConstants {
 		float run = 0;
 		float t = 0;
 		float dt = 0.01f;
-		float samples = Math.round(TAU / dt);
+		float samples = Math.round(PApplet.TAU / dt);
 		float len = ellipseCircumference(w2, h2, 0, dt);
 		float nextL = 0;
 
@@ -227,7 +227,7 @@ public class Dasher implements PConstants {
 		// Draw the fill part
 		p.pushStyle();
 		p.noStroke();
-		p.ellipseMode(CORNER); // all correct vars are already
+		p.ellipseMode(PApplet.CORNER); // all correct vars are already
 										// calculated, so why not use them...?
 										// :)
 		p.ellipse(x, y, w, h);
@@ -236,10 +236,10 @@ public class Dasher implements PConstants {
 		// Draw dashes
 		p.pushStyle();
 		p.noFill();
-		p.ellipseMode(CORNER);
+		p.ellipseMode(PApplet.CORNER);
 		for (int i = 0; i < tsA.length; i += 2) {
 			if (i == tsA.length - 1) {
-				p.arc(x, y, w, h, tsA[i], TAU);
+				p.arc(x, y, w, h, tsA[i], PApplet.TAU);
 			} else {
 				p.arc(x, y, w, h, tsA[i], tsA[i + 1]);
 			}
@@ -266,15 +266,15 @@ public class Dasher implements PConstants {
 		float w = c;
 		float h = d;
 
-		if (ellipseMode == CORNERS) {
+		if (ellipseMode == PApplet.CORNERS) {
 			w = c - a;
 			h = d - b;
-		} else if (ellipseMode == RADIUS) {
+		} else if (ellipseMode == PApplet.RADIUS) {
 			x = a - c;
 			y = b - d;
 			w = c * 2;
 			h = d * 2;
-		} else if (ellipseMode == DIAMETER) { // == CENTER
+		} else if (ellipseMode == PApplet.DIAMETER) { // == CENTER
 			x = a - c / 2f;
 			y = b - d / 2f;
 		}
@@ -296,13 +296,13 @@ public class Dasher implements PConstants {
 			if (stop > start) {
 				// make sure that we're starting at a useful point
 				while (start < 0) {
-					start += TAU;
-					stop += TAU;
+					start += PApplet.TAU;
+					stop += PApplet.TAU;
 				}
 
-				if (stop - start > TAU) {
+				if (stop - start > PApplet.TAU) {
 					// don't change start, it is visible in PIE mode
-					stop = start + TAU;
+					stop = start + PApplet.TAU;
 				}
 
 				// TODO: implement modes: CHORD, PIE
@@ -335,7 +335,7 @@ public class Dasher implements PConstants {
 				// Draw the fill part
 				p.pushStyle();
 				p.noStroke();
-				p.ellipseMode(CORNER); // all correct vars are already
+				p.ellipseMode(PApplet.CORNER); // all correct vars are already
 												// calculated,
 				// so why not use them...? :)
 				p.arc(x, y, w, h, start, stop, mode);
@@ -344,10 +344,10 @@ public class Dasher implements PConstants {
 				// Draw dashes
 				p.pushStyle();
 				p.noFill();
-				p.ellipseMode(CORNER);
+				p.ellipseMode(PApplet.CORNER);
 
 				// If PIE mode, draw center-start line
-				if (mode == PIE) {
+				if (mode == PApplet.PIE) {
 					this.line(x + w2, y + h2, x + w2 + w2 * (float) Math.cos(start),
 							y + h2 + h2 * (float) Math.sin(start));
 				}
@@ -363,10 +363,10 @@ public class Dasher implements PConstants {
 
 				// If PIE, draw end-center line,
 				// else if CHORD draw end-start line.
-				if (mode == PIE) {
+				if (mode == PApplet.PIE) {
 					this.line(x + w2 + w2 * (float) Math.cos(stop), y + h2 + h2 * (float) Math.sin(stop), x + w2,
 							y + h2);
-				} else if (mode == CHORD) {
+				} else if (mode == PApplet.CHORD) {
 					this.line(x + w2 + w2 * (float) Math.cos(stop), y + h2 + h2 * (float) Math.sin(stop),
 							x + w2 + w2 * (float) Math.cos(start), y + h2 + h2 * (float) Math.sin(start));
 				}
@@ -385,10 +385,10 @@ public class Dasher implements PConstants {
 	  int ellipseMode = p.getGraphics().ellipseMode;
 	  float w = c;
 	  float h = d;
-	  if (ellipseMode == CORNERS) {
+	  if (ellipseMode == PApplet.CORNERS) {
 	    w = c - a;
 	    h = d - b;
-	  } else if (ellipseMode == RADIUS) {
+	  } else if (ellipseMode == PApplet.RADIUS) {
 	    w = c * 2;
 	    h = d * 2;
 	  } 
@@ -468,17 +468,17 @@ public class Dasher implements PConstants {
 				f *= 2;
 				s -= f * w * w;
 				// if (abs(w) < EPSILON || it > 100) {
-				if (Math.abs(w) < EPSILON) {
+				if (Math.abs(w) < PApplet.EPSILON) {
 					// println("it: " + it);
 					break;
 				}
 				// it++;
 			}
-			return 2 * a * PI * s / v;
+			return 2 * a * PApplet.PI * s / v;
 
 		// Internal recursive differential approximation
 		case 2:
-			return ellipseArcLength(a, b, 0, TAU, precision);
+			return ellipseArcLength(a, b, 0, PApplet.TAU, precision);
 
 		// Ramanujan's approximation
 		// Ramanujan, S. "Modular Equations and Approximations to pi." Quart. J.
@@ -486,7 +486,7 @@ public class Dasher implements PConstants {
 		// https://books.google.com/books?id=oSioAM4wORMC&pg=PA39#v=onepage&q&f=false
 		case 0:
 		default:
-			return PI * (3 * (a + b) - (float) Math.sqrt((a + 3 * b) * (3 * a + b)));
+			return PApplet.PI * (3 * (a + b) - (float) Math.sqrt((a + 3 * b) * (3 * a + b)));
 		}
 	}
 
@@ -515,7 +515,7 @@ public class Dasher implements PConstants {
 		}
 
 		double len = 0;
-		int samples = Math.round(TAU / precision);
+		int samples = Math.round(PApplet.TAU / precision);
 		float dt = (endT - startT) / samples;
 		for (int i = 0; i < samples; i++) {
 			len += ellipseArcDifferential(a, b, startT + i * dt, dt);
@@ -564,7 +564,7 @@ public class Dasher implements PConstants {
 		float run = 0;
 		float t = 0;
 		float dt = precision;
-		float samples = Math.round(TAU / dt);
+		float samples = Math.round(PApplet.TAU / dt);
 		float dn = 0;
 		float len = ellipseCircumference(a, b, 0, 0.001f);
 
@@ -592,19 +592,19 @@ public class Dasher implements PConstants {
 		boolean neg = alpha < 0;
 		if (neg)
 			alpha = -alpha;
-		float rho = alpha % TAU;
+		float rho = alpha % PApplet.TAU;
 
 		float t = (float)Math.atan(Math.tan(rho) * a / b);
 
 		// Adjust atan limits to map t to (0, TAU)
-		if (rho >= HALF_PI && rho <= 1.5 * PI) {
-			t += PI;
-		} else if (rho > 1.5 * PI) {
-			t = TAU + t;
+		if (rho >= PApplet.HALF_PI && rho <= 1.5 * PApplet.PI) {
+			t += PApplet.PI;
+		} else if (rho > 1.5 * PApplet.PI) {
+			t = PApplet.TAU + t;
 		}
 
 		// fix quadrants
-		if (alpha > TAU) {
+		if (alpha > PApplet.TAU) {
 			t += alpha - rho;
 		}
 		if (neg) {

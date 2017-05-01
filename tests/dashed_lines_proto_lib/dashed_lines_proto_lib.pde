@@ -10,7 +10,7 @@ void setup() {
   strokeCap(SQUARE);
   
   fill(255, 0, 0, 50);
-  strokeWeight(3);
+  strokeWeight(7);
 
   n1 = new Node(width / 2, height / 2, 5);
   n2 = new Node(3 * width / 4, 3 * height / 4, 5);
@@ -40,8 +40,8 @@ void draw() {
   //drawDashedLine();
   //drawDashedRectangle();
   //drawDashedEllipse();
-  drawDashedArc();
-  //drawDashedQuad();
+  //drawDashedArc();
+  drawDashedQuad();
   //drawDashedTriangle();
   
 }

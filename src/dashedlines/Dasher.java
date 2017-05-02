@@ -24,7 +24,7 @@ public class Dasher {
 	//  ██╔═══╝ ██╔══██╗██║╚██╗ ██╔╝    ██╔═══╝ ██╔══██╗██║   ██║██╔═══╝ ╚════██║
 	//  ██║     ██║  ██║██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║     ███████║
 	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝
-	private float CIRCLE_EPSILON = 0.1f;
+	private float ARC_DIFFERENTIAL_PRECISION = 0.005f;  // generally measured in radian increments 
 	private float[] dashPattern = { 10, 10 };
 	private float dashPatternLength = 0; // stores the accumulated length of the complete dash-gap pattern
 	private float offset = 0;
@@ -114,9 +114,7 @@ public class Dasher {
 			id++;
 		}
 
-		// If last t was the startpoint of a dash, close it at the end of
-		// the
-		// line
+		// If last t was the startpoint of a dash, close it at the end of the line
 		if (id % 2 == 1) {
 			ts.append(1);
 		}
@@ -177,9 +175,7 @@ public class Dasher {
 		// Draw the underlying fill props
 		p.pushStyle();
 		p.noStroke();
-		p.quad(a, b, c, b, c, d, a, d); // since we already did the
-										// calculations, quad is faster than
-										// rect()
+		p.quad(a, b, c, b, c, d, a, d); // since we already did the calculations, quad is faster than rect
 		p.popStyle();
 
 		// Draw rect lines (quick and dirty)
@@ -274,14 +270,12 @@ public class Dasher {
 				// TODO: implement modes: CHORD, PIE
 
 				// Compute theta parameters for start-ends of dashes and gaps
-				FloatList ts = new FloatList(); // TODO: precompute the size of
-												// the t array and create it as
-												// an array directly
+				FloatList ts = new FloatList(); // TODO: precompute the size of the t array and create it as an array directly
 				int id = 0;
 				float run = 0;
 				float t = start;
-				float dt = 0.01f;
-				float len = ellipseArcLength(w2, h2, start, stop, 0.01f);
+				float dt = ARC_DIFFERENTIAL_PRECISION;
+				float len = ellipseArcLength(w2, h2, start, stop, dt);
 				float nextL = 0;
 				float nextT = 0;
 
@@ -296,14 +290,14 @@ public class Dasher {
 						// note offset is negative, so adding positive increment
 						nextL -= dashPatternLength * (int) (offset / dashPatternLength);
 					}
-					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.005f);
+					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt);
 					
 					// Process the chunk before t = start
 					// This method is not very optimal, but oh well, stupid ellipse geometry... :P
 					while(nextT <= start) {
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
-						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.005f);  // compute from start to avoid accumulated imprecision
+						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt);  // compute from start to avoid accumulated imprecision
 					}
 					if (id % 2 == 1) {
 						ts.append(start);
@@ -325,8 +319,8 @@ public class Dasher {
 					t += dt;
 				}
 
-				
-				float[] tsA = ts.array(); // see TODO above
+				// This should be optimized...
+				float[] tsA = ts.array();
 
 				// Draw the fill part
 				p.pushStyle();

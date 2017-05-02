@@ -7,15 +7,24 @@
 
 - [x] Develop this into an actual library
 
-- [ ] Implement dashMode()
+- [ ] Implement dash.offset()
+    - [ ] line
+    - [ ] rect
+    - [ ] quad
+    - [ ] triangle
+    - [ ] ellipse
+    - [ ] arc
+    - [ ] arcPolar
+
+- [ ] Implement dash.mode()
     - [ ] Design which modes are there and how they work  
 
-- [ ] dashBezier()
-- [ ] dashCurve()
-- [ ] beginDashShape(), endDashShape()
-    - [ ] dashVertex()
-    - [ ] bezierVertex()
-    - [ ] curveVertex()
+- [ ] dash.bezier()
+- [ ] dash.curve()
+- [ ] dash.beginShape(), dash.endShape()
+    - [ ] dash.vertex()
+    - [ ] dash.bezierVertex()
+    - [ ] dash.curveVertex()
 
 
 ## SOON

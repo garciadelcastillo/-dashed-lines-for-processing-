@@ -1,5 +1,7 @@
 package dashedlines;
 
+import com.sun.istack.internal.FragmentContentHandler;
+
 import processing.core.*;
 import processing.data.*;
 
@@ -18,21 +20,39 @@ public class Dasher {
 		p = theParent;
 	}
 
-	////// PRIVATE PROPS //////
+	//  ██████╗ ██████╗ ██╗██╗   ██╗    ██████╗ ██████╗  ██████╗ ██████╗ ███████╗
+	//  ██╔══██╗██╔══██╗██║██║   ██║    ██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔════╝
+	//  ██████╔╝██████╔╝██║██║   ██║    ██████╔╝██████╔╝██║   ██║██████╔╝███████╗
+	//  ██╔═══╝ ██╔══██╗██║╚██╗ ██╔╝    ██╔═══╝ ██╔══██╗██║   ██║██╔═══╝ ╚════██║
+	//  ██║     ██║  ██║██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║     ███████║
+	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝
 	private float CIRCLE_EPSILON = 0.1f;
 	private float[] dashPattern = { 10, 10 };
+	private float dashPatternLength = 0; // stores the accumulated length of the complete dash-gap pattern
+	private float offset = 0;
 
-	////// PUBLIC API //////
+
+
+
+	// ██████╗ ██╗   ██╗██████╗ ██╗     ██╗ ██████╗     █████╗ ██████╗ ██╗
+	// ██╔══██╗██║   ██║██╔══██╗██║     ██║██╔════╝    ██╔══██╗██╔══██╗██║
+	// ██████╔╝██║   ██║██████╔╝██║     ██║██║         ███████║██████╔╝██║
+	// ██╔═══╝ ██║   ██║██╔══██╗██║     ██║██║         ██╔══██║██╔═══╝ ██║
+	// ██║     ╚██████╔╝██████╔╝███████╗██║╚██████╗    ██║  ██║██║     ██║
+	// ╚═╝      ╚═════╝ ╚═════╝ ╚══════╝╚═╝ ╚═════╝    ╚═╝  ╚═╝╚═╝     ╚═╝
+
 	public void pattern(float d1) {
 		dashPattern = new float[2];
 		dashPattern[0] = d1;
 		dashPattern[1] = d1;
+		updateDashPatternLength();
 	}
 
 	public void pattern(float d1, float d2) {
 		dashPattern = new float[2];
 		dashPattern[0] = d1;
 		dashPattern[1] = d2;
+		updateDashPatternLength();
 	}
 
 	public void pattern(float d1, float d2, float d3, float d4) {
@@ -41,6 +61,7 @@ public class Dasher {
 		dashPattern[1] = d2;
 		dashPattern[2] = d3;
 		dashPattern[3] = d4;
+		updateDashPatternLength();
 	}
 
 	public void pattern(float[] ds) {
@@ -48,17 +69,44 @@ public class Dasher {
 			throw new RuntimeException("Please provide an even number of dash-gap lengths on dash(float[])");
 		}
 		dashPattern = ds;
+		updateDashPatternLength();
+	}
+
+	public void offset(float off) {
+		offset = off;
 	}
 
 	public void line(float x1, float y1, float x2, float y2) {
 		// Compute theta parameters for start-ends of dashes and gaps
-		// TODO: precompute the size of the array and create it as an array
-		// directly
+		// TODO: precompute the size of the array and create it as an array right away
 		FloatList ts = new FloatList();
 		int id = 0;
 		float run = 0;
 		float t = 0;
 		float len = PApplet.dist(x1, y1, x2, y2);
+
+		if (offset != 0) {
+			// p.println("testing offset");
+			run += offset;
+
+			// Adjust run to be less than one dashPatternLength behind 0
+			if (run > 0) {
+				run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+			} else {
+				// note offset is negative, so adding positive increment
+				run -= dashPatternLength * (int) (offset / dashPatternLength);
+			}
+
+			// Now process the chunk before t = 0
+			while (run < 0) {
+				run += dashPattern[id % dashPattern.length];
+				id++;
+				// if past t = 0 and at the end point of a dash, add t = 0
+				if (run >= 0 && id % 2 == 1) {
+					ts.append(0);
+				}
+			}
+		}
 
 		while (run < len) {
 			t = run / len;
@@ -67,15 +115,11 @@ public class Dasher {
 			id++;
 		}
 
-		// If last t was the startpoint of a dash, close it at the end of the
+		// If last t was the startpoint of a dash, close it at the end of
+		// the
 		// line
 		if (id % 2 == 1) {
 			ts.append(1);
-		}
-
-		// DEV
-		if (ts.size() % 2 == 1) {
-			throw new RuntimeException("t array is size " + ts.size());
 		}
 
 		float[] tsA = ts.array(); // TODO: improve the list-array situation
@@ -316,7 +360,7 @@ public class Dasher {
 				float t = start;
 				float dt = 0.01f;
 				float samples = Math.round((stop - start) / dt);
-//				float len = ellipseCircumference(w2, h2, 0, dt);
+				// float len = ellipseCircumference(w2, h2, 0, dt);
 				float nextL = 0;
 
 				// println("start: " + millis());
@@ -337,7 +381,7 @@ public class Dasher {
 				p.noStroke();
 				p.ellipseMode(PApplet.CORNER); // all correct vars are already
 												// calculated,
-				// so why not use them...? :)
+												// so why not use them...? :)
 				p.arc(x, y, w, h, start, stop, mode);
 				p.popStyle();
 
@@ -375,42 +419,57 @@ public class Dasher {
 			}
 		}
 	}
-	
+
 	// Create a dashed arc using Processing same function signature,
 	// however using start/stop as POLAR ANGLES, not THETA parameters.
-	// This is not consistent with Processing's implementation, 
+	// This is not consistent with Processing's implementation,
 	// but just feels right geometrically... ;)
 	public void arcPolar(float a, float b, float c, float d, float start, float stop, int mode) {
 
-	  int ellipseMode = p.getGraphics().ellipseMode;
-	  float w = c;
-	  float h = d;
-	  if (ellipseMode == PApplet.CORNERS) {
-	    w = c - a;
-	    h = d - b;
-	  } else if (ellipseMode == PApplet.RADIUS) {
-	    w = c * 2;
-	    h = d * 2;
-	  } 
-	  if (w < 0) {  // undo negative width
-	    w = -w;
-	  }
-	  if (h < 0) {  // undo negative height
-	    h = -h;
-	  }
-	  float w2 = 0.5f * w;
-	  float h2 = 0.5f * h;
+		int ellipseMode = p.getGraphics().ellipseMode;
+		float w = c;
+		float h = d;
+		if (ellipseMode == PApplet.CORNERS) {
+			w = c - a;
+			h = d - b;
+		} else if (ellipseMode == PApplet.RADIUS) {
+			w = c * 2;
+			h = d * 2;
+		}
+		if (w < 0) { // undo negative width
+			w = -w;
+		}
+		if (h < 0) { // undo negative height
+			h = -h;
+		}
+		float w2 = 0.5f * w;
+		float h2 = 0.5f * h;
 
-	  float thetaStart = ellipsePolarToTheta(w2, h2, start);
-	  float thetaStop = ellipsePolarToTheta(w2, h2, stop);
-	  this.arc(a, b, c, d, thetaStart, thetaStop, mode);
+		float thetaStart = ellipsePolarToTheta(w2, h2, start);
+		float thetaStop = ellipsePolarToTheta(w2, h2, stop);
+		this.arc(a, b, c, d, thetaStart, thetaStop, mode);
 	}
-	
-	
-	
-	
 
-	////// PRIVATE METHODS //////
+
+
+
+
+
+
+	//  ██████╗ ██████╗ ██╗██╗   ██╗    ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
+	//  ██╔══██╗██╔══██╗██║██║   ██║    ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
+	//  ██████╔╝██████╔╝██║██║   ██║    ██╔████╔██║█████╗     ██║   ███████║██║   ██║██║  ██║███████╗
+	//  ██╔═══╝ ██╔══██╗██║╚██╗ ██╔╝    ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║██║   ██║██║  ██║╚════██║
+	//  ██║     ██║  ██║██║ ╚████╔╝     ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝███████║
+	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
+
+	private void updateDashPatternLength() {
+		dashPatternLength = 0;
+		for (int i = 0; i < dashPattern.length; i++) {
+			dashPatternLength += dashPattern[i];
+		}
+	}
+
 	// Given a & b as the major and minor semi-axes,
 	// return a fast approximation to the circumference of the ellipse.
 	private float ellipseCircumference(float a, float b) {
@@ -538,8 +597,8 @@ public class Dasher {
 	// the point),
 	// returns the corresponding PVector point on the ellipse.
 	private PVector pointOnEllipseAtParameter(float x, float y, float a, float b, float t) {
-		float px = a * (float)Math.cos(t);
-		float py = b * (float)Math.sin(t);
+		float px = a * (float) Math.cos(t);
+		float py = b * (float) Math.sin(t);
 		return new PVector(x + px, y + py);
 	}
 
@@ -594,7 +653,7 @@ public class Dasher {
 			alpha = -alpha;
 		float rho = alpha % PApplet.TAU;
 
-		float t = (float)Math.atan(Math.tan(rho) * a / b);
+		float t = (float) Math.atan(Math.tan(rho) * a / b);
 
 		// Adjust atan limits to map t to (0, TAU)
 		if (rho >= PApplet.HALF_PI && rho <= 1.5 * PApplet.PI) {

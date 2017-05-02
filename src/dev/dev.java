@@ -8,6 +8,8 @@ public class dev extends PApplet {
 	Dasher dash;
 
 	Node n1, n2, n3, n4;
+	
+	float off = 0;
 
 	public void settings() {
 		size(800, 600);
@@ -26,8 +28,8 @@ public class dev extends PApplet {
 		n4 = new Node(this, width / 2, height / 2 + 200, 4);
 
 		dash = new Dasher(this);
-
 		dash.pattern(20, 10, 5, 10); // sets dash size and spacing in pixels
+		dash.offset(off);
 
 		// Random set of dash lines
 		// float[] pt = new float[20];
@@ -44,12 +46,15 @@ public class dev extends PApplet {
 		n2.render();
 		n3.render();
 		n4.render();
+		
+		dash.offset(off);
+		off += 1;
 
-		// drawDashedLine();
+		drawDashedLine();
 		// drawDashedRectangle();
 		// drawDashedEllipse();
 		// drawDashedArc();
-		drawDashedQuad();
+		// drawDashedQuad();
 		// drawDashedTriangle();
 	}
 
@@ -73,6 +78,7 @@ public class dev extends PApplet {
 	}
 
 	///////////////////////////////////////
+	
 	void drawDashedLine() {
 		stroke(0);
 		strokeWeight(5);

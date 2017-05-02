@@ -12,9 +12,9 @@
     - [x] rect
     - [x] quad
     - [x] triangle
-    - [ ] ellipse
-    - [ ] arc
-    - [ ] arcPolar
+    - [x] ellipse
+    - [x] arc
+    - [x] arcPolar
 
 - [ ] Implement dash.mode()
     - [ ] Design which modes are there and how they work  

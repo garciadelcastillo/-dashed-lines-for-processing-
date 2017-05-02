@@ -37,18 +37,18 @@ public class dev extends PApplet {
 		// pt[i] = random(5, 20);
 		// }
 		// dash.pattern(pt);
-		
+
 		// Testing computing new T given starting t and arc length
-//		float startT = 0.75f * PI;
-//		float endT = 0.25f * PI;
-//		println("goal: " + endT);
-//		float d0 = dash.ellipseArcLength(200, 100, startT, endT, 0.01f);
-//		if (endT < startT)
-//			d0 *= -1;
-//		println("d0: " + d0);
-//		float t0 = dash.ellipseThetaFromArcLength(200, 100, startT, d0, 0.01f);
-//		println("t0: " + t0);
-		
+		//		float startT = 0.75f * PI;
+		//		float endT = 0.25f * PI;
+		//		println("goal: " + endT);
+		//		float d0 = dash.ellipseArcLength(200, 100, startT, endT, 0.01f);
+		//		if (endT < startT)
+		//			d0 *= -1;
+		//		println("d0: " + d0);
+		//		float t0 = dash.ellipseThetaFromArcLength(200, 100, startT, d0, 0.01f);
+		//		println("t0: " + t0);
+
 	}
 
 	public void draw() {
@@ -62,12 +62,12 @@ public class dev extends PApplet {
 		dash.offset(off);
 		off += 1f;
 
-//		drawDashedLine();
-//		drawDashedRectangle();
-//		 drawDashedQuad();
-//		 drawDashedTriangle();
-		 drawDashedEllipse();
-//		 drawDashedArc();
+		//		drawDashedLine();
+		//		drawDashedRectangle();
+		//		 drawDashedQuad();
+		//		 drawDashedTriangle();
+//		drawDashedEllipse();
+				 drawDashedArc();
 
 	}
 
@@ -128,7 +128,7 @@ public class dev extends PApplet {
 		// arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
 		// popStyle();
 
-		//// Dashed arc implementation: uses same convention
+		// Dashed arc implementation: uses same convention
 		pushStyle();
 		ellipseMode(RADIUS);
 		// noFill();
@@ -137,16 +137,15 @@ public class dev extends PApplet {
 		dash.arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
 		popStyle();
 
-		//// Now custom version using polar angles:
-		// pushStyle();
-		// fill(255, 0, 0, 50);
-		// noStroke();
-		// ellipseMode(RADIUS);
-		//// noFill();
-		// stroke(0);
-		// dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14,
-		//// 0);
-		// popStyle();
+		// Now custom version using polar angles:
+//		pushStyle();
+//		fill(0, 255, 0, 50);
+////		noStroke();
+//		ellipseMode(RADIUS);
+//		// noFill();
+//		 stroke(0);
+//		dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
+//		popStyle();
 	}
 
 	void drawDashedQuad() {

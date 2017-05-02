@@ -1,7 +1,5 @@
 package dashedlines;
 
-import com.sun.istack.internal.FragmentContentHandler;
-
 import processing.core.*;
 import processing.data.*;
 
@@ -399,6 +397,8 @@ public class Dasher {
 
 		float thetaStart = ellipsePolarToTheta(w2, h2, start);
 		float thetaStop = ellipsePolarToTheta(w2, h2, stop);
+		
+		log(thetaStart + " " + thetaStop);
 		this.arc(a, b, c, d, thetaStart, thetaStop, mode);
 	}
 
@@ -414,7 +414,11 @@ public class Dasher {
 	//  ██╔═══╝ ██╔══██╗██║╚██╗ ██╔╝    ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║██║   ██║██║  ██║╚════██║
 	//  ██║     ██║  ██║██║ ╚████╔╝     ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝███████║
 	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
-
+	
+	private void log(Object foo) {
+		PApplet.println(foo);
+	}
+	
 	private void updateDashPatternLength() {
 		dashPatternLength = 0;
 		for (int i = 0; i < dashPattern.length; i++) {

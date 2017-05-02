@@ -368,7 +368,6 @@ public class Dasher {
 
 				// If there is ofsset, precompute first t
 				if (offset != 0) {
-					// p.println("testing offset");
 					nextL += offset;
 
 					// Adjust run to be less than one dashPatternLength behind 0
@@ -378,31 +377,28 @@ public class Dasher {
 						// note offset is negative, so adding positive increment
 						nextL -= dashPatternLength * (int) (offset / dashPatternLength);
 					}
+					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.005f);
 					
-					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.01f);
-					
-					// Now process the chunk before t = start
-					while(nextT < start) {
+					// Process the chunk before t = start
+					// This method is not very optimal, but oh well, stupid ellipse geometry... :P
+					while(nextT <= start) {
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
-						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.005f);
+						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.005f);  // compute from start to avoid accumulated imprecision
 					}
-					
 					if (id % 2 == 1) {
-						ts.append(0);
+						ts.append(start);
 					}
 					
+					// Set the params off to run regular dashing
 					run = nextL;
-					t = ellipseThetaFromArcLength(w2, h2, t, nextL, 0.005f);
+					t = nextT;
 				}
 
-				// println("start: " + millis());
-				//				for (int i = 0; i < samples; i++) {
-//				PApplet.println("starting ts");
+				// Compute dash t params
 				while (run < len) {
 					run += ellipseArcDifferential(w2, h2, t, dt);
 					if ((int) run >= nextL) {
-//						PApplet.println(t);
 						ts.append(t);
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
@@ -410,15 +406,13 @@ public class Dasher {
 					t += dt;
 				}
 
-				// println("end: " + millis());
+				
 				float[] tsA = ts.array(); // see TODO above
 
 				// Draw the fill part
 				p.pushStyle();
 				p.noStroke();
-				p.ellipseMode(PApplet.CORNER); // all correct vars are already
-												// calculated,
-												// so why not use them...? :)
+				p.ellipseMode(PApplet.CORNER); // all correct vars are already calculated, so why not use them...? :)
 				p.arc(x, y, w, h, start, stop, mode);
 				p.popStyle();
 

@@ -60,7 +60,7 @@ public class dev extends PApplet {
 		n4.render();
 
 		dash.offset(off);
-		off += 0.11f;
+		off += 1f;
 
 //		drawDashedLine();
 //		drawDashedRectangle();

@@ -85,6 +85,7 @@ public class Dasher {
 		float t = 0;
 		float len = PApplet.dist(x1, y1, x2, y2);
 
+		// If there is ofsset, precompute first t
 		if (offset != 0) {
 			// p.println("testing offset");
 			run += offset;
@@ -244,16 +245,18 @@ public class Dasher {
 		float w2 = 0.5f * w, h2 = 0.5f * h;
 
 		// Compute theta parameters for start-ends of dashes and gaps
-		FloatList ts = new FloatList(); // TODO: precompute the size of the t
-										// array and create it as an array
-										// directly
+		FloatList ts = new FloatList(); // TODO: precompute the size of the t array and create it as an array directly
 		int id = 0;
 		float run = 0;
 		float t = 0;
 		float dt = 0.01f;
 		float samples = Math.round(PApplet.TAU / dt);
-		float len = ellipseCircumference(w2, h2, 0, dt);
+		//		float len = ellipseCircumference(w2, h2, 0, dt);
 		float nextL = 0;
+
+
+
+
 
 		// println("start: " + millis());
 		for (int i = 0; i < samples; i++) {
@@ -359,20 +362,54 @@ public class Dasher {
 				float run = 0;
 				float t = start;
 				float dt = 0.01f;
-				float samples = Math.round((stop - start) / dt);
-				// float len = ellipseCircumference(w2, h2, 0, dt);
+				float len = ellipseArcLength(w2, h2, start, stop, 0.01f);
 				float nextL = 0;
+				float nextT = 0;
+
+				// If there is ofsset, precompute first t
+				if (offset != 0) {
+					// p.println("testing offset");
+					nextL += offset;
+
+					// Adjust run to be less than one dashPatternLength behind 0
+					if (nextL > 0) {
+						nextL -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+					} else {
+						// note offset is negative, so adding positive increment
+						nextL -= dashPatternLength * (int) (offset / dashPatternLength);
+					}
+					
+					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.01f);
+					
+					// Now process the chunk before t = start
+					while(nextT < start) {
+						nextL += dashPattern[id % dashPattern.length];
+						id++;
+						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, 0.005f);
+					}
+					
+					if (id % 2 == 1) {
+						ts.append(0);
+					}
+					
+					run = nextL;
+					t = ellipseThetaFromArcLength(w2, h2, t, nextL, 0.005f);
+				}
 
 				// println("start: " + millis());
-				for (int i = 0; i < samples; i++) {
+				//				for (int i = 0; i < samples; i++) {
+//				PApplet.println("starting ts");
+				while (run < len) {
 					run += ellipseArcDifferential(w2, h2, t, dt);
 					if ((int) run >= nextL) {
+//						PApplet.println(t);
 						ts.append(t);
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
 					}
 					t += dt;
 				}
+
 				// println("end: " + millis());
 				float[] tsA = ts.array(); // see TODO above
 
@@ -471,13 +508,6 @@ public class Dasher {
 	}
 
 	// Given a & b as the major and minor semi-axes,
-	// return a fast approximation to the circumference of the ellipse.
-	private float ellipseCircumference(float a, float b) {
-		// By default, just rely on Ramanujan's implementation
-		return ellipseCircumference(a, b, 0, 0.001f);
-	}
-
-	// Given a & b as the major and minor semi-axes,
 	// return an approximation to the circumference of the ellipse.
 	// Use mode 0 for Ramanujan's fast approximation, or for very low
 	// b/a ratios use mode 1 for a more precise (albeit) expensive recursive
@@ -549,12 +579,16 @@ public class Dasher {
 		}
 	}
 
+
+
+
+
 	// Given a & b as the major and minor semi-axes,
 	// startT and endT as theta parameters (not angle) to measure between,
 	// and precision and the dt (theta increment) to be used in calculations,
 	// returns a lower-bound approximation to the arc length based on
 	// differential approximation.
-	private float ellipseArcLength(float a, float b, float startT, float endT, float precision) {
+	public float ellipseArcLength(float a, float b, float startT, float endT, float precision) {
 		// Similarly to the circumference, tThe exact solution to the arc length
 		// of an ellipse
 		// can only be obtained solving for the complete elliptical integral of
@@ -582,6 +616,35 @@ public class Dasher {
 		return (float) len;
 	}
 
+	// Given a & b the major and minor semi-axes, 
+	// t as the starting theta parameter, and the arc length of the ellipse (can be negative),
+	// return the approximate theta along the ellipse after adding length.
+	public float ellipseThetaFromArcLength(float a, float b, float t, float length, float precision) {
+		// Housekeeping
+		if (a < 0)
+			a = -a;
+		if (b < 0)
+			b = -b;
+
+		double len = 0;
+		float dt = precision; // if len is neg, will get the sign
+		float T = t;
+
+		if (length < 0) {
+			while (len >= length) {
+				len -= ellipseArcDifferential(a, b, T, dt);
+				T -= dt;
+			}
+		} else {
+			while (len <= length) {
+				len += ellipseArcDifferential(a, b, T, dt);
+				T += dt;
+			}
+		}
+
+		return T;
+	}
+
 	// Calculate the differential arc length at a given parameter t with given
 	// dt
 	private double ellipseArcDifferential(double a, double b, double t, double dt) {
@@ -589,8 +652,6 @@ public class Dasher {
 		double bc2 = Math.pow(b * Math.cos(t), 2.0);
 		return dt * Math.sqrt(as2 + bc2);
 	}
-
-	/////////////////// UNUSED BUT POTENTIALLY USEFUL? ////////////////////
 
 	// Given a & b as the major and minor semi-axes,
 	// and t [0, TAU] as the parameter along the ellipse (not the polar angle of
@@ -601,6 +662,38 @@ public class Dasher {
 		float py = b * (float) Math.sin(t);
 		return new PVector(x + px, y + py);
 	}
+	
+	// Given a & b as the major and minor semi-axes,
+	// and alpha as polar angle, return the equivalent theta parameter.
+	private float ellipsePolarToTheta(float a, float b, float alpha) {
+		boolean neg = alpha < 0;
+		if (neg)
+			alpha = -alpha;
+		float rho = alpha % PApplet.TAU;
+
+		float t = (float) Math.atan(Math.tan(rho) * a / b);
+
+		// Adjust atan limits to map t to (0, TAU)
+		if (rho >= PApplet.HALF_PI && rho <= 1.5 * PApplet.PI) {
+			t += PApplet.PI;
+		} else if (rho > 1.5 * PApplet.PI) {
+			t = PApplet.TAU + t;
+		}
+
+		// fix quadrants
+		if (alpha > PApplet.TAU) {
+			t += alpha - rho;
+		}
+		if (neg) {
+			t = -t;
+		}
+
+		return t;
+	}
+
+	/////////////////// UNUSED BUT POTENTIALLY USEFUL? ////////////////////
+
+
 
 	// Given a & b as the major and minor semi-axes,
 	// and alpha [0, TAU] as the polar angle of the point,
@@ -647,30 +740,6 @@ public class Dasher {
 		return ts;
 	}
 
-	private float ellipsePolarToTheta(float a, float b, float alpha) {
-		boolean neg = alpha < 0;
-		if (neg)
-			alpha = -alpha;
-		float rho = alpha % PApplet.TAU;
 
-		float t = (float) Math.atan(Math.tan(rho) * a / b);
-
-		// Adjust atan limits to map t to (0, TAU)
-		if (rho >= PApplet.HALF_PI && rho <= 1.5 * PApplet.PI) {
-			t += PApplet.PI;
-		} else if (rho > 1.5 * PApplet.PI) {
-			t = PApplet.TAU + t;
-		}
-
-		// fix quadrants
-		if (alpha > PApplet.TAU) {
-			t += alpha - rho;
-		}
-		if (neg) {
-			t = -t;
-		}
-
-		return t;
-	}
 
 }

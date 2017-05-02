@@ -8,7 +8,7 @@ public class dev extends PApplet {
 	Dasher dash;
 
 	Node n1, n2, n3, n4;
-	
+
 	float off = 0;
 
 	public void settings() {
@@ -20,7 +20,8 @@ public class dev extends PApplet {
 		strokeCap(SQUARE);
 
 		fill(255, 0, 0, 50);
-		strokeWeight(3);
+		stroke(0);
+		strokeWeight(5);
 
 		n1 = new Node(this, width / 2, height / 2, 5);
 		n2 = new Node(this, 3 * width / 4, 3 * height / 4, 5);
@@ -28,8 +29,7 @@ public class dev extends PApplet {
 		n4 = new Node(this, width / 2, height / 2 + 200, 4);
 
 		dash = new Dasher(this);
-		dash.pattern(20, 10, 5, 10); // sets dash size and spacing in pixels
-		dash.offset(off);
+		dash.pattern(40, 10, 5, 10); // sets dash size and spacing in pixels
 
 		// Random set of dash lines
 		// float[] pt = new float[20];
@@ -37,6 +37,18 @@ public class dev extends PApplet {
 		// pt[i] = random(5, 20);
 		// }
 		// dash.pattern(pt);
+		
+		// Testing computing new T given starting t and arc length
+//		float startT = 0.75f * PI;
+//		float endT = 0.25f * PI;
+//		println("goal: " + endT);
+//		float d0 = dash.ellipseArcLength(200, 100, startT, endT, 0.01f);
+//		if (endT < startT)
+//			d0 *= -1;
+//		println("d0: " + d0);
+//		float t0 = dash.ellipseThetaFromArcLength(200, 100, startT, d0, 0.01f);
+//		println("t0: " + t0);
+		
 	}
 
 	public void draw() {
@@ -46,16 +58,17 @@ public class dev extends PApplet {
 		n2.render();
 		n3.render();
 		n4.render();
-		
-		dash.offset(off);
-		off += 1;
 
-		drawDashedLine();
-		// drawDashedRectangle();
-		// drawDashedEllipse();
-		// drawDashedArc();
-		// drawDashedQuad();
-		// drawDashedTriangle();
+		dash.offset(off);
+		off += 0.11f;
+
+//		drawDashedLine();
+//		drawDashedRectangle();
+//		 drawDashedQuad();
+//		 drawDashedTriangle();
+//		 drawDashedEllipse();
+		 drawDashedArc();
+
 	}
 
 	public void mousePressed() {
@@ -78,10 +91,8 @@ public class dev extends PApplet {
 	}
 
 	///////////////////////////////////////
-	
+
 	void drawDashedLine() {
-		stroke(0);
-		strokeWeight(5);
 		dash.line(n1.x, n1.y, n2.x, n2.y);
 	}
 

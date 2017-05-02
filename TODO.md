@@ -8,10 +8,10 @@
 - [x] Develop this into an actual library
 
 - [ ] Implement dash.offset()
-    - [ ] line
-    - [ ] rect
-    - [ ] quad
-    - [ ] triangle
+    - [x] line
+    - [x] rect
+    - [x] quad
+    - [x] triangle
     - [ ] ellipse
     - [ ] arc
     - [ ] arcPolar

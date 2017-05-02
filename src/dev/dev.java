@@ -66,8 +66,8 @@ public class dev extends PApplet {
 //		drawDashedRectangle();
 //		 drawDashedQuad();
 //		 drawDashedTriangle();
-//		 drawDashedEllipse();
-		 drawDashedArc();
+		 drawDashedEllipse();
+//		 drawDashedArc();
 
 	}
 

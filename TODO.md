@@ -7,7 +7,7 @@
 
 - [x] Develop this into an actual library
 
-- [ ] Implement dash.offset()
+- [s] Implement dash.offset()
     - [x] line
     - [x] rect
     - [x] quad
@@ -16,15 +16,18 @@
     - [x] arc
     - [x] arcPolar
 
+- [ ] dash.beginShape(), dash.endShape()
+    - [ ] dash.vertex()
+    - [ ] properly continue dashes over kinks with native corners
+
+- [ ] dash.bezierVertex()
+- [ ] dash.curveVertex()
+
 - [ ] Implement dash.mode()
     - [ ] Design which modes are there and how they work  
 
 - [ ] dash.bezier()
 - [ ] dash.curve()
-- [ ] dash.beginShape(), dash.endShape()
-    - [ ] dash.vertex()
-    - [ ] dash.bezierVertex()
-    - [ ] dash.curveVertex()
 
 
 ## SOON

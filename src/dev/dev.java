@@ -49,6 +49,7 @@ public class dev extends PApplet {
 		//		float t0 = dash.ellipseThetaFromArcLength(200, 100, startT, d0, 0.01f);
 		//		println("t0: " + t0);
 
+
 	}
 
 	public void draw() {
@@ -66,8 +67,12 @@ public class dev extends PApplet {
 		//		drawDashedRectangle();
 		//		 drawDashedQuad();
 		//		 drawDashedTriangle();
-//		drawDashedEllipse();
-				 drawDashedArc();
+		//		drawDashedEllipse();
+//		drawDashedArc();
+		
+//		noFill();
+		drawPolygon();
+		
 
 	}
 
@@ -138,14 +143,14 @@ public class dev extends PApplet {
 		popStyle();
 
 		// Now custom version using polar angles:
-//		pushStyle();
-//		fill(0, 255, 0, 50);
-////		noStroke();
-//		ellipseMode(RADIUS);
-//		// noFill();
-//		 stroke(0);
-//		dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
-//		popStyle();
+		//		pushStyle();
+		//		fill(0, 255, 0, 50);
+		////		noStroke();
+		//		ellipseMode(RADIUS);
+		//		// noFill();
+		//		 stroke(0);
+		//		dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
+		//		popStyle();
 	}
 
 	void drawDashedQuad() {
@@ -157,6 +162,17 @@ public class dev extends PApplet {
 		dash.triangle(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
 	}
 
+	void drawPolygon() {
+		dash.beginShape();
+		dash.vertex(n1.x, n1.y);
+		dash.vertex(n2.x, n2.y);
+		dash.vertex(n3.x, n3.y);
+		dash.vertex(n4.x, n4.y);
+		dash.endShape(CLOSE);
+	}
+	
+	
+	
 	////////////////////////////////////////
 	// Def. static init
 	public static void main(String[] args) {

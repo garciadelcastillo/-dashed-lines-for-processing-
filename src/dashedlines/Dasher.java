@@ -8,6 +8,7 @@ public class Dasher {
 	public final static String VERSION = "##library.prettyVersion##";
 
 	PApplet p;
+	PGraphics g;
 
 	/**
 	 * Main constructor, pass a reference to the current PApplet
@@ -16,6 +17,7 @@ public class Dasher {
 	 */
 	public Dasher(PApplet theParent) {
 		p = theParent;
+		g = p.getGraphics();
 	}
 
 	//  ██████╗ ██████╗ ██╗██╗   ██╗    ██████╗ ██████╗  ██████╗ ██████╗ ███████╗
@@ -24,10 +26,24 @@ public class Dasher {
 	//  ██╔═══╝ ██╔══██╗██║╚██╗ ██╔╝    ██╔═══╝ ██╔══██╗██║   ██║██╔═══╝ ╚════██║
 	//  ██║     ██║  ██║██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║     ███████║
 	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝
-	private float ARC_DIFFERENTIAL_PRECISION = 0.005f;  // generally measured in radian increments 
+	private float ARC_DIFFERENTIAL_PRECISION = 0.005f; // generally measured in radian increments 
 	private float[] dashPattern = { 10, 10 };
 	private float dashPatternLength = 0; // stores the accumulated length of the complete dash-gap pattern
 	private float offset = 0;
+
+	// Based off Processing's core implementation for begin/endShape() + vertex()
+	/**
+	 * Type of shape passed to beginShape(), zero if no shape is currently being
+	 * drawn.
+	 */
+	protected int shape;
+
+	// vertices
+	public static final int DEFAULT_VERTICES = 512;
+	public static final int VERTEX_FIELD_COUNT = 2; // let's start simple with 2D
+	protected float vertices[][] = new float[DEFAULT_VERTICES][VERTEX_FIELD_COUNT];
+	protected int vertexCount; // total number of vertices
+
 
 
 
@@ -132,7 +148,7 @@ public class Dasher {
 	}
 
 	public void rect(float a, float b, float c, float d) {
-		int rectMode = p.getGraphics().rectMode;
+		int rectMode = g.rectMode;
 
 		// From Processing's core
 		float hradius, vradius;
@@ -220,7 +236,7 @@ public class Dasher {
 	// (note that start/stop here refer to the THETA parameter, NOT THE POLAR
 	// ANGLE)
 	public void arc(float a, float b, float c, float d, float start, float stop, int mode) {
-		int ellipseMode = p.getGraphics().ellipseMode;
+		int ellipseMode = g.ellipseMode;
 
 		// From Processing's core, CORNER-oriented vars
 		float x = a;
@@ -291,18 +307,18 @@ public class Dasher {
 						nextL -= dashPatternLength * (int) (offset / dashPatternLength);
 					}
 					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt);
-					
+
 					// Process the chunk before t = start
 					// This method is not very optimal, but oh well, stupid ellipse geometry... :P
-					while(nextT <= start) {
+					while (nextT <= start) {
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
-						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt);  // compute from start to avoid accumulated imprecision
+						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt); // compute from start to avoid accumulated imprecision
 					}
 					if (id % 2 == 1) {
 						ts.append(start);
 					}
-					
+
 					// Set the params off to run regular dashing
 					run = nextL;
 					t = nextT;
@@ -370,7 +386,7 @@ public class Dasher {
 	// but just feels right geometrically... ;)
 	public void arcPolar(float a, float b, float c, float d, float start, float stop, int mode) {
 
-		int ellipseMode = p.getGraphics().ellipseMode;
+		int ellipseMode = g.ellipseMode;
 		float w = c;
 		float h = d;
 		if (ellipseMode == PApplet.CORNERS) {
@@ -391,13 +407,158 @@ public class Dasher {
 
 		float thetaStart = ellipsePolarToTheta(w2, h2, start);
 		float thetaStop = ellipsePolarToTheta(w2, h2, stop);
-		
+
 		log(thetaStart + " " + thetaStop);
 		this.arc(a, b, c, d, thetaStart, thetaStop, mode);
 	}
 
 
+	public void beginShape() {
+		this.beginShape(PApplet.POLYGON);
+	}
 
+	public void beginShape(int kind) {
+		this.vertexCount = 0;
+		this.shape = kind;
+	}
+
+	public void vertex(float x, float y) {
+		vertexCheck();
+
+		float[] vertex = vertices[vertexCount];
+		//		    curveVertexCount = 0;  // not necessary yet
+		vertex[PApplet.X] = x;
+		vertex[PApplet.Y] = y;
+//		vertex[PApplet.Z] = 0;  // start easy with 2D
+
+		// In Processing's core there are a lot of other vertex properties associated
+		// to it, but probably not useful here since we will anyway rely on that core
+		// when actually rendering the dashes as shapes.
+
+		vertexCount++;
+	}
+
+	// @TODO: Implement vertex(x, y, z) and vertex(float[] v)
+
+	public void endShape() {
+		this.endShape(PApplet.OPEN);
+	}
+
+	public void endShape(int mode) {
+
+		// draw the fill according to current params
+		if (g.fill == true) {
+			log(p.frameCount + " drawing fill");
+			p.pushStyle();
+			p.noStroke();
+			p.beginShape(this.shape);
+			for (int i = 0; i < vertexCount; i++) {
+				p.vertex(vertices[i][PApplet.X], vertices[i][PApplet.Y]);
+			}
+			p.endShape(mode);
+			p.popStyle();
+		}
+		
+//		if (g.stroke == true) {
+//			log(p.frameCount + " drawing stroke");
+//			p.pushStyle();
+//			p.noFill();
+//			p.beginShape(this.shape);
+//			for (int i = 0; i < vertexCount; i++) {
+//				p.vertex(vertices[i][PApplet.X], vertices[i][PApplet.Y]);
+//			}
+//			p.endShape(mode);
+//			p.popStyle();
+//		}
+		
+		// Let's start by trying POLYGON, will implement the rest of the modes later...
+		int id = 0; 
+		float run = 0; 
+		float t = 0; 
+		float len = 0;  // the length of the segment the dash is currently on
+		boolean startDash = true;  // should a new dash be generated?
+		float dx, dy;
+		
+		if (vertexCount > 1) {  // if at least one line
+			
+			p.pushStyle();
+			p.noFill();
+			
+			// If there is ofsset, precompute first t
+			if (offset != 0) {
+				run += offset;
+
+				// Adjust run to be less than one dashPatternLength behind 0
+				if (run > 0) {
+					run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+				} else {
+					// note offset is negative, so adding positive increment
+					run -= dashPatternLength * (int) (offset / dashPatternLength);
+				}
+
+				// Now process the chunk before t = 0
+				while (run < 0) {
+					run += dashPattern[id % dashPattern.length];
+					id++;
+					// if past t = 0 and at the end point of a dash, add first vertex
+					if (run >= 0 && id % 2 == 1) {
+						p.beginShape();
+						startDash = false;
+						p.vertex(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
+					}
+				}
+			}
+			
+			// Go over all segments with no return (CLOSE will be implemented later)
+			for (int i = 0; i < vertexCount - 1; i++) {
+				dx = vertices[i + 1][PApplet.X] - vertices[i][PApplet.X];
+				dy = vertices[i + 1][PApplet.Y] - vertices[i][PApplet.Y];
+				
+				len = PApplet.dist(vertices[i][PApplet.X], vertices[i][PApplet.Y],
+						vertices[i + 1][PApplet.X], vertices[i + 1][PApplet.Y]);
+				
+				while (run < len) {
+					if (startDash) {
+						p.beginShape();
+						startDash = false;
+					}
+					
+					t = run / len; 
+					p.vertex(vertices[i][PApplet.X] + t * dx, vertices[i][PApplet.Y] + t * dy);
+					run += dashPattern[id % dashPattern.length];
+					id++;
+					
+					if (id % 2 == 0) {
+						p.endShape();
+						startDash = true;
+					}
+										
+				}
+				
+				// Already past the segment length, prepare to jump to next segment:				
+				// If dash was unfinished, add corner kink
+				if (id % 2 == 1) {
+					p.vertex(vertices[i + 1][PApplet.X], vertices[i + 1][PApplet.Y]);
+					
+					// If on last segment, finish drawing
+					if (i == vertexCount - 2) {
+						p.endShape();
+					}
+				}
+				
+				// Reposition run
+				run -= len;
+								
+			}
+			
+			p.popStyle();
+			
+			
+		}
+		
+		
+
+	}
 
 
 
@@ -408,11 +569,12 @@ public class Dasher {
 	//  ██╔═══╝ ██╔══██╗██║╚██╗ ██╔╝    ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║██║   ██║██║  ██║╚════██║
 	//  ██║     ██║  ██║██║ ╚████╔╝     ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝███████║
 	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
-	
+
+	// For dev purposes.
 	private void log(Object foo) {
 		PApplet.println(foo);
 	}
-	
+
 	private void updateDashPatternLength() {
 		dashPatternLength = 0;
 		for (int i = 0; i < dashPattern.length; i++) {
@@ -575,7 +737,7 @@ public class Dasher {
 		float py = b * (float) Math.sin(t);
 		return new PVector(x + px, y + py);
 	}
-	
+
 	// Given a & b as the major and minor semi-axes,
 	// and alpha as polar angle, return the equivalent theta parameter.
 	private float ellipsePolarToTheta(float a, float b, float alpha) {
@@ -653,6 +815,14 @@ public class Dasher {
 		return ts;
 	}
 
+	// Borrowed from Processing's core
+	protected void vertexCheck() {
+		if (vertexCount == vertices.length) {
+			float temp[][] = new float[vertexCount << 1][VERTEX_FIELD_COUNT];
+			System.arraycopy(vertices, 0, temp, 0, vertexCount);
+			vertices = temp;
+		}
+	}
 
 
 }

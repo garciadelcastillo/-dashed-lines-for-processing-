@@ -21,6 +21,7 @@
     - [x] properly continue dashes over kinks with native corners
     - [ ] Add CLOSE to endShape
     - [ ] Add working MODES to beginShape()
+    - [ ] Expand to 3D
 
 - [ ] Migrate all linear geometry to shape + vertices (it gets to Processing's core faster, and allows for dashes to bend on corners). It is literally how it is implemented in Processing's core anyway. 
 
@@ -39,6 +40,9 @@
 ## SOON
 - [ ] At some point, implement 'offset' or something so that animations like this are possible: https://www.youtube.com/watch?v=8uZgU3f8p9A
 - [ ] Respond to this: https://forum.processing.org/two/discussion/comment/93993/#Comment_93993
+
+- [ ] When CLOSING a POLYGON, the first/last vertex doesn't form a corner if the dash is continuous. It shouldn't be hard to do. 
+
 
 ## LONG RUN
 - [ ] Review JAVA2D's way of doing dashed lines natively: 

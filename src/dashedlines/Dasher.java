@@ -445,10 +445,14 @@ public class Dasher {
 	}
 
 	public void endShape(int mode) {
+		
+		// @TODO have the last dash fold back into the first one if necessary
+		if (shape == PApplet.POLYGON && mode == PApplet.CLOSE) {
+			this.vertex(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
+		}
 
 		// draw the fill according to current params
 		if (g.fill == true) {
-			log(p.frameCount + " drawing fill");
 			p.pushStyle();
 			p.noStroke();
 			p.beginShape(this.shape);
@@ -459,18 +463,6 @@ public class Dasher {
 			p.popStyle();
 		}
 		
-//		if (g.stroke == true) {
-//			log(p.frameCount + " drawing stroke");
-//			p.pushStyle();
-//			p.noFill();
-//			p.beginShape(this.shape);
-//			for (int i = 0; i < vertexCount; i++) {
-//				p.vertex(vertices[i][PApplet.X], vertices[i][PApplet.Y]);
-//			}
-//			p.endShape(mode);
-//			p.popStyle();
-//		}
-		
 		// Let's start by trying POLYGON, will implement the rest of the modes later...
 		int id = 0; 
 		float run = 0; 
@@ -479,8 +471,7 @@ public class Dasher {
 		boolean startDash = true;  // should a new dash be generated?
 		float dx, dy;
 		
-		if (vertexCount > 1) {  // if at least one line
-			
+		if (vertexCount > 1) {
 			p.pushStyle();
 			p.noFill();
 			
@@ -552,11 +543,8 @@ public class Dasher {
 			}
 			
 			p.popStyle();
-			
-			
+
 		}
-		
-		
 
 	}
 

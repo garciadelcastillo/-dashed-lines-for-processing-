@@ -19,7 +19,8 @@
 - [ ] dash.beginShape(), dash.endShape()
     - [x] dash.vertex()
     - [x] properly continue dashes over kinks with native corners
-    - [ ] Add CLOSE to endShape
+    - [x] Add CLOSE to endShape
+    - [x] When CLOSING a POLYGON, the first/last vertex doesn't form a corner if the dash is continuous. It shouldn't be hard to do. 
     - [ ] Add working MODES to beginShape()
     - [ ] Expand to 3D
 
@@ -41,7 +42,7 @@
 - [ ] At some point, implement 'offset' or something so that animations like this are possible: https://www.youtube.com/watch?v=8uZgU3f8p9A
 - [ ] Respond to this: https://forum.processing.org/two/discussion/comment/93993/#Comment_93993
 
-- [ ] When CLOSING a POLYGON, the first/last vertex doesn't form a corner if the dash is continuous. It shouldn't be hard to do. 
+
 
 
 ## LONG RUN

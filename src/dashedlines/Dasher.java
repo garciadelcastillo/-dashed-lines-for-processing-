@@ -446,7 +446,6 @@ public class Dasher {
 
 	public void endShape(int mode) {
 		
-		// @TODO have the last dash fold back into the first one if necessary
 		if (shape == PApplet.POLYGON && mode == PApplet.CLOSE) {
 			this.vertex(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
 		}
@@ -471,6 +470,11 @@ public class Dasher {
 		boolean startDash = true;  // should a new dash be generated?
 		float dx, dy;
 		
+		// Tests for forming a corner with the last + first dash;
+		boolean corner = false;
+		boolean computedCorner = false;
+		float cEndX = 0, cEndY = 0;
+		
 		if (vertexCount > 1) {
 			p.pushStyle();
 			p.noFill();
@@ -493,9 +497,13 @@ public class Dasher {
 					id++;
 					// if past t = 0 and at the end point of a dash, add first vertex
 					if (run >= 0 && id % 2 == 1) {
-						p.beginShape();
+						if (mode == PApplet.CLOSE) {
+							corner = true;
+						} else {
+							p.beginShape();
+							p.vertex(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
+						}
 						startDash = false;
-						p.vertex(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
 					}
 				}
 			}
@@ -515,7 +523,14 @@ public class Dasher {
 					}
 					
 					t = run / len; 
-					p.vertex(vertices[i][PApplet.X] + t * dx, vertices[i][PApplet.Y] + t * dy);
+					if (corner && !computedCorner) {
+						cEndX = vertices[i][PApplet.X] + t * dx;
+						cEndY = vertices[i][PApplet.Y] + t * dy;
+						computedCorner = true;
+						startDash = true;
+					} else {
+						p.vertex(vertices[i][PApplet.X] + t * dx, vertices[i][PApplet.Y] + t * dy);
+					}
 					run += dashPattern[id % dashPattern.length];
 					id++;
 					
@@ -533,8 +548,19 @@ public class Dasher {
 					
 					// If on last segment, finish drawing
 					if (i == vertexCount - 2) {
+						// Add last to first dash if necessary
+						if (corner) {
+							p.vertex(cEndX, cEndY);
+						}
 						p.endShape();
 					}
+					
+				// Don't leave a hanging initial dash pending...
+				} else if (i == vertexCount - 2 && corner) {
+					p.beginShape();
+					p.vertex(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
+					p.vertex(cEndX, cEndY);
+					p.endShape();
 				}
 				
 				// Reposition run

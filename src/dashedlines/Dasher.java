@@ -497,7 +497,7 @@ public class Dasher {
 					id++;
 					// if past t = 0 and at the end point of a dash, add first vertex
 					if (run >= 0 && id % 2 == 1) {
-						if (mode == PApplet.CLOSE) {
+						if (shape == PApplet.POLYGON && mode == PApplet.CLOSE) {
 							corner = true;
 						} else {
 							p.beginShape();

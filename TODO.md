@@ -21,7 +21,7 @@
     - [x] properly continue dashes over kinks with native corners
     - [x] Add CLOSE to endShape
     - [x] When CLOSING a POLYGON, the first/last vertex doesn't form a corner if the dash is continuous. It shouldn't be hard to do. 
-    - [ ] Add working MODES to beginShape()
+    - [ ] Add working MODES to beginShape() (take them from PGraphicsFX2D implementation...)
     - [ ] Expand to 3D
 
 - [ ] Migrate all linear geometry to shape + vertices (it gets to Processing's core faster, and allows for dashes to bend on corners). It is literally how it is implemented in Processing's core anyway. 

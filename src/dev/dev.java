@@ -12,12 +12,14 @@ public class dev extends PApplet {
 	float off = 0;
 
 	public void settings() {
-		size(800, 600);
+		size(1200, 800);
 	}
 
 	// Settings pretty much acts as setup()
 	public void setup() {
 		strokeCap(SQUARE);
+//		strokeCap(ROUND);
+//		strokeJoin(ROUND);
 
 		fill(255, 0, 0, 50);
 		stroke(0);
@@ -29,7 +31,7 @@ public class dev extends PApplet {
 		n4 = new Node(this, width / 2, height / 2 + 200, 4);
 
 		dash = new Dasher(this);
-		dash.pattern(100, 10, 5, 10); // sets dash size and spacing in pixels
+		dash.pattern(50, 12.5f, 25, 12.5f); // sets dash size and spacing in pixels
 
 		// Random set of dash lines
 		// float[] pt = new float[20];
@@ -61,16 +63,16 @@ public class dev extends PApplet {
 		n4.render();
 
 		dash.offset(off);
-		off += .2f;
+		off += mouseX / 100.0f;
 
-		//		drawDashedLine();
-		//		drawDashedRectangle();
-		//		 drawDashedQuad();
-		//		 drawDashedTriangle();
-		//		drawDashedEllipse();
-//		drawDashedArc();
+//		drawDashedLine();
+//		drawDashedRectangle();
+//		drawDashedQuad();
+//		drawDashedTriangle();
+//		drawDashedEllipse();
+//		drawDashed-Arc();
 		
-//		noFill();
+//		 noFill();
 		drawPolygon();
 		
 
@@ -125,32 +127,32 @@ public class dev extends PApplet {
 		line(n1.x, n1.y, n4.x, n4.y);
 		popStyle();
 
-		//// Processing's native arc: uses thetas instead of polar angles
-		// pushStyle();
-		// ellipseMode(RADIUS);
-		// fill(0, 255, 0, 50);
-		// noStroke();
-		// arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
-		// popStyle();
+//		// Processing's native arc: uses thetas instead of polar angles
+//		 pushStyle();
+//		 ellipseMode(RADIUS);
+//		 fill(0, 255, 0, 50);
+//		 noStroke();
+//		 arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
+//		 popStyle();
 
-		// Dashed arc implementation: uses same convention
-		pushStyle();
-		ellipseMode(RADIUS);
-		// noFill();
-		fill(255, 0, 0, 50);
-		stroke(0);
-		dash.arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
-		popStyle();
+//		// Dashed arc implementation: uses same convention
+//		pushStyle();
+//		ellipseMode(RADIUS);
+//		// noFill();
+//		fill(255, 0, 0, 50);
+//		stroke(0);
+//		dash.arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
+//		popStyle();
 
 		// Now custom version using polar angles:
-		//		pushStyle();
-		//		fill(0, 255, 0, 50);
-		////		noStroke();
-		//		ellipseMode(RADIUS);
-		//		// noFill();
-		//		 stroke(0);
-		//		dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
-		//		popStyle();
+				pushStyle();
+				fill(0, 255, 0, 50);
+		//		noStroke();
+				ellipseMode(RADIUS);
+				// noFill();
+				 stroke(0);
+				dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
+				popStyle();
 	}
 
 	void drawDashedQuad() {

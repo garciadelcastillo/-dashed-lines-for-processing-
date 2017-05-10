@@ -9,6 +9,8 @@ public class dev extends PApplet {
 
 	Node n1, n2, n3, n4;
 
+	Node[] nodes;
+
 	float off = 0;
 
 	public void settings() {
@@ -18,17 +20,24 @@ public class dev extends PApplet {
 	// Settings pretty much acts as setup()
 	public void setup() {
 		strokeCap(SQUARE);
-//		strokeCap(ROUND);
-//		strokeJoin(ROUND);
+		//				strokeCap(ROUND);
+		//				strokeJoin(ROUND);
 
 		fill(255, 0, 0, 50);
 		stroke(0);
 		strokeWeight(5);
 
-		n1 = new Node(this, width / 2, height / 2, 5);
-		n2 = new Node(this, 3 * width / 4, 3 * height / 4, 5);
-		n3 = new Node(this, width / 2 + 200, height / 2, 5);
-		n4 = new Node(this, width / 2, height / 2 + 200, 4);
+		n1 = new Node(this, width / 3, height / 3, 5);
+		n2 = new Node(this, 2 * width / 3, height / 3, 5);
+		n3 = new Node(this, 2 * width / 3, 2 * height / 3, 5);
+		n4 = new Node(this, width / 3, 2 * height / 3, 5);
+
+		nodes = new Node[12];
+		float dx = width / 7;
+		for (int i = 0; i < 6; i++) {
+			nodes[2 * i] = new Node(this, dx + i * dx, 0.25f * height, 5);
+			nodes[2 * i + 1] = new Node(this, dx + i * dx, 0.75f * height, 5);
+		}
 
 		dash = new Dasher(this);
 		dash.pattern(50, 12.5f, 25, 12.5f); // sets dash size and spacing in pixels
@@ -62,18 +71,32 @@ public class dev extends PApplet {
 		n3.render();
 		n4.render();
 
+		for (int i = 0; i < nodes.length; i++) {
+			nodes[i].render();
+		}
+
 		dash.offset(off);
 		off += 1f;
 
 //		drawDashedLine();
 //		drawDashedRectangle();
 //		drawDashedQuad();
-		drawDashedTriangle();
+//		drawDashedTriangle();
 //		drawDashedEllipse();
-//		drawDashed-Arc();
-		
-//		 noFill();
+
+//		noFill();
 //		drawPolygon();
+		
+//		drawShapeOpen();
+//		drawShapeClosed();
+//		drawShapePoints();
+//		drawShapeLines();
+//		drawShapeTriangles();
+//		drawShapeTriangleStrip();
+//		drawShapeTriangleFan();
+//		drawShapeQuads();
+		drawShapeQuadStrip();
+		
 		
 
 	}
@@ -88,6 +111,12 @@ public class dev extends PApplet {
 		} else if (n4.inside(mouseX, mouseY)) {
 			n4.dragged = true;
 		}
+		
+		for (int i = 0; i < nodes.length; i++) {
+			if (nodes[i].inside(mouseX, mouseY)) {
+				nodes[i].dragged = true;
+			}
+		}
 	}
 
 	public void mouseReleased() {
@@ -95,8 +124,18 @@ public class dev extends PApplet {
 		n2.dragged = false;
 		n3.dragged = false;
 		n4.dragged = false;
+		
+		for (int i = 0; i < nodes.length; i++) {
+			nodes[i].dragged = false;
+		}
 	}
 
+	
+	
+	
+	
+	
+	
 	///////////////////////////////////////
 
 	void drawDashedLine() {
@@ -105,7 +144,7 @@ public class dev extends PApplet {
 
 	void drawDashedRectangle() {
 		rectMode(CORNERS);
-		dash.rect(n1.x, n1.y, n2.x, n2.y);
+		dash.rect(n1.x, n1.y, n3.x, n3.y);
 	}
 
 	void drawDashedEllipse() {
@@ -127,41 +166,41 @@ public class dev extends PApplet {
 		line(n1.x, n1.y, n4.x, n4.y);
 		popStyle();
 
-//		// Processing's native arc: uses thetas instead of polar angles
-//		 pushStyle();
-//		 ellipseMode(RADIUS);
-//		 fill(0, 255, 0, 50);
-//		 noStroke();
-//		 arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
-//		 popStyle();
+		//		// Processing's native arc: uses thetas instead of polar angles
+		//		 pushStyle();
+		//		 ellipseMode(RADIUS);
+		//		 fill(0, 255, 0, 50);
+		//		 noStroke();
+		//		 arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14);
+		//		 popStyle();
 
-//		// Dashed arc implementation: uses same convention
-//		pushStyle();
-//		ellipseMode(RADIUS);
-//		// noFill();
-//		fill(255, 0, 0, 50);
-//		stroke(0);
-//		dash.arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
-//		popStyle();
+		//		// Dashed arc implementation: uses same convention
+		//		pushStyle();
+		//		ellipseMode(RADIUS);
+		//		// noFill();
+		//		fill(255, 0, 0, 50);
+		//		stroke(0);
+		//		dash.arc(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
+		//		popStyle();
 
 		// Now custom version using polar angles:
-				pushStyle();
-				fill(0, 255, 0, 50);
+		pushStyle();
+		fill(0, 255, 0, 50);
 		//		noStroke();
-				ellipseMode(RADIUS);
-				// noFill();
-				 stroke(0);
-				dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
-				popStyle();
+		ellipseMode(RADIUS);
+		// noFill();
+		stroke(0);
+		dash.arcPolar(n1.x, n1.y, n2.x - n1.x, n2.y - n1.y, alpha13, alpha14, OPEN);
+		popStyle();
 	}
 
 	void drawDashedQuad() {
 		// noFill();
-		dash.quad(n1.x, n1.y, n3.x, n3.y, n2.x, n2.y, n4.x, n4.y);
+		dash.quad(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
 	}
 
 	void drawDashedTriangle() {
-		dash.triangle(n1.x, n1.y, n3.x, n3.y, n2.x, n2.y);
+		dash.triangle(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
 	}
 
 	void drawPolygon() {
@@ -172,11 +211,94 @@ public class dev extends PApplet {
 		dash.vertex(n4.x, n4.y);
 		dash.endShape(CLOSE);
 	}
+
+	void drawShapeOpen() {
+		dash.beginShape();
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape();
+	}
+
+	void drawShapeClosed() {
+		dash.beginShape();
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
 	
+	void drawShapePoints() {
+		dash.beginShape(POINTS);
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
 	
+	void drawShapeLines() {
+		dash.beginShape(LINES);
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
 	
+	void drawShapeTriangles() {
+		dash.beginShape(TRIANGLES);
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
+	
+	void drawShapeTriangleStrip() {
+		dash.beginShape(TRIANGLE_STRIP);
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
+	
+	void drawShapeTriangleFan() {
+		Node[] fanNodes = new Node[17];
+		fanNodes[0] = new Node(this, width/2, height/2, 5);
+		
+		float alpha = TAU / (fanNodes.length - 1);
+		for (int i = 1; i < fanNodes.length; i++) {
+			fanNodes[i] = new Node(this, width / 2 + 200 * cos(alpha * (i - 1)), height / 2 + 200 * sin(alpha * (i - 1)), 5);
+		}
+		
+		dash.beginShape(TRIANGLE_FAN);
+		for (int i = 0; i < fanNodes.length; i++) {
+			dash.vertex(fanNodes[i].x, fanNodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
+	
+	void drawShapeQuads() {
+		dash.beginShape(QUADS);
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
+	
+	void drawShapeQuadStrip() {
+		dash.beginShape(QUAD_STRIP);
+		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
+
+
+
+
+
 	////////////////////////////////////////
 	// Def. static init
+	////////////////////////////////////////
 	public static void main(String[] args) {
 		PApplet.main("dev.dev");
 	}

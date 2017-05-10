@@ -5,10 +5,10 @@ import processing.data.*;
 
 public class Dasher {
 
-	public final static String VERSION = "##library.prettyVersion##";
+	protected final static String VERSION = "##library.prettyVersion##";
 
-	PApplet p;
-	PGraphics g;
+	protected PApplet p;
+	protected PGraphics g;
 
 	/**
 	 * Main constructor, pass a reference to the current PApplet
@@ -26,10 +26,10 @@ public class Dasher {
 	//  ██╔═══╝ ██╔══██╗██║╚██╗ ██╔╝    ██╔═══╝ ██╔══██╗██║   ██║██╔═══╝ ╚════██║
 	//  ██║     ██║  ██║██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║     ███████║
 	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝
-	private float ARC_DIFFERENTIAL_PRECISION = 0.005f; // generally measured in radian increments 
-	private float[] dashPattern = { 10, 10 };
-	private float dashPatternLength = 0; // stores the accumulated length of the complete dash-gap pattern
-	private float offset = 0;
+	protected float ARC_DIFFERENTIAL_PRECISION = 0.005f; // generally measured in radian increments 
+	protected float[] dashPattern = { 10, 10 };
+	protected float dashPatternLength = 0; // stores the accumulated length of the complete dash-gap pattern
+	protected float offset = 0;
 
 	// Based off Processing's core implementation for begin/endShape() + vertex()
 	/**
@@ -37,12 +37,20 @@ public class Dasher {
 	 * drawn.
 	 */
 	protected int shape;
+	protected int shapeCore;  // @TOTHINK: isn't this always POLYGON?
 
-	// vertices
-	public static final int DEFAULT_VERTICES = 512;
-	public static final int VERTEX_FIELD_COUNT = 2; // let's start simple with 2D
+	// Vertices
+	// Two lists will be maintained: 
+	// - a primary one, used as a first layer to store vertices from the public API (beginShape+vertex+endShape)
+	// - a secondary one, used by the internal beginShape+vertex+endShape implementation and subsidiary methods
+	protected static final int DEFAULT_VERTICES = 512;
+	protected static final int VERTEX_FIELD_COUNT = 2; // let's start simple with 2D
+	// Primary
 	protected float vertices[][] = new float[DEFAULT_VERTICES][VERTEX_FIELD_COUNT];
-	protected int vertexCount; // total number of vertices
+	protected int vertexCount;
+	// Internal
+	protected float verticesCore[][] = new float[DEFAULT_VERTICES][VERTEX_FIELD_COUNT];
+	protected int vertexCountCore;
 
 
 
@@ -188,37 +196,61 @@ public class Dasher {
 			d = temp;
 		}
 
-		// Draw the underlying fill props
-		p.pushStyle();
-		p.noStroke();
-		p.quad(a, b, c, b, c, d, a, d); // since we already did the calculations, quad is faster than rect
-		p.popStyle();
-
-		// Draw rect lines (quick and dirty)
-		this.quad(a, b, c, b, c, d, a, d);
+//		// Draw the underlying fill props
+//		p.pushStyle();
+//		p.noStroke();
+//		p.quad(a, b, c, b, c, d, a, d); // since we already did the calculations, quad is faster than rect
+//		p.popStyle();
+//
+//		// Draw rect lines (quick and dirty)
+//		this.quad(a, b, c, b, c, d, a, d);
+		
+		// Using core's B+V+E for proper dash continuity calcs
+		this.beginShapeImpl(PApplet.POLYGON);
+		this.vertexImpl(a, b);
+		this.vertexImpl(c, b);
+		this.vertexImpl(c, d);
+		this.vertexImpl(a, d);
+		this.endShapeImpl(PApplet.CLOSE);
+		
 	}
 
 	public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-		p.pushStyle();
-		p.noStroke();
-		p.quad(x1, y1, x2, y2, x3, y3, x4, y4);
-		p.popStyle();
-
-		this.line(x1, y1, x2, y2);
-		this.line(x2, y2, x3, y3);
-		this.line(x3, y3, x4, y4);
-		this.line(x4, y4, x1, y1);
+//		p.pushStyle();
+//		p.noStroke();
+//		p.quad(x1, y1, x2, y2, x3, y3, x4, y4);
+//		p.popStyle();
+//
+//		this.line(x1, y1, x2, y2);
+//		this.line(x2, y2, x3, y3);
+//		this.line(x3, y3, x4, y4);
+//		this.line(x4, y4, x1, y1);
+		
+		// Using core's B+V+E for proper dash continuity calcs
+		this.beginShapeImpl(PApplet.POLYGON);
+		this.vertexImpl(x1, y1);
+		this.vertexImpl(x2, y2);
+		this.vertexImpl(x3, y3);
+		this.vertexImpl(x4, y4);
+		this.endShapeImpl(PApplet.CLOSE);
 	}
 
 	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-		p.pushStyle();
-		p.noStroke();
-		p.triangle(x1, y1, x2, y2, x3, y3);
-		p.popStyle();
-
-		this.line(x1, y1, x2, y2);
-		this.line(x2, y2, x3, y3);
-		this.line(x3, y3, x1, y1);
+//		p.pushStyle();
+//		p.noStroke();
+//		p.triangle(x1, y1, x2, y2, x3, y3);
+//		p.popStyle();
+//
+//		this.line(x1, y1, x2, y2);
+//		this.line(x2, y2, x3, y3);
+//		this.line(x3, y3, x1, y1);
+		
+		// Using core's B+V+E for proper dash continuity calcs
+		this.beginShapeImpl(PApplet.POLYGON);
+		this.vertexImpl(x1, y1);
+		this.vertexImpl(x2, y2);
+		this.vertexImpl(x3, y3);
+		this.endShapeImpl(PApplet.CLOSE);
 	}
 
 	public void ellipse(float a, float b, float c, float d) {
@@ -508,7 +540,7 @@ public class Dasher {
 				}
 			}
 			
-			// Go over all segments with no return (CLOSE will be implemented later)
+			// Go over all segments with no return
 			for (int i = 0; i < vertexCount - 1; i++) {
 				dx = vertices[i + 1][PApplet.X] - vertices[i][PApplet.X];
 				dy = vertices[i + 1][PApplet.Y] - vertices[i][PApplet.Y];
@@ -585,11 +617,11 @@ public class Dasher {
 	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
 
 	// For dev purposes.
-	private void log(Object foo) {
+	protected void log(Object foo) {
 		PApplet.println(foo);
 	}
 
-	private void updateDashPatternLength() {
+	protected void updateDashPatternLength() {
 		dashPatternLength = 0;
 		for (int i = 0; i < dashPattern.length; i++) {
 			dashPatternLength += dashPattern[i];
@@ -608,7 +640,7 @@ public class Dasher {
 	// There is no closed form equation to find the length (solution is a double
 	// elliptic integral),
 	// nor the arc length given an angle...
-	private float ellipseCircumference(float a, float b, int mode, float precision) {
+	protected float ellipseCircumference(float a, float b, int mode, float precision) {
 		// Turns out the exact solution has no closed form, and can only be
 		// obtained solving
 		// for the complete elliptical integral of the second kind:
@@ -677,7 +709,7 @@ public class Dasher {
 	// and precision and the dt (theta increment) to be used in calculations,
 	// returns a lower-bound approximation to the arc length based on
 	// differential approximation.
-	public float ellipseArcLength(float a, float b, float startT, float endT, float precision) {
+	protected float ellipseArcLength(float a, float b, float startT, float endT, float precision) {
 		// Similarly to the circumference, tThe exact solution to the arc length
 		// of an ellipse
 		// can only be obtained solving for the complete elliptical integral of
@@ -708,7 +740,7 @@ public class Dasher {
 	// Given a & b the major and minor semi-axes, 
 	// t as the starting theta parameter, and the arc length of the ellipse (can be negative),
 	// return the approximate theta along the ellipse after adding length.
-	public float ellipseThetaFromArcLength(float a, float b, float t, float length, float precision) {
+	protected float ellipseThetaFromArcLength(float a, float b, float t, float length, float precision) {
 		// Housekeeping
 		if (a < 0)
 			a = -a;
@@ -736,7 +768,7 @@ public class Dasher {
 
 	// Calculate the differential arc length at a given parameter t with given
 	// dt
-	private double ellipseArcDifferential(double a, double b, double t, double dt) {
+	protected double ellipseArcDifferential(double a, double b, double t, double dt) {
 		double as2 = Math.pow(a * Math.sin(t), 2.0);
 		double bc2 = Math.pow(b * Math.cos(t), 2.0);
 		return dt * Math.sqrt(as2 + bc2);
@@ -746,7 +778,7 @@ public class Dasher {
 	// and t [0, TAU] as the parameter along the ellipse (not the polar angle of
 	// the point),
 	// returns the corresponding PVector point on the ellipse.
-	private PVector pointOnEllipseAtParameter(float x, float y, float a, float b, float t) {
+	protected PVector pointOnEllipseAtParameter(float x, float y, float a, float b, float t) {
 		float px = a * (float) Math.cos(t);
 		float py = b * (float) Math.sin(t);
 		return new PVector(x + px, y + py);
@@ -754,7 +786,7 @@ public class Dasher {
 
 	// Given a & b as the major and minor semi-axes,
 	// and alpha as polar angle, return the equivalent theta parameter.
-	private float ellipsePolarToTheta(float a, float b, float alpha) {
+	protected float ellipsePolarToTheta(float a, float b, float alpha) {
 		boolean neg = alpha < 0;
 		if (neg)
 			alpha = -alpha;
@@ -787,13 +819,13 @@ public class Dasher {
 	// Given a & b as the major and minor semi-axes,
 	// and alpha [0, TAU] as the polar angle of the point,
 	// returns the corresponding PVector point on the ellipse.
-	private PVector pointOnEllipseAtAngle(float x, float y, float a, float b, float alpha) {
+	protected PVector pointOnEllipseAtAngle(float x, float y, float a, float b, float alpha) {
 		return pointOnEllipseAtParameter(x, y, a, b, this.ellipsePolarToTheta(a, b, alpha));
 	}
 
 	// Returns the parameters resulting of diving the ellipse in n equal-length
 	// arcs.
-	private float[] divideEllipse(float a, float b, int n, float precision) {
+	protected float[] divideEllipse(float a, float b, int n, float precision) {
 		// Housekeeping
 		if (a < 0)
 			a = -a;
@@ -837,6 +869,161 @@ public class Dasher {
 			vertices = temp;
 		}
 	}
+	
+	
+	
+	// Internal implementation of beginShape+vertex+endShape
+	protected void vertexCheckCore() {
+		if (vertexCountCore == verticesCore.length) {
+			float temp[][] = new float[vertexCountCore << 1][VERTEX_FIELD_COUNT];
+			System.arraycopy(verticesCore, 0, temp, 0, vertexCountCore);
+			verticesCore = temp;
+		}
+	}
+	
+	protected void beginShapeImpl(int kind) {
+		this.vertexCountCore = 0;
+		this.shapeCore = kind;
+	}
+	
+	protected void vertexImpl(float x, float y) {
+		vertexCheckCore();
 
+		float[] vertex = verticesCore[vertexCountCore];
+		vertex[PApplet.X] = x;
+		vertex[PApplet.Y] = y;
+
+		vertexCountCore++;
+	}
+
+	public void endShapeImpl(int mode) {
+		if (shapeCore == PApplet.POLYGON && mode == PApplet.CLOSE) {
+			this.vertexImpl(verticesCore[0][PApplet.X], verticesCore[0][PApplet.Y]);
+		}
+
+		// draw the fill according to current params 
+		// --> @TOTHINK: is this necessary in the core implementation? Isn't everything POLYGON here?
+		if (g.fill == true) {
+			p.pushStyle();
+			p.noStroke();
+			p.beginShape(this.shapeCore);
+			for (int i = 0; i < vertexCountCore; i++) {
+				p.vertex(verticesCore[i][PApplet.X], verticesCore[i][PApplet.Y]);
+			}
+			p.endShape(mode);
+			p.popStyle();
+		}
+		
+		// Let's start by trying POLYGON, will implement the rest of the modes later...
+		int id = 0; 
+		float run = 0; 
+		float t = 0; 
+		float len = 0;  // the length of the segment the dash is currently on
+		boolean startDash = true;  // should a new dash be generated?
+		float dx, dy;
+		
+		// Tests for forming a corner with the last + first dash;
+		boolean corner = false;
+		boolean computedCorner = false;
+		float cEndX = 0, cEndY = 0;
+		
+		if (vertexCountCore > 1) {
+			p.pushStyle();
+			p.noFill();
+			
+			// If there is ofsset, precompute first t
+			if (offset != 0) {
+				run += offset;
+
+				// Adjust run to be less than one dashPatternLength behind 0
+				if (run > 0) {
+					run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+				} else {
+					// note offset is negative, so adding positive increment
+					run -= dashPatternLength * (int) (offset / dashPatternLength);
+				}
+
+				// Now process the chunk before t = 0
+				while (run < 0) {
+					run += dashPattern[id % dashPattern.length];
+					id++;
+					// if past t = 0 and at the end point of a dash, add first vertex
+					if (run >= 0 && id % 2 == 1) {
+						if (shapeCore == PApplet.POLYGON && mode == PApplet.CLOSE) {
+							corner = true;
+						} else {
+							p.beginShape();
+							p.vertex(verticesCore[0][PApplet.X], verticesCore[0][PApplet.Y]);
+						}
+						startDash = false;
+					}
+				}
+			}
+			
+			// Go over all segments with no return
+			for (int i = 0; i < vertexCountCore - 1; i++) {
+				dx = verticesCore[i + 1][PApplet.X] - verticesCore[i][PApplet.X];
+				dy = verticesCore[i + 1][PApplet.Y] - verticesCore[i][PApplet.Y];
+				
+				len = PApplet.dist(verticesCore[i][PApplet.X], verticesCore[i][PApplet.Y],
+						verticesCore[i + 1][PApplet.X], verticesCore[i + 1][PApplet.Y]);
+				
+				while (run < len) {
+					if (startDash) {
+						p.beginShape();
+						startDash = false;
+					}
+					
+					t = run / len; 
+					if (corner && !computedCorner) {
+						cEndX = verticesCore[i][PApplet.X] + t * dx;
+						cEndY = verticesCore[i][PApplet.Y] + t * dy;
+						computedCorner = true;
+						startDash = true;
+					} else {
+						p.vertex(verticesCore[i][PApplet.X] + t * dx, verticesCore[i][PApplet.Y] + t * dy);
+					}
+					run += dashPattern[id % dashPattern.length];
+					id++;
+					
+					if (id % 2 == 0) {
+						p.endShape();
+						startDash = true;
+					}
+										
+				}
+				
+				// Already past the segment length, prepare to jump to next segment:				
+				// If dash was unfinished, add corner kink
+				if (id % 2 == 1) {
+					p.vertex(verticesCore[i + 1][PApplet.X], verticesCore[i + 1][PApplet.Y]);
+					
+					// If on last segment, finish drawing
+					if (i == vertexCountCore - 2) {
+						// Add last to first dash if necessary
+						if (corner) {
+							p.vertex(cEndX, cEndY);
+						}
+						p.endShape();
+					}
+					
+				// Don't leave me hanging with an initial dash pending...
+				} else if (i == vertexCountCore - 2 && corner) {
+					p.beginShape();
+					p.vertex(verticesCore[0][PApplet.X], verticesCore[0][PApplet.Y]);
+					p.vertex(cEndX, cEndY);
+					p.endShape();
+				}
+				
+				// Reposition run
+				run -= len;
+								
+			}
+			
+			p.popStyle();
+
+		}
+
+	}
 
 }

@@ -63,17 +63,17 @@ public class dev extends PApplet {
 		n4.render();
 
 		dash.offset(off);
-		off += mouseX / 100.0f;
+		off += 1f;
 
 //		drawDashedLine();
 //		drawDashedRectangle();
 //		drawDashedQuad();
-//		drawDashedTriangle();
+		drawDashedTriangle();
 //		drawDashedEllipse();
 //		drawDashed-Arc();
 		
 //		 noFill();
-		drawPolygon();
+//		drawPolygon();
 		
 
 	}
@@ -157,11 +157,11 @@ public class dev extends PApplet {
 
 	void drawDashedQuad() {
 		// noFill();
-		dash.quad(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+		dash.quad(n1.x, n1.y, n3.x, n3.y, n2.x, n2.y, n4.x, n4.y);
 	}
 
 	void drawDashedTriangle() {
-		dash.triangle(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
+		dash.triangle(n1.x, n1.y, n3.x, n3.y, n2.x, n2.y);
 	}
 
 	void drawPolygon() {

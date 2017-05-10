@@ -26,6 +26,8 @@
 
 - [ ] Migrate all linear geometry to shape + vertices (it gets to Processing's core faster, and allows for dashes to bend on corners). It is literally how it is implemented in Processing's core anyway. 
 
+- [ ] Add rounded corners to rect() (need quadraticVertex implementation, which needs bezierVertex impl...)
+
 - [ ] Since most dashed lines won't likely be filled, add "if (g.fill == true)" to prefill on all shapes 
 
 - [ ] dash.bezierVertex()
@@ -39,7 +41,7 @@
 
 
 ## SOON
-- [ ] At some point, implement 'offset' or something so that animations like this are possible: https://www.youtube.com/watch?v=8uZgU3f8p9A
+- [x] At some point, implement 'offset' or something so that animations like this are possible: https://www.youtube.com/watch?v=8uZgU3f8p9A
 - [ ] Respond to this: https://forum.processing.org/two/discussion/comment/93993/#Comment_93993
 
 

@@ -477,7 +477,7 @@ public class Dasher {
 				this.vertexImpl(vertices[vertexCount - 2][PApplet.X], vertices[vertexCount - 2][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 1][PApplet.X], vertices[vertexCount - 1][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 3][PApplet.X], vertices[vertexCount - 3][PApplet.Y]);
-				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping dashed lines (hi Alykhan! ;)
+				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping lines, make Alykhan happy ;)
 			}
 			break;
 
@@ -487,7 +487,7 @@ public class Dasher {
 				this.vertexImpl(vertices[vertexCount - 2][PApplet.X], vertices[vertexCount - 2][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 1][PApplet.X], vertices[vertexCount - 1][PApplet.Y]);
 				this.vertexImpl(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
-				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping dashed lines (hi Alykhan! ;)
+				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping lines, make Alykhan happy ;)
 			}
 			break;
 
@@ -513,7 +513,7 @@ public class Dasher {
 				this.vertexImpl(vertices[vertexCount - 1][PApplet.X], vertices[vertexCount - 1][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 2][PApplet.X], vertices[vertexCount - 2][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 4][PApplet.X], vertices[vertexCount - 4][PApplet.Y]);
-				this.endShapeImpl(vertexCount - 4 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping dashed lines (hi Alykhan! ;)
+				this.endShapeImpl(vertexCount - 4 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping lines, make Alykhan happy ;)
 			}
 			break;
 

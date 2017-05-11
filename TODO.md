@@ -21,12 +21,8 @@
     - [x] properly continue dashes over kinks with native corners
     - [x] Add CLOSE to endShape
     - [x] When CLOSING a POLYGON, the first/last vertex doesn't form a corner if the dash is continuous. It shouldn't be hard to do. 
-    - [ ] Add working MODES to beginShape() (take them from PGraphicsFX2D implementation...)
-    - [ ] Expand to 3D
-
-- [ ] Migrate all linear geometry to shape + vertices (it gets to Processing's core faster, and allows for dashes to bend on corners). It is literally how it is implemented in Processing's core anyway. 
-
-- [ ] Add rounded corners to rect() (need quadraticVertex implementation, which needs bezierVertex impl...)
+    - [x] Add working MODES to beginShape() (take them from PGraphicsFX2D implementation...)
+    - [x] Migrate all linear geometry to shape + vertices (it gets to Processing's core faster, and allows for dashes to bend on corners).
 
 - [ ] Since most dashed lines won't likely be filled, add "if (g.fill == true)" to prefill on all shapes 
 
@@ -44,6 +40,8 @@
 - [x] At some point, implement 'offset' or something so that animations like this are possible: https://www.youtube.com/watch?v=8uZgU3f8p9A
 - [ ] Respond to this: https://forum.processing.org/two/discussion/comment/93993/#Comment_93993
 
+- [ ] Expand methods to 3D
+- [ ] Add rounded corners to rect() (need quadraticVertex implementation, which needs bezierVertex impl...)
 
 
 

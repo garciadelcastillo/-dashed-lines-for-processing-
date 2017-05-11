@@ -14,7 +14,7 @@ public class dev extends PApplet {
 	float off = 0;
 
 	public void settings() {
-		size(1200, 800);
+		size(1200, 800, JAVA2D);
 	}
 
 	// Settings pretty much acts as setup()
@@ -78,7 +78,7 @@ public class dev extends PApplet {
 		dash.offset(off);
 		off += 1f;
 
-		drawDashedLine();
+//		drawDashedLine();
 //		drawDashedRectangle();
 //		drawDashedQuad();
 //		drawDashedTriangle();
@@ -96,9 +96,7 @@ public class dev extends PApplet {
 //		drawShapeTriangleFan();
 //		drawShapeQuads();
 //		drawShapeQuadStrip();
-		
-		
-
+		drawShapeWithStyleChanges();
 	}
 
 	public void mousePressed() {
@@ -287,6 +285,15 @@ public class dev extends PApplet {
 	void drawShapeQuadStrip() {
 		dash.beginShape(QUAD_STRIP);
 		for (int i = 0; i < nodes.length; i++) {
+			dash.vertex(nodes[i].x, nodes[i].y);
+		}
+		dash.endShape(CLOSE);
+	}
+	
+	void drawShapeWithStyleChanges() {
+		dash.beginShape(QUAD_STRIP);
+		for (int i = 0; i < nodes.length; i++) {
+			fill(i * 255f / nodes.length, 0, 0, 200);
 			dash.vertex(nodes[i].x, nodes[i].y);
 		}
 		dash.endShape(CLOSE);

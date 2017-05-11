@@ -37,7 +37,6 @@ public class Dasher {
 	 * drawn.
 	 */
 	protected int shape;
-//	protected int shapeImpl; // @TOTHINK: isn't this always POLYGON?
 	protected boolean beganShape = false;
 
 	// Vertices
@@ -156,6 +155,7 @@ public class Dasher {
 //		}
 //		p.popStyle();
 		
+		// Let's try for a while relying on polyshape
 		this.beginShapeImpl();
 		this.vertexImpl(x1, y1);
 		this.vertexImpl(x2, y2);
@@ -456,6 +456,7 @@ public class Dasher {
 		// Depending on the shape mode, shapes are drawn on the fly. 
 		// This is useful in case the user is changing style properties
 		// while adding vertices before endShape.
+		// @TOTHINK: it also means the fill of a shape overlaos with the prev stroke... :(
 		// Inspired by the PGraphicsJava2D implementation.
 		switch (this.shape) {
 

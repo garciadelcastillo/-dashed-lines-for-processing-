@@ -37,7 +37,7 @@ public class Dasher {
 	 * drawn.
 	 */
 	protected int shape;
-	protected int shapeCore; // @TOTHINK: isn't this always POLYGON?
+//	protected int shapeImpl; // @TOTHINK: isn't this always POLYGON?
 	protected boolean beganShape = false;
 
 	// Vertices
@@ -50,8 +50,8 @@ public class Dasher {
 	protected float vertices[][] = new float[DEFAULT_VERTICES][VERTEX_FIELD_COUNT];
 	protected int vertexCount;
 	// Internal
-	protected float verticesCore[][] = new float[DEFAULT_VERTICES][VERTEX_FIELD_COUNT];
-	protected int vertexCountCore;
+	protected float verticesImpl[][] = new float[DEFAULT_VERTICES][VERTEX_FIELD_COUNT];
+	protected int vertexCountImpl;
 
 
 
@@ -100,60 +100,66 @@ public class Dasher {
 	}
 
 	public void line(float x1, float y1, float x2, float y2) {
-		// Compute theta parameters for start-ends of dashes and gaps
-		// TODO: precompute the size of the array and create it as an array right away
-		FloatList ts = new FloatList();
-		int id = 0;
-		float run = 0;
-		float t = 0;
-		float len = PApplet.dist(x1, y1, x2, y2);
-
-		// If there is ofsset, precompute first t
-		if (offset != 0) {
-			// p.println("testing offset");
-			run += offset;
-
-			// Adjust run to be less than one dashPatternLength behind 0
-			if (run > 0) {
-				run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
-			} else {
-				// note offset is negative, so adding positive increment
-				run -= dashPatternLength * (int) (offset / dashPatternLength);
-			}
-
-			// Now process the chunk before t = 0
-			while (run < 0) {
-				run += dashPattern[id % dashPattern.length];
-				id++;
-				// if past t = 0 and at the end point of a dash, add t = 0
-				if (run >= 0 && id % 2 == 1) {
-					ts.append(0);
-				}
-			}
-		}
-
-		while (run < len) {
-			t = run / len;
-			ts.append(t);
-			run += dashPattern[id % dashPattern.length];
-			id++;
-		}
-
-		// If last t was the startpoint of a dash, close it at the end of the line
-		if (id % 2 == 1) {
-			ts.append(1);
-		}
-
-		float[] tsA = ts.array(); // TODO: improve the list-array situation
-
-		// Draw dashes
-		p.pushStyle();
-		float dx = x2 - x1;
-		float dy = y2 - y1;
-		for (int i = 0; i < tsA.length; i += 2) {
-			p.line(x1 + tsA[i] * dx, y1 + tsA[i] * dy, x1 + tsA[i + 1] * dx, y1 + tsA[i + 1] * dy);
-		}
-		p.popStyle();
+				
+//		// Compute theta parameters for start-ends of dashes and gaps
+//		// TODO: precompute the size of the array and create it as an array right away
+//		FloatList ts = new FloatList();
+//		int id = 0;
+//		float run = 0;
+//		float t = 0;
+//		float len = PApplet.dist(x1, y1, x2, y2);
+//
+//		// If there is ofsset, precompute first t
+//		if (offset != 0) {
+//			// p.println("testing offset");
+//			run += offset;
+//
+//			// Adjust run to be less than one dashPatternLength behind 0
+//			if (run > 0) {
+//				run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+//			} else {
+//				// note offset is negative, so adding positive increment
+//				run -= dashPatternLength * (int) (offset / dashPatternLength);
+//			}
+//
+//			// Now process the chunk before t = 0
+//			while (run < 0) {
+//				run += dashPattern[id % dashPattern.length];
+//				id++;
+//				// if past t = 0 and at the end point of a dash, add t = 0
+//				if (run >= 0 && id % 2 == 1) {
+//					ts.append(0);
+//				}
+//			}
+//		}
+//
+//		while (run < len) {
+//			t = run / len;
+//			ts.append(t);
+//			run += dashPattern[id % dashPattern.length];
+//			id++;
+//		}
+//
+//		// If last t was the startpoint of a dash, close it at the end of the line
+//		if (id % 2 == 1) {
+//			ts.append(1);
+//		}
+//
+//		float[] tsA = ts.array(); // TODO: improve the list-array situation
+//
+//		// Draw dashes
+//		p.pushStyle();
+//		float dx = x2 - x1;
+//		float dy = y2 - y1;
+//		for (int i = 0; i < tsA.length; i += 2) {
+//			p.line(x1 + tsA[i] * dx, y1 + tsA[i] * dy, x1 + tsA[i + 1] * dx, y1 + tsA[i + 1] * dy);
+//		}
+//		p.popStyle();
+		
+		this.beginShapeImpl();
+		this.vertexImpl(x1, y1);
+		this.vertexImpl(x2, y2);
+		this.endShapeImpl(PApplet.OPEN);
 	}
 
 	public void rect(float a, float b, float c, float d) {
@@ -198,7 +204,7 @@ public class Dasher {
 		}
 
 		// Using core's B+V+E for proper dash continuity calcs
-		this.beginShapeImpl(PApplet.POLYGON);
+		this.beginShapeImpl();
 		this.vertexImpl(a, b);
 		this.vertexImpl(c, b);
 		this.vertexImpl(c, d);
@@ -209,7 +215,7 @@ public class Dasher {
 
 	public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 		// Using core's B+V+E for proper dash continuity calcs
-		this.beginShapeImpl(PApplet.POLYGON);
+		this.beginShapeImpl();
 		this.vertexImpl(x1, y1);
 		this.vertexImpl(x2, y2);
 		this.vertexImpl(x3, y3);
@@ -219,7 +225,7 @@ public class Dasher {
 
 	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
 		// Using core's B+V+E for proper dash continuity calcs
-		this.beginShapeImpl(PApplet.POLYGON);
+		this.beginShapeImpl();
 		this.vertexImpl(x1, y1);
 		this.vertexImpl(x2, y2);
 		this.vertexImpl(x3, y3);
@@ -427,13 +433,13 @@ public class Dasher {
 	}
 
 	public void vertex(float x, float y) {
-		
+
 		if (!this.beganShape) {
 			PApplet.println("Must call beginShape() before adding any vertex()");
 			return;
 		}
-		
-		// curveVertexCount = 0;  // not necessary yet
+
+		// curveVertexCount = 0;  // from Processing's implementation, not necessary yet
 
 		// Ran out of vertices in the buffer?
 		if (vertexCount == vertices.length) {
@@ -451,7 +457,6 @@ public class Dasher {
 		// This is useful in case the user is changing style properties
 		// while adding vertices before endShape.
 		// Inspired by the PGraphicsJava2D implementation.
-
 		switch (this.shape) {
 
 		case PApplet.POINTS:
@@ -473,21 +478,21 @@ public class Dasher {
 
 		case PApplet.TRIANGLE_STRIP:
 			if (vertexCount >= 3) {
-				this.beginShapeImpl(PApplet.POLYGON);
+				this.beginShapeImpl();
 				this.vertexImpl(vertices[vertexCount - 2][PApplet.X], vertices[vertexCount - 2][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 1][PApplet.X], vertices[vertexCount - 1][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 3][PApplet.X], vertices[vertexCount - 3][PApplet.Y]);
-				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping lines, make Alykhan happy ;)
+				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN); // avoid overlapping lines, make Alykhan happy ;)
 			}
 			break;
 
 		case PApplet.TRIANGLE_FAN:
 			if (vertexCount >= 3) {
-				this.beginShapeImpl(PApplet.POLYGON);
+				this.beginShapeImpl();
 				this.vertexImpl(vertices[vertexCount - 2][PApplet.X], vertices[vertexCount - 2][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 1][PApplet.X], vertices[vertexCount - 1][PApplet.Y]);
 				this.vertexImpl(vertices[0][PApplet.X], vertices[0][PApplet.Y]);
-				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping lines, make Alykhan happy ;)
+				this.endShapeImpl(vertexCount - 3 == 0 ? PApplet.CLOSE : PApplet.OPEN); // avoid overlapping lines, make Alykhan happy ;)
 			}
 			break;
 
@@ -505,15 +510,12 @@ public class Dasher {
 			// |   |   |
 			// 1---3---5
 			if ((vertexCount >= 4) && ((vertexCount % 2) == 0)) {
-//				quad(vertices[vertexCount - 4][PApplet.X], vertices[vertexCount - 4][PApplet.Y],
-//						vertices[vertexCount - 2][PApplet.X], vertices[vertexCount - 2][PApplet.Y], x, y,
-//						vertices[vertexCount - 3][PApplet.X], vertices[vertexCount - 3][PApplet.Y]);
-				this.beginShapeImpl(PApplet.POLYGON);
+				this.beginShapeImpl();
 				this.vertexImpl(vertices[vertexCount - 3][PApplet.X], vertices[vertexCount - 3][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 1][PApplet.X], vertices[vertexCount - 1][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 2][PApplet.X], vertices[vertexCount - 2][PApplet.Y]);
 				this.vertexImpl(vertices[vertexCount - 4][PApplet.X], vertices[vertexCount - 4][PApplet.Y]);
-				this.endShapeImpl(vertexCount - 4 == 0 ? PApplet.CLOSE : PApplet.OPEN);  // avoid overlapping lines, make Alykhan happy ;)
+				this.endShapeImpl(vertexCount - 4 == 0 ? PApplet.CLOSE : PApplet.OPEN); // avoid overlapping lines, make Alykhan happy ;)
 			}
 			break;
 
@@ -535,15 +537,15 @@ public class Dasher {
 
 	public void endShape(int mode) {
 		if (this.shape == PApplet.POLYGON) {
-			this.beginShapeImpl(PApplet.POLYGON);
+			this.beginShapeImpl();
 			for (int i = 0; i < vertexCount; i++) {
-				this.vertexImpl(vertices[i][PApplet.X], vertices[i][PApplet.Y]);				
+				this.vertexImpl(vertices[i][PApplet.X], vertices[i][PApplet.Y]);
 			}
 			this.endShapeImpl(mode);
 		}
-		
+
 		// Prevent from further calls to vertex()
-		this.beganShape = false;		
+		this.beganShape = false;
 	}
 
 
@@ -752,10 +754,158 @@ public class Dasher {
 		return t;
 	}
 
+	// Internal implementation of beginShape+vertex+endShape.
+	// Will always draw a POLYGON, with OPEN/CLOSE option.
+	protected void beginShapeImpl() {
+		this.vertexCountImpl = 0;
+	}
+
+	protected void vertexImpl(float x, float y) {
+		if (vertexCountImpl == verticesImpl.length) {
+			float temp[][] = new float[vertexCountImpl << 1][VERTEX_FIELD_COUNT];
+			System.arraycopy(verticesImpl, 0, temp, 0, vertexCountImpl);
+			verticesImpl = temp;
+		}
+
+		verticesImpl[vertexCountImpl][PApplet.X] = x;
+		verticesImpl[vertexCountImpl][PApplet.Y] = y;
+
+		vertexCountImpl++;
+	}
+
+	protected void endShapeImpl(int mode) {
+		if (mode == PApplet.CLOSE) {
+			this.vertexImpl(verticesImpl[0][PApplet.X], verticesImpl[0][PApplet.Y]);
+		}
+
+		// Draw the fill according to current params
+		if (g.fill == true) {
+			p.pushStyle();
+			p.noStroke();
+			p.beginShape(PApplet.POLYGON);
+			for (int i = 0; i < vertexCountImpl; i++) {
+				p.vertex(verticesImpl[i][PApplet.X], verticesImpl[i][PApplet.Y]);
+			}
+			p.endShape(mode);
+			p.popStyle();
+		}
+
+		// Let's start by trying POLYGON, will implement the rest of the modes later...
+		int id = 0;
+		float run = 0;
+		float t = 0;
+		float len = 0; // the length of the segment the dash is currently on
+		boolean startDash = true; // should a new dash be generated?
+		float dx, dy;
+
+		// Tests for forming a corner with the last + first dash;
+		boolean corner = false;
+		boolean computedCorner = false;
+		float cEndX = 0, cEndY = 0;
+
+		if (vertexCountImpl > 1) {
+			p.pushStyle();
+			p.noFill();
+
+			// If there is ofsset, precompute first t
+			if (offset != 0) {
+				run += offset;
+
+				// Adjust run to be less than one dashPatternLength behind 0
+				if (run > 0) {
+					run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+				} else {
+					// note offset is negative, so adding positive increment
+					run -= dashPatternLength * (int) (offset / dashPatternLength);
+				}
+
+				// Now process the chunk before t = 0
+				while (run < 0) {
+					run += dashPattern[id % dashPattern.length];
+					id++;
+					// if past t = 0 and at the end point of a dash, add first vertex
+					if (run >= 0 && id % 2 == 1) {
+						if (mode == PApplet.CLOSE) {
+							corner = true;
+						} else {
+							p.beginShape();
+							p.vertex(verticesImpl[0][PApplet.X], verticesImpl[0][PApplet.Y]);
+						}
+						startDash = false;
+					}
+				}
+			}
+
+			// Go over all segments with no return
+			for (int i = 0; i < vertexCountImpl - 1; i++) {
+				dx = verticesImpl[i + 1][PApplet.X] - verticesImpl[i][PApplet.X];
+				dy = verticesImpl[i + 1][PApplet.Y] - verticesImpl[i][PApplet.Y];
+
+				len = PApplet.dist(verticesImpl[i][PApplet.X], verticesImpl[i][PApplet.Y],
+						verticesImpl[i + 1][PApplet.X], verticesImpl[i + 1][PApplet.Y]);
+
+				while (run < len) {
+					if (startDash) {
+						p.beginShape();
+						startDash = false;
+					}
+
+					t = run / len;
+					if (corner && !computedCorner) {
+						cEndX = verticesImpl[i][PApplet.X] + t * dx;
+						cEndY = verticesImpl[i][PApplet.Y] + t * dy;
+						computedCorner = true;
+						startDash = true;
+					} else {
+						p.vertex(verticesImpl[i][PApplet.X] + t * dx, verticesImpl[i][PApplet.Y] + t * dy);
+					}
+					run += dashPattern[id % dashPattern.length];
+					id++;
+
+					if (id % 2 == 0) {
+						p.endShape();
+						startDash = true;
+					}
+
+				}
+
+				// Already past the segment length, prepare to jump to next segment:				
+				// If dash was unfinished, add corner kink
+				if (id % 2 == 1) {
+					p.vertex(verticesImpl[i + 1][PApplet.X], verticesImpl[i + 1][PApplet.Y]);
+
+					// If on last segment, finish drawing
+					if (i == vertexCountImpl - 2) {
+						// Add last to first dash if necessary
+						if (corner) {
+							p.vertex(cEndX, cEndY);
+						}
+						p.endShape();
+					}
+
+				// Don't leave me hanging with an initial dash pending...
+				} else if (i == vertexCountImpl - 2 && corner) {
+					p.beginShape();
+					p.vertex(verticesImpl[0][PApplet.X], verticesImpl[0][PApplet.Y]);
+					p.vertex(cEndX, cEndY);
+					p.endShape();
+				}
+
+				// Reposition run
+				run -= len;
+
+			}
+
+			p.popStyle();
+
+		}
+
+	}
+
+
+
+
 	/////////////////// UNUSED BUT POTENTIALLY USEFUL? ////////////////////
-
-
-
 	// Given a & b as the major and minor semi-axes,
 	// and alpha [0, TAU] as the polar angle of the point,
 	// returns the corresponding PVector point on the ellipse.
@@ -804,158 +954,6 @@ public class Dasher {
 
 
 
-	// Internal implementation of beginShape+vertex+endShape
-	protected void vertexCheckCore() {
-		if (vertexCountCore == verticesCore.length) {
-			float temp[][] = new float[vertexCountCore << 1][VERTEX_FIELD_COUNT];
-			System.arraycopy(verticesCore, 0, temp, 0, vertexCountCore);
-			verticesCore = temp;
-		}
-	}
 
-	protected void beginShapeImpl(int kind) {
-		this.vertexCountCore = 0;
-		this.shapeCore = kind;
-	}
-
-	protected void vertexImpl(float x, float y) {
-		vertexCheckCore();
-
-		float[] vertex = verticesCore[vertexCountCore];
-		vertex[PApplet.X] = x;
-		vertex[PApplet.Y] = y;
-
-		vertexCountCore++;
-	}
-
-	protected void endShapeImpl(int mode) {
-		if (shapeCore == PApplet.POLYGON && mode == PApplet.CLOSE) {
-			this.vertexImpl(verticesCore[0][PApplet.X], verticesCore[0][PApplet.Y]);
-		}
-
-		// draw the fill according to current params 
-		// --> @TOTHINK: is this necessary in the core implementation? Isn't everything POLYGON here?
-		if (g.fill == true) {
-			p.pushStyle();
-			p.noStroke();
-			p.beginShape(this.shapeCore);
-			for (int i = 0; i < vertexCountCore; i++) {
-				p.vertex(verticesCore[i][PApplet.X], verticesCore[i][PApplet.Y]);
-			}
-			p.endShape(mode);
-			p.popStyle();
-		}
-
-		// Let's start by trying POLYGON, will implement the rest of the modes later...
-		int id = 0;
-		float run = 0;
-		float t = 0;
-		float len = 0; // the length of the segment the dash is currently on
-		boolean startDash = true; // should a new dash be generated?
-		float dx, dy;
-
-		// Tests for forming a corner with the last + first dash;
-		boolean corner = false;
-		boolean computedCorner = false;
-		float cEndX = 0, cEndY = 0;
-
-		if (vertexCountCore > 1) {
-			p.pushStyle();
-			p.noFill();
-
-			// If there is ofsset, precompute first t
-			if (offset != 0) {
-				run += offset;
-
-				// Adjust run to be less than one dashPatternLength behind 0
-				if (run > 0) {
-					run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
-				} else {
-					// note offset is negative, so adding positive increment
-					run -= dashPatternLength * (int) (offset / dashPatternLength);
-				}
-
-				// Now process the chunk before t = 0
-				while (run < 0) {
-					run += dashPattern[id % dashPattern.length];
-					id++;
-					// if past t = 0 and at the end point of a dash, add first vertex
-					if (run >= 0 && id % 2 == 1) {
-						if (shapeCore == PApplet.POLYGON && mode == PApplet.CLOSE) {
-							corner = true;
-						} else {
-							p.beginShape();
-							p.vertex(verticesCore[0][PApplet.X], verticesCore[0][PApplet.Y]);
-						}
-						startDash = false;
-					}
-				}
-			}
-
-			// Go over all segments with no return
-			for (int i = 0; i < vertexCountCore - 1; i++) {
-				dx = verticesCore[i + 1][PApplet.X] - verticesCore[i][PApplet.X];
-				dy = verticesCore[i + 1][PApplet.Y] - verticesCore[i][PApplet.Y];
-
-				len = PApplet.dist(verticesCore[i][PApplet.X], verticesCore[i][PApplet.Y],
-						verticesCore[i + 1][PApplet.X], verticesCore[i + 1][PApplet.Y]);
-
-				while (run < len) {
-					if (startDash) {
-						p.beginShape();
-						startDash = false;
-					}
-
-					t = run / len;
-					if (corner && !computedCorner) {
-						cEndX = verticesCore[i][PApplet.X] + t * dx;
-						cEndY = verticesCore[i][PApplet.Y] + t * dy;
-						computedCorner = true;
-						startDash = true;
-					} else {
-						p.vertex(verticesCore[i][PApplet.X] + t * dx, verticesCore[i][PApplet.Y] + t * dy);
-					}
-					run += dashPattern[id % dashPattern.length];
-					id++;
-
-					if (id % 2 == 0) {
-						p.endShape();
-						startDash = true;
-					}
-
-				}
-
-				// Already past the segment length, prepare to jump to next segment:				
-				// If dash was unfinished, add corner kink
-				if (id % 2 == 1) {
-					p.vertex(verticesCore[i + 1][PApplet.X], verticesCore[i + 1][PApplet.Y]);
-
-					// If on last segment, finish drawing
-					if (i == vertexCountCore - 2) {
-						// Add last to first dash if necessary
-						if (corner) {
-							p.vertex(cEndX, cEndY);
-						}
-						p.endShape();
-					}
-
-					// Don't leave me hanging with an initial dash pending...
-				} else if (i == vertexCountCore - 2 && corner) {
-					p.beginShape();
-					p.vertex(verticesCore[0][PApplet.X], verticesCore[0][PApplet.Y]);
-					p.vertex(cEndX, cEndY);
-					p.endShape();
-				}
-
-				// Reposition run
-				run -= len;
-
-			}
-
-			p.popStyle();
-
-		}
-
-	}
 
 }

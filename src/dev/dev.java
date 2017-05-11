@@ -78,7 +78,7 @@ public class dev extends PApplet {
 		dash.offset(off);
 		off += 1f;
 
-//		drawDashedLine();
+		drawDashedLine();
 //		drawDashedRectangle();
 //		drawDashedQuad();
 //		drawDashedTriangle();
@@ -95,7 +95,7 @@ public class dev extends PApplet {
 //		drawShapeTriangleStrip();
 //		drawShapeTriangleFan();
 //		drawShapeQuads();
-		drawShapeQuadStrip();
+//		drawShapeQuadStrip();
 		
 		
 

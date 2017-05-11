@@ -25,15 +25,17 @@
     - [x] Migrate all linear geometry to shape + vertices (it gets to Processing's core faster, and allows for dashes to bend on corners).
     - [x] Since most dashed lines won't likely be filled, add "if (g.fill == true)" to prefill on all shapes 
 
+- [ ] dash.bezier()
+    - [ ] dash.bezierVertex()
 
-- [ ] dash.bezierVertex()
-- [ ] dash.curveVertex()
+
+- [ ] dash.curve()
+    - [ ] dash.curveVertex()
+
 
 - [ ] Implement dash.mode()
     - [ ] Design which modes are there and how they work  
 
-- [ ] dash.bezier()
-- [ ] dash.curve()
 
 
 ## SOON

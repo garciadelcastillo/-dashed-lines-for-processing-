@@ -99,62 +99,62 @@ public class Dasher {
 	}
 
 	public void line(float x1, float y1, float x2, float y2) {
-				
-//		// Compute theta parameters for start-ends of dashes and gaps
-//		// TODO: precompute the size of the array and create it as an array right away
-//		FloatList ts = new FloatList();
-//		int id = 0;
-//		float run = 0;
-//		float t = 0;
-//		float len = PApplet.dist(x1, y1, x2, y2);
-//
-//		// If there is ofsset, precompute first t
-//		if (offset != 0) {
-//			// p.println("testing offset");
-//			run += offset;
-//
-//			// Adjust run to be less than one dashPatternLength behind 0
-//			if (run > 0) {
-//				run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
-//			} else {
-//				// note offset is negative, so adding positive increment
-//				run -= dashPatternLength * (int) (offset / dashPatternLength);
-//			}
-//
-//			// Now process the chunk before t = 0
-//			while (run < 0) {
-//				run += dashPattern[id % dashPattern.length];
-//				id++;
-//				// if past t = 0 and at the end point of a dash, add t = 0
-//				if (run >= 0 && id % 2 == 1) {
-//					ts.append(0);
-//				}
-//			}
-//		}
-//
-//		while (run < len) {
-//			t = run / len;
-//			ts.append(t);
-//			run += dashPattern[id % dashPattern.length];
-//			id++;
-//		}
-//
-//		// If last t was the startpoint of a dash, close it at the end of the line
-//		if (id % 2 == 1) {
-//			ts.append(1);
-//		}
-//
-//		float[] tsA = ts.array(); // TODO: improve the list-array situation
-//
-//		// Draw dashes
-//		p.pushStyle();
-//		float dx = x2 - x1;
-//		float dy = y2 - y1;
-//		for (int i = 0; i < tsA.length; i += 2) {
-//			p.line(x1 + tsA[i] * dx, y1 + tsA[i] * dy, x1 + tsA[i + 1] * dx, y1 + tsA[i + 1] * dy);
-//		}
-//		p.popStyle();
-		
+
+		//		// Compute theta parameters for start-ends of dashes and gaps
+		//		// TODO: precompute the size of the array and create it as an array right away
+		//		FloatList ts = new FloatList();
+		//		int id = 0;
+		//		float run = 0;
+		//		float t = 0;
+		//		float len = PApplet.dist(x1, y1, x2, y2);
+		//
+		//		// If there is ofsset, precompute first t
+		//		if (offset != 0) {
+		//			// p.println("testing offset");
+		//			run += offset;
+		//
+		//			// Adjust run to be less than one dashPatternLength behind 0
+		//			if (run > 0) {
+		//				run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+		//			} else {
+		//				// note offset is negative, so adding positive increment
+		//				run -= dashPatternLength * (int) (offset / dashPatternLength);
+		//			}
+		//
+		//			// Now process the chunk before t = 0
+		//			while (run < 0) {
+		//				run += dashPattern[id % dashPattern.length];
+		//				id++;
+		//				// if past t = 0 and at the end point of a dash, add t = 0
+		//				if (run >= 0 && id % 2 == 1) {
+		//					ts.append(0);
+		//				}
+		//			}
+		//		}
+		//
+		//		while (run < len) {
+		//			t = run / len;
+		//			ts.append(t);
+		//			run += dashPattern[id % dashPattern.length];
+		//			id++;
+		//		}
+		//
+		//		// If last t was the startpoint of a dash, close it at the end of the line
+		//		if (id % 2 == 1) {
+		//			ts.append(1);
+		//		}
+		//
+		//		float[] tsA = ts.array(); // TODO: improve the list-array situation
+		//
+		//		// Draw dashes
+		//		p.pushStyle();
+		//		float dx = x2 - x1;
+		//		float dy = y2 - y1;
+		//		for (int i = 0; i < tsA.length; i += 2) {
+		//			p.line(x1 + tsA[i] * dx, y1 + tsA[i] * dy, x1 + tsA[i + 1] * dx, y1 + tsA[i + 1] * dy);
+		//		}
+		//		p.popStyle();
+
 		// Let's try for a while relying on polyshape
 		this.beginShapeImpl();
 		this.vertexImpl(x1, y1);
@@ -884,7 +884,7 @@ public class Dasher {
 						p.endShape();
 					}
 
-				// Don't leave me hanging with an initial dash pending...
+					// Don't leave me hanging with an initial dash pending...
 				} else if (i == vertexCountImpl - 2 && corner) {
 					p.beginShape();
 					p.vertex(verticesImpl[0][PApplet.X], verticesImpl[0][PApplet.Y]);
@@ -950,6 +950,48 @@ public class Dasher {
 		// println("end: " + millis());
 
 		return ts;
+	}
+
+
+	/**
+	 * Given the xy coordinates of the three defpoints of a quadratic Bézier
+	 * curve, and the parameters a and b along the curve at which to split it,
+	 * draws a new subcurve between them.
+	 * 
+	 * @param a
+	 * @param b
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 */
+	public void subQuadraticBezier(float a, float b, float x1, float y1, float x2, float y2, float x3, float y3) {
+		if (a > b) {
+			float tmp = a;
+			a = b;
+			b = tmp;
+		}
+		
+		float a2 = a * a;
+		float b2 = b * b;
+		float ma = a - 1;
+		float mb = b - 1;
+		float ab = a * b;
+		
+		float sx1, sy1, sx2, sy2, sx3, sy3;
+		sx1 = ma * ma * x1 - 2 * a * ma * x2 + a2 * x3;
+		sy1 = ma * ma * y1 - 2 * a * ma * y2 + a2 * y3;
+		sx2 = ma * mb * x1 + (a + b - 2 * ab) * x2 + ab * x3;
+		sy2 = ma * mb * y1 + (a + b - 2 * ab) * y2 + ab * y3;
+		sx3 = mb * mb * x1 - 2 * b * mb * x2 + b2 * x3;
+		sy3 = mb * mb * y1 - 2 * b * mb * y2 + b2 * y3;
+		
+		p.beginShape();
+		p.vertex(sx1, sy1);
+		p.quadraticVertex(sx2, sy2, sx3, sy3);
+		p.endShape();
 	}
 
 

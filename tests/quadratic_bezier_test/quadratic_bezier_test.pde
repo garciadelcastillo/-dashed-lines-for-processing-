@@ -46,7 +46,22 @@ void draw() {
     endShape();
   }
 
-  println(frameRate);
+//  PVector[] pts = splitQuadraticBezier(0.1, 0.2, n1, n2, n3);
+//  noFill();
+//  strokeWeight(1);
+//  stroke(0);
+//  for (int i = 0; i < pts.length; i++) {
+//    ellipse(pts[i].x, pts[i].y, 5, 5);
+//  }
+//  strokeWeight(2);
+//  stroke(0);
+//  beginShape();
+//  vertex(pts[0].x, pts[0].y);
+//  quadraticVertex(pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+//  endShape();
+
+
+  //println(frameRate);
 }
 
 
@@ -91,29 +106,69 @@ PVector[] splitQuadraticBezier(float a, float b, Node start, Node controlPoint, 
   for (int i = 0; i < pts.length; i++) {
     pts[i] = new PVector();
   }
+  
+  // LONG FORM
+  //float d = b - a;
+  //float d2 = d * d;
+  //float a2 = a * a;
+  //float ma = a - 1;
+  //float ma2 = ma * ma;
 
-  float d = b - a;
-  float d2 = d * d;
+  //pts[0].x = ma2 * start.x - 2 * a * ma * controlPoint.x + a2 * end.x;
+  //pts[0].y = ma2 * start.y - 2 * a * ma * controlPoint.y + a2 * end.y;
+
+  //pts[1].x = (ma2 + d * ma) * start.x
+  //  + (-2 * a * ma + d - 2 * d * a) * controlPoint.x
+  //  + (a2 + a * d) * end.x;
+  //pts[1].y = (ma2 + d * ma) * start.y
+  //  + (-2 * a * ma + d - 2 * d * a) * controlPoint.y
+  //  + (a2 + a * d) * end.y;
+
+  //pts[2].x = (ma2 + 2 * d * ma + d2) * start.x 
+  //  + (-2 * a * ma + 2 * d - 4 * d * a - 2 * d2) * controlPoint.x
+  //  + (a2 + 2 * a * d + d2) * end.x;
+  //pts[2].y = (ma2 + 2 * d * ma + d2) * start.y 
+  //  + (-2 * a * ma + 2 * d - 4 * d * a - 2 * d2) * controlPoint.y
+  //  + (a2 + 2 * a * d + d2) * end.y;
+
+  // SIMPLER
+  //float a2 = a * a;
+  //float b2 = b * b;
+  //float ab = a * b;
+  //float ma = a - 1;
+
+  //pts[0].x = ma * ma * start.x - 2 * a * ma * controlPoint.x + a2 * end.x;
+  //pts[0].y = ma * ma * start.y - 2 * a * ma * controlPoint.y + a2 * end.y;
+
+  //pts[1].x = (ab - a - b + 1) * start.x 
+  //  + (-2 * ab + a + b) * controlPoint.x 
+  //  + ab * end.x;
+  //pts[1].y = (ab - a - b + 1) * start.y 
+  //  + (-2 * ab + a + b) * controlPoint.y 
+  //  + ab * end.y;
+
+  //pts[2].x = (b-1)*(b-1) * start.x
+  //  + (2 * b - 2 * b2) * controlPoint.x
+  //  + b2 * end.x;
+  //pts[2].y = (b-1)*(b-1) * start.y
+  //  + (2 * b - 2 * b2) * controlPoint.y
+  //  + b2 * end.y;
+
+  // SIMPLEST ;)
   float a2 = a * a;
+  float b2 = b * b;
   float ma = a - 1;
-  float ma2 = ma * ma;
+  float mb = b - 1;
+  float ab = a * b;
+  
+  pts[0].x = ma * ma * start.x - 2 * a * ma * controlPoint.x + a2 * end.x;
+  pts[0].y = ma * ma * start.y - 2 * a * ma * controlPoint.y + a2 * end.y;
+  
+  pts[1].x = ma * mb * start.x + (a + b - 2 * ab) * controlPoint.x + ab * end.x;
+  pts[1].y = ma * mb * start.y + (a + b - 2 * ab) * controlPoint.y + ab * end.y;
+  
+  pts[2].x = mb * mb * start.x - 2 * b * mb * controlPoint.x + b2 * end.x;
+  pts[2].y = mb * mb * start.y - 2 * b * mb * controlPoint.y + b2 * end.y;
 
-  pts[0].x = ma2 * start.x - 2 * a * ma * controlPoint.x + a2 * end.x;
-  pts[0].y = ma2 * start.y - 2 * a * ma * controlPoint.y + a2 * end.y;
-
-  pts[1].x = (ma2 + d * ma) * start.x
-    + (-2 * a * ma + d - 2 * d * a) * controlPoint.x
-    + (a2 + a * d) * end.x;
-  pts[1].y = (ma2 + d * ma) * start.y
-    + (-2 * a * ma + d - 2 * d * a) * controlPoint.y
-    + (a2 + a * d) * end.y;
-
-  pts[2].x = (ma2 + 2 * d * ma + d2) * start.x 
-    + (-2 * a * ma + 2 * d - 4 * d * a - 2 * d2) * controlPoint.x
-    + (a2 + 2 * a * d + d2) * end.x;
-  pts[2].y = (ma2 + 2 * d * ma + d2) * start.y 
-    + (-2 * a * ma + 2 * d - 4 * d * a - 2 * d2) * controlPoint.y
-    + (a2 + 2 * a * d + d2) * end.y;
-
-  return pts;
+  return pts; 
 }

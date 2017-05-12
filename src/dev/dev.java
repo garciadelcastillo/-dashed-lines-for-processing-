@@ -78,25 +78,28 @@ public class dev extends PApplet {
 		dash.offset(off);
 		off += 1f;
 
-//		drawDashedLine();
-//		drawDashedRectangle();
-//		drawDashedQuad();
-//		drawDashedTriangle();
-//		drawDashedEllipse();
+		//		drawDashedLine();
+		//		drawDashedRectangle();
+		//		drawDashedQuad();
+		//		drawDashedTriangle();
+		//		drawDashedEllipse();
 
-//		noFill();
-//		drawPolygon();
-		
-//		drawShapeOpen();
-//		drawShapeClosed();
-//		drawShapePoints();
-//		drawShapeLines();
-//		drawShapeTriangles();
-//		drawShapeTriangleStrip();
-//		drawShapeTriangleFan();
-//		drawShapeQuads();
-//		drawShapeQuadStrip();
-		drawShapeWithStyleChanges();
+		//		noFill();
+		//		drawPolygon();
+
+		//		drawShapeOpen();
+		//		drawShapeClosed();
+		//		drawShapePoints();
+		//		drawShapeLines();
+		//		drawShapeTriangles();
+		//		drawShapeTriangleStrip();
+		//		drawShapeTriangleFan();
+		//		drawShapeQuads();
+		//		drawShapeQuadStrip();
+		//		drawShapeWithStyleChanges();
+
+		testQuadraticBezierCurves();
+
 	}
 
 	public void mousePressed() {
@@ -109,7 +112,7 @@ public class dev extends PApplet {
 		} else if (n4.inside(mouseX, mouseY)) {
 			n4.dragged = true;
 		}
-		
+
 		for (int i = 0; i < nodes.length; i++) {
 			if (nodes[i].inside(mouseX, mouseY)) {
 				nodes[i].dragged = true;
@@ -122,18 +125,18 @@ public class dev extends PApplet {
 		n2.dragged = false;
 		n3.dragged = false;
 		n4.dragged = false;
-		
+
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i].dragged = false;
 		}
 	}
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	///////////////////////////////////////
 
 	void drawDashedLine() {
@@ -225,7 +228,7 @@ public class dev extends PApplet {
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapePoints() {
 		dash.beginShape(POINTS);
 		for (int i = 0; i < nodes.length; i++) {
@@ -233,7 +236,7 @@ public class dev extends PApplet {
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapeLines() {
 		dash.beginShape(LINES);
 		for (int i = 0; i < nodes.length; i++) {
@@ -241,7 +244,7 @@ public class dev extends PApplet {
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapeTriangles() {
 		dash.beginShape(TRIANGLES);
 		for (int i = 0; i < nodes.length; i++) {
@@ -249,7 +252,7 @@ public class dev extends PApplet {
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapeTriangleStrip() {
 		dash.beginShape(TRIANGLE_STRIP);
 		for (int i = 0; i < nodes.length; i++) {
@@ -257,23 +260,24 @@ public class dev extends PApplet {
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapeTriangleFan() {
 		Node[] fanNodes = new Node[17];
-		fanNodes[0] = new Node(this, width/2, height/2, 5);
-		
+		fanNodes[0] = new Node(this, width / 2, height / 2, 5);
+
 		float alpha = TAU / (fanNodes.length - 1);
 		for (int i = 1; i < fanNodes.length; i++) {
-			fanNodes[i] = new Node(this, width / 2 + 200 * cos(alpha * (i - 1)), height / 2 + 200 * sin(alpha * (i - 1)), 5);
+			fanNodes[i] = new Node(this, width / 2 + 200 * cos(alpha * (i - 1)),
+					height / 2 + 200 * sin(alpha * (i - 1)), 5);
 		}
-		
+
 		dash.beginShape(TRIANGLE_FAN);
 		for (int i = 0; i < fanNodes.length; i++) {
 			dash.vertex(fanNodes[i].x, fanNodes[i].y);
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapeQuads() {
 		dash.beginShape(QUADS);
 		for (int i = 0; i < nodes.length; i++) {
@@ -281,7 +285,7 @@ public class dev extends PApplet {
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapeQuadStrip() {
 		dash.beginShape(QUAD_STRIP);
 		for (int i = 0; i < nodes.length; i++) {
@@ -289,7 +293,7 @@ public class dev extends PApplet {
 		}
 		dash.endShape(CLOSE);
 	}
-	
+
 	void drawShapeWithStyleChanges() {
 		dash.beginShape(QUAD_STRIP);
 		for (int i = 0; i < nodes.length; i++) {
@@ -299,7 +303,29 @@ public class dev extends PApplet {
 		dash.endShape(CLOSE);
 	}
 
+	void testQuadraticBezierCurves() {
+		pushStyle();
+		fill(255, 0, 0, 50);
+		//stroke(0);
+		noStroke();
+		strokeWeight(1);
+		beginShape();
+		vertex(n1.x, n1.y);
+		quadraticVertex(n2.x, n2.y, n3.x, n3.y);
+		endShape();
 
+		noFill();
+		int segments = 10;
+		strokeWeight(5);
+		stroke(0);
+		float dt = 1 / (float) segments;
+		for (int i = 0; i < segments; i += 2) {
+			float a = i * dt;
+			float b = i * dt + dt;
+			dash.subQuadraticBezier(a, b, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
+		}
+		popStyle();
+	}
 
 
 

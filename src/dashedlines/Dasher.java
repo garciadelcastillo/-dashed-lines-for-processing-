@@ -27,8 +27,9 @@ public class Dasher {
 	//  ██║     ██║  ██║██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║     ███████║
 	//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝
 	protected float ARC_DIFFERENTIAL_PRECISION = 0.005f; // generally measured in radian increments 
+	protected float BEZIER_DIFFERENTIAL_PRECISION = 0.005f;  // aka 200 samples per bezier
 	protected float[] dashPattern = { 10, 10 };
-	protected float dashPatternLength = 0; // stores the accumulated length of the complete dash-gap pattern
+	protected float dashPatternLength = 0; // stores the accumulated length of the complete dash-gap pattern. Eg: for 10-5-2-5 it is 22
 	protected float offset = 0;
 
 	// Based off Processing's core implementation for begin/endShape() + vertex()
@@ -549,7 +550,98 @@ public class Dasher {
 		this.beganShape = false;
 	}
 
+	
+	
+	
+	public void bezier(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		
+		int id = 0;
+		float t = 0;
+		float run = 0;
+		float dt = BEZIER_DIFFERENTIAL_PRECISION;
+		PVector p0 = new PVector(x1, y1);
+		PVector pt = new PVector();
+		float nextL = 0;
+		boolean dash = false;
+		
+		if (g.fill == true) {
+			p.pushStyle();
+			p.noStroke();
+			p.bezier(x1, y1, x2, y2, x3, y3, x4, y4);
+			p.popStyle();
+		}
+		
+		// If there is offset, precompute first nextL
+		if (offset != 0) {
+			nextL += offset;
 
+			// Adjust run to be less than one dashPatternLength behind 0
+			if (nextL > 0) {
+				nextL -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+			} else {
+				// note offset is negative, so adding positive increment
+				nextL -= dashPatternLength * (int) (offset / dashPatternLength);
+			}
+			
+			// Adjust nextL to first position after zero
+			while (nextL < 0) {
+				nextL += dashPattern[id % dashPattern.length];
+				id++;
+				dash = !dash;
+			}
+		}
+		
+		if (nextL <= 0) {
+			nextL += dashPattern[id % dashPattern.length];
+			id++;
+			dash = !dash;
+		}
+			
+		
+		p.pushStyle();
+		p.noFill();		
+		// If at this point dash == true, then start drawing and add a vertex
+		if (dash) {
+			p.beginShape();
+			p.vertex(x1, y1);
+		}
+
+		while (t < 1) {
+			t += dt;
+			if (t > 1) t = 1;
+			pt = this.pointOnCubicBezier(t, x1, y1, x2, y2, x3, y3, x4, y4);
+			run += PApplet.dist(p0.x, p0.y, pt.x, pt.y);
+			p0 = pt;
+			
+			if (run >= nextL) {
+				// Just changed dash state, adjust accordingly
+				if (dash) {
+					dash = false;
+					p.endShape();
+					
+				} else {
+					dash = true;
+					p.beginShape();
+				}
+				nextL += dashPattern[id % dashPattern.length];
+				id++;
+			}
+			
+			if (dash) {
+				p.vertex(pt.x, pt.y);
+			}
+		}
+		
+		// Close unfinished dash
+		if (dash) {
+			p.endShape();
+		}
+		
+		p.popStyle();
+	}
+
+	
+	
 
 
 	//  ██████╗ ██████╗ ██╗██╗   ██╗    ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
@@ -1102,6 +1194,49 @@ public class Dasher {
 		p.bezier(sx1, sy1, sx2, sy2, sx3, sy3, sx4, sy4);
 	}
 
+	public float cubicBezierArcLength(float t, float x1, float y1, float x2, float y2, float x3, float y3, float x4,
+			float y4) {
+
+//		// Gravesen method from http://steve.hollasch.net/cgindex/curves/cbezarclen.html
+//		float l1 = p.dist(x1, y1, x2, y2) + p.dist(x2, y2, x3, y3) + p.dist(x3, y3, x4, y4);
+//		float l0 = p.dist(x1, y1, x4, y4);
+//		float l = 0.5f * l1 + 0.5f * l0;
+//		float err = l1 - l0;
+//		log("len: " + l + " err: " + err);
+		
+//		// From paper-core.js (no idea where this derivation comes from)
+//		// Doesn't really work that well either
+//		float ax, bx, cx, ay, by, cy, dx, dy;
+//		ax = 9 * (x2 - x3) + 3 * (x4 - x1);
+//		bx = 6 * (x1 + x3) - 12 * x2;
+//		cx = 3 * (x2 - x1);
+//		ay = 9 * (y2 - y3) + 3 * (y4 - y1);
+//		by = 6 * (y1 + y3) - 12 * y2;
+//		cy = 3 * (y2 - y1);
+//		dx = (ax * t + bx) * t + cx;
+//		dy = (ay * t + by) * t + cy;
+//		float len = (float) Math.sqrt(dx * dx + dy * dy);		
+//		log(len);
+		
+		// Incremental length calculation (slow)
+		float len = 0;
+		float T = 0;
+		float dt = t / 16;
+		PVector pv = new PVector(x1, y1);
+		PVector pt;
+				
+		for (int i = 0; i < 16; i++) {
+			T += dt;
+			pt = this.pointOnCubicBezier(T, x1, y1, x2, y2, x3, y3, x4, y4);
+			len += PApplet.dist(pv.x, pv.y, pt.x, pt.y);
+			pv = pt;
+		}
+		
+		log(len);
+		
+		
+		return len;
+	}
 
 
 

@@ -31,7 +31,13 @@ public class dev extends PApplet {
 		n2 = new Node(this, 2 * width / 3, height / 3, 5);
 		n3 = new Node(this, 2 * width / 3, 2 * height / 3, 5);
 		n4 = new Node(this, width / 3, 2 * height / 3, 5);
-
+		
+//		n1 = new Node(this, 220, 40, 5);
+//		n2 = new Node(this, 220, 260, 5);
+//		n3 = new Node(this, 35, 200, 5);
+//		n4 = new Node(this, 120, 160, 5);
+		
+		
 		nodes = new Node[12];
 		float dx = width / 7;
 		for (int i = 0; i < 6; i++) {
@@ -40,7 +46,7 @@ public class dev extends PApplet {
 		}
 
 		dash = new Dasher(this);
-		dash.pattern(50, 12.5f, 25, 12.5f); // sets dash size and spacing in pixels
+		dash.pattern(50, 10, 25, 10); // sets dash size and spacing in pixels
 
 		// Random set of dash lines
 		// float[] pt = new float[20];
@@ -77,6 +83,7 @@ public class dev extends PApplet {
 
 		dash.offset(off);
 		off += 1f;
+//		dash.offset(0);
 
 		//		drawDashedLine();
 		//		drawDashedRectangle();
@@ -99,7 +106,10 @@ public class dev extends PApplet {
 		//		drawShapeWithStyleChanges();
 
 //		testQuadraticBezierCurves();
-		testCubicBezierCurves();
+//		testCubicBezierCurves();
+//		dash.cubicBezierArcLength(1f, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+		
+		drawDashedBezier();
 	}
 
 	public void mousePressed() {
@@ -346,6 +356,15 @@ public class dev extends PApplet {
 		}
 		popStyle();
 		
+	}
+	
+	
+	void drawDashedBezier() {
+		pushStyle();
+		strokeWeight(5);
+		stroke(0);
+		dash.bezier(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+		popStyle();
 	}
 
 

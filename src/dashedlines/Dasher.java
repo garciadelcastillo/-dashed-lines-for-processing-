@@ -1017,6 +1017,19 @@ public class Dasher {
 		p.endShape();
 	}
 
+	
+	public PVector pointOnCubicBezier(float t, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		float t2 = t * t;
+		float t3 = t2 * t;
+		float mt = 1 - t;
+		float mt2 = mt * mt;
+		float mt3 = mt2 * mt;
+
+		float x = mt3 * x1 + 3 * mt2 * t * x2 + 3 * mt * t2 * x3 + t3 * x4;
+		float y = mt3 * y1 + 3 * mt2 * t * y2 + 3 * mt * t2 * y3 + t3 * y4;
+
+		return new PVector(x, y);
+	}
 
 
 

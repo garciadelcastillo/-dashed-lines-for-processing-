@@ -98,8 +98,8 @@ public class dev extends PApplet {
 		//		drawShapeQuadStrip();
 		//		drawShapeWithStyleChanges();
 
-		testQuadraticBezierCurves();
-
+//		testQuadraticBezierCurves();
+		testCubicBezierCurves();
 	}
 
 	public void mousePressed() {
@@ -324,6 +324,21 @@ public class dev extends PApplet {
 			float b = i * dt + dt;
 			dash.subQuadraticBezier(a, b, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
 		}
+		popStyle();
+	}
+	
+	void testCubicBezierCurves() {
+		pushStyle();
+		fill(255, 0, 0, 50);
+		noStroke();
+		strokeWeight(1);
+		bezier(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+
+		stroke(0);
+		fill(0, 255, 0, 50);
+		float t = (float) mouseX / width;
+		PVector p = dash.pointOnCubicBezier(t, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+		ellipse(p.x, p.y, 5, 5);
 		popStyle();
 	}
 

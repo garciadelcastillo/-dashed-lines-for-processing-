@@ -334,12 +334,18 @@ public class dev extends PApplet {
 		strokeWeight(1);
 		bezier(n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
 
+		noFill();
+		int segments = 20;
+		strokeWeight(5);
 		stroke(0);
-		fill(0, 255, 0, 50);
-		float t = (float) mouseX / width;
-		PVector p = dash.pointOnCubicBezier(t, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
-		ellipse(p.x, p.y, 5, 5);
+		float dt = 1 / (float) segments;
+		for (int i = 0; i < segments; i += 2) {
+			float a = i * dt;
+			float b = i * dt + dt;
+			dash.subCubicBezier(a, b, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+		}
 		popStyle();
+		
 	}
 
 

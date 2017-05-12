@@ -955,7 +955,8 @@ public class Dasher {
 	/**
 	 * Given the xy coordinates of the three defpoints of a quadratic Bézier
 	 * curve, and the parameter t of a point along it, returns the cartesian
-	 * coordinates of that point. 
+	 * coordinates of that point.
+	 * 
 	 * @param t
 	 * @param x1
 	 * @param y1
@@ -1017,8 +1018,24 @@ public class Dasher {
 		p.endShape();
 	}
 
-	
-	public PVector pointOnCubicBezier(float t, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+	/**
+	 * Given the xy coordinates of the four defpoints of a cubic Bézier curve,
+	 * and the parameter t of a point along it, returns the cartesian
+	 * coordinates of that point.
+	 * 
+	 * @param t
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @param x4
+	 * @param y4
+	 * @return
+	 */
+	public PVector pointOnCubicBezier(float t, float x1, float y1, float x2, float y2, float x3, float y3, float x4,
+			float y4) {
 		float t2 = t * t;
 		float t3 = t2 * t;
 		float mt = 1 - t;
@@ -1029,6 +1046,60 @@ public class Dasher {
 		float y = mt3 * y1 + 3 * mt2 * t * y2 + 3 * mt * t2 * y3 + t3 * y4;
 
 		return new PVector(x, y);
+	}
+
+
+	/**
+	 * Given the xy coordinates of the four defpoints of a cubic Bézier curve,
+	 * and the parameters a and b along the curve at which to split it, draws a
+	 * new subcurve between them.
+	 * 
+	 * @param a
+	 * @param b
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @param x4
+	 * @param y4
+	 */
+	public void subCubicBezier(float a, float b, float x1, float y1, float x2, float y2, float x3, float y3, float x4,
+			float y4) {
+		if (a > b) {
+			float tmp = a;
+			a = b;
+			b = tmp;
+		}
+
+		float a2 = a * a;
+		float a3 = a2 * a;
+		float ma = a - 1;
+		float ma2 = ma * ma;
+		float ma3 = ma2 * ma;
+		float b2 = b * b;
+		float b3 = b2 * b;
+		float mb = b - 1;
+		float mb2 = mb * mb;
+		float mb3 = mb2 * mb;
+		float ab = a * b;
+
+		float sx1, sy1, sx2, sy2, sx3, sy3, sx4, sy4;
+
+		sx1 = -ma3 * x1 + 3 * a * ma2 * x2 - 3 * a2 * ma * x3 + a3 * x4;
+		sy1 = -ma3 * y1 + 3 * a * ma2 * y2 - 3 * a2 * ma * y3 + a3 * y4;
+
+		sx2 = -1 * ma2 * mb * x1 + ma * (3 * ab - 2 * a - b) * x2 + a * (-3 * ab + a + 2 * b) * x3 + a2 * b * x4;
+		sy2 = -1 * ma2 * mb * y1 + ma * (3 * ab - 2 * a - b) * y2 + a * (-3 * ab + a + 2 * b) * y3 + a2 * b * y4;
+
+		sx3 = -1 * ma * mb2 * x1 + mb * (3 * ab - a - 2 * b) * x2 + b * (-3 * ab + 2 * a + b) * x3 + a * b2 * x4;
+		sy3 = -1 * ma * mb2 * y1 + mb * (3 * ab - a - 2 * b) * y2 + b * (-3 * ab + 2 * a + b) * y3 + a * b2 * y4;
+
+		sx4 = -mb3 * x1 + 3 * b * mb2 * x2 - 3 * b2 * mb * x3 + b3 * x4;
+		sy4 = -mb3 * y1 + 3 * b * mb2 * y2 - 3 * b2 * mb * y3 + b3 * y4;
+
+		p.bezier(sx1, sy1, sx2, sy2, sx3, sy3, sx4, sy4);
 	}
 
 

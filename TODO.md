@@ -25,7 +25,13 @@
     - [x] Migrate all linear geometry to shape + vertices (it gets to Processing's core faster, and allows for dashes to bend on corners).
     - [x] Since most dashed lines won't likely be filled, add "if (g.fill == true)" to prefill on all shapes 
 
+- Good Bezier refs:
+    + http://www.planetclegg.com/projects/WarpingTextToSplines.html
+    + https://pomax.github.io/bezierinfo/
+    + https://gamedev.stackexchange.com/questions/5373/moving-ships-between-two-planets-along-a-bezier-missing-some-equations-for-acce/5427#5427
+
 - [ ] dash.bezier()
+    - [ ] Try out Pomax' Gauss-Lagrande approximation for arc length
     - [ ] dash.bezierVertex()
 
 

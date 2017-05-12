@@ -952,6 +952,29 @@ public class Dasher {
 		return ts;
 	}
 
+	/**
+	 * Given the xy coordinates of the three defpoints of a quadratic Bézier
+	 * curve, and the parameter t of a point along it, returns the cartesian
+	 * coordinates of that point. 
+	 * @param t
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @return
+	 */
+	public PVector pointOnQuadraticBezier(float t, float x1, float y1, float x2, float y2, float x3, float y3) {
+		float t2 = t * t;
+		float mt = 1 - t;
+		float mt2 = mt * mt;
+
+		float x = mt2 * x1 + 2 * mt * t * x2 + t2 * x3;
+		float y = mt2 * y1 + 2 * mt * t * y2 + t2 * y3;
+
+		return new PVector(x, y);
+	}
 
 	/**
 	 * Given the xy coordinates of the three defpoints of a quadratic Bézier
@@ -973,13 +996,13 @@ public class Dasher {
 			a = b;
 			b = tmp;
 		}
-		
+
 		float a2 = a * a;
 		float b2 = b * b;
 		float ma = a - 1;
 		float mb = b - 1;
 		float ab = a * b;
-		
+
 		float sx1, sy1, sx2, sy2, sx3, sy3;
 		sx1 = ma * ma * x1 - 2 * a * ma * x2 + a2 * x3;
 		sy1 = ma * ma * y1 - 2 * a * ma * y2 + a2 * y3;
@@ -987,7 +1010,7 @@ public class Dasher {
 		sy2 = ma * mb * y1 + (a + b - 2 * ab) * y2 + ab * y3;
 		sx3 = mb * mb * x1 - 2 * b * mb * x2 + b2 * x3;
 		sy3 = mb * mb * y1 - 2 * b * mb * y2 + b2 * y3;
-		
+
 		p.beginShape();
 		p.vertex(sx1, sy1);
 		p.quadraticVertex(sx2, sy2, sx3, sy3);

@@ -5,8 +5,6 @@ void setup() {
   size(800, 600);
   strokeCap(SQUARE);
 
-
-
   n1 = new Node(width / 2, height / 2, 5);
   n2 = new Node(3 * width / 4, 3 * height / 4, 5);
   n3 = new Node(width / 2 + 200, height / 2, 5);
@@ -35,13 +33,13 @@ void draw() {
     float a = i * dt;
     float b = i * dt + dt;
     PVector[] pts = splitQuadraticBezier(a, b, n1, n2, n3);
-    stroke(0);
-    strokeWeight(1);
+    //stroke(0);
+    //strokeWeight(1);
     //for (int j = 0; j < pts.length; j++) {
     //  ellipse(pts[j].x, pts[j].y, 5, 5);
     //}
     strokeWeight(5);
-    stroke(0, 63);
+    stroke(0);
     beginShape();
     vertex(pts[0].x, pts[0].y);
     quadraticVertex(pts[1].x, pts[1].y, pts[2].x, pts[2].y);

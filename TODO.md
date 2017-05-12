@@ -44,10 +44,15 @@
 - [ ] Expand methods to 3D
 - [ ] Add rounded corners to rect() (need quadraticVertex implementation, which needs bezierVertex impl...)
 - [ ] When drawing shapes with continuous primitives (TRIANGLES, QUADS, STRIPS), newer fills overlap previous strokes because of drawing order. Figure out a way to fix this by buffering styles?
-
+- [ ] Fork https://pomax.github.io/bezierinfo/ and add:
+    - [ ] General matrix solution for curve splitting between [a, b]
 
 ## LONG RUN
 - [ ] Review JAVA2D's way of doing dashed lines natively: 
     * https://github.com/processing/processing/issues/4207
     * https://docs.oracle.com/javase/8/javafx/api/javafx/scene/canvas/GraphicsContext.html#setLineDashes-double...-
 
+
+## NOTES:
+- Matrix multiplication notation in WAplha:
+    {{1,0,0},{1,0.5,0},{1,1,1}}.{{1,x,x^2},{0,(1-x),(2*x*(1-x))},{0,0,(1-x)^2}}.{{1,0,0},{-2,2,0},{1,-2,1}}

@@ -599,12 +599,8 @@ public class Dasher {
 		}
 
 
-		p.pushStyle();
-		p.noFill();
 		// If at this point dash == true, then start drawing and add a vertex
 		if (dash) {
-			//			p.beginShape();
-			//			p.vertex(x1, y1);
 			ts.append(0);
 		}
 
@@ -619,59 +615,32 @@ public class Dasher {
 			p0 = pt;
 
 			if (run >= nextL) {
+				// Just changed dash state, adjust accordingly
+				dash = !dash;
+				
 				// Interpolate for a better approximation
 				float nt = (nextL + d - run) / d;
-				ts.append(t - nt * dt);
-//				log("t: " + (t - nt * dt));
-//				ts.append(t);
+				ts.append(t - dt + nt * dt);
 
-				// Just changed dash state, adjust accordingly
-				if (dash) {
-					dash = false;
-					//					p.endShape();
-
-				} else {
-					dash = true;
-					//					p.beginShape();
-				}
+				// Move on to next pattern segment
 				nextL += dashPattern[id % dashPattern.length];
 				id++;
-			}
-
-			if (dash) {
-				//				p.vertex(pt.x, pt.y);
 			}
 		}
 
 		// Close unfinished dash
 		if (dash) {
-			//			p.endShape();
 			ts.append(1);
 		}
-
-		p.popStyle();
-
-//		log("LIST");
-//		for (Float T : ts) {
-//			log(T);
-//		}
-
+		
+		// Draw bezier curves between those parameters
 		p.pushStyle();
 		p.noFill();
-//		for (Float T : ts) {
-//			PVector v = this.pointOnCubicBezier(T, x1, y1, x2, y2, x3, y3, x4, y4);
-//			p.ellipse(v.x, v.y, 5, 5);
-//		}
-		
-		
 		int len = ts.size();
 		for (int i = 0; i < len; i+=2) {
-			PVector start = this.pointOnCubicBezier(ts.get(i), x1, y1, x2, y2, x3, y3, x4, y4);
-			PVector end = this.pointOnCubicBezier(ts.get(i + 1), x1, y1, x2, y2, x3, y3, x4, y4);
-			p.line(start.x, start.y, end.x, end.y);
+			this.subCubicBezier(ts.get(i), ts.get(i + 1), x1, y1, x2, y2, x3, y3, x4, y4);
 		}
 		p.popStyle();
-
 	}
 
 
@@ -1252,7 +1221,7 @@ public class Dasher {
 		//		float len = (float) Math.sqrt(dx * dx + dy * dy);		
 		//		log(len);
 
-		// Incremental length calculation (slow)
+		// Differential length calculation (expensive)
 		float len = 0;
 		float T = 0;
 		float dt = t / 16;
@@ -1265,9 +1234,6 @@ public class Dasher {
 			len += PApplet.dist(pv.x, pv.y, pt.x, pt.y);
 			pv = pt;
 		}
-
-		log(len);
-
 
 		return len;
 	}

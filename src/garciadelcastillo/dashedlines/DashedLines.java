@@ -3,7 +3,7 @@ package garciadelcastillo.dashedlines;
 import processing.core.*;
 import processing.data.*;
 
-public class Dasher {
+public class DashedLines {
 
 	protected final static String VERSION = "##library.prettyVersion##";
 	protected PApplet p;
@@ -21,7 +21,7 @@ public class Dasher {
 	 * 
 	 * @param theParent
 	 */
-	public Dasher(PApplet theParent) {
+	public DashedLines(PApplet theParent) {
 		p = theParent;
 		g = p.getGraphics();
 		updateDashPatternLength();

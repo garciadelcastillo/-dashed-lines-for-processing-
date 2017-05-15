@@ -5,7 +5,7 @@ import processing.core.*;
 
 public class dev extends PApplet {
 
-	Dasher dash;
+	DashedLines dash;
 
 	Node n1, n2, n3, n4;
 
@@ -45,7 +45,7 @@ public class dev extends PApplet {
 			nodes[2 * i + 1] = new Node(this, dx + i * dx, 0.75f * height, 5);
 		}
 
-		dash = new Dasher(this);
+		dash = new DashedLines(this);
 //		dash.pattern(50, 10, 25, 10); // sets dash size and spacing in pixels
 //		dash.pattern(new float[] {});
 //		dash.pattern(50);

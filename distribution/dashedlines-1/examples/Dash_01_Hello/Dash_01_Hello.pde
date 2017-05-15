@@ -1,4 +1,4 @@
-import dashedlines.*;
+import garciadelcastillo.dashedlines.*;
 
 Dasher dash;
 
@@ -7,7 +7,6 @@ void setup() {
   
   dash = new Dasher(this);
   
-  dash.pattern(10, 5, 2, 5);
 }
 
 void draw() {

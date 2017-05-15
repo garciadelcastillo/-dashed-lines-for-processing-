@@ -41,10 +41,10 @@
 
 - [ ] Publication
     - [x] Document methods a la javadoc
+    - [x] Rethink package name
     - [ ] Write examples
     - [ ] Write a nice Readme for the github page
     - [ ] Decide where I am going to host this... 
-    - [ ] Rethink package name
     - [ ] Remove dev package from javadoc exports and compilation
     - [ ] Go over library.properties and make sure things are in the right place
     - [ ] Create a dashedlines.zip + dashedlines.txt (copy of library.properties) 

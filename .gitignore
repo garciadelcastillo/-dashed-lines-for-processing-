@@ -14,5 +14,5 @@ hs_err_pid*
 /bin/
 
 # Don't version all dev distros
-distribution
-tmp
+distribution/*
+tmp/*

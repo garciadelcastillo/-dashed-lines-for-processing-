@@ -1,7 +1,7 @@
 package dev;
 
+import garciadelcastillo.dashedlines.*;
 import processing.core.*;
-import dashedlines.*;
 
 public class dev extends PApplet {
 

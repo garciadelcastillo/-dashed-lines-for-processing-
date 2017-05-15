@@ -40,7 +40,7 @@
 - [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
 
 - [ ] Publication
-    - [ ] Document methods a la javadoc
+    - [x] Document methods a la javadoc
     - [ ] Write examples
     - [ ] Write a nice Readme for the github page
     - [ ] Decide where I am going to host this... 

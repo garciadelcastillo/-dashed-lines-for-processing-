@@ -46,8 +46,11 @@ public class dev extends PApplet {
 		}
 
 		dash = new Dasher(this);
-		dash.pattern(50, 10, 25, 10); // sets dash size and spacing in pixels
-
+//		dash.pattern(50, 10, 25, 10); // sets dash size and spacing in pixels
+//		dash.pattern(new float[] {});
+//		dash.pattern(50);
+		
+		
 		// Random set of dash lines
 		// float[] pt = new float[20];
 		// for (int i = 0; i < 20; i++) {
@@ -332,7 +335,7 @@ public class dev extends PApplet {
 		for (int i = 0; i < segments; i += 2) {
 			float a = i * dt;
 			float b = i * dt + dt;
-			dash.subQuadraticBezier(a, b, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);
+			//dash.subQuadraticBezier(a, b, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y);  // protected method
 		}
 		popStyle();
 	}
@@ -352,7 +355,7 @@ public class dev extends PApplet {
 		for (int i = 0; i < segments; i += 2) {
 			float a = i * dt;
 			float b = i * dt + dt;
-			dash.subCubicBezier(a, b, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);
+//			dash.subCubicBezier(a, b, n1.x, n1.y, n2.x, n2.y, n3.x, n3.y, n4.x, n4.y);  // protected method
 		}
 		popStyle();
 		

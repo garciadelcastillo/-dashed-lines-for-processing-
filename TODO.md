@@ -7,7 +7,7 @@
 
 - [x] Develop this into an actual library
 
-- [s] Implement dash.offset()
+- [x] Implement dash.offset()
     - [x] line
     - [x] rect
     - [x] quad
@@ -16,7 +16,9 @@
     - [x] arc
     - [x] arcPolar
 
-- [ ] dash.beginShape(), dash.endShape()
+- [x] At some point, implement 'offset' or something so that animations like this are possible: https://www.youtube.com/watch?v=8uZgU3f8p9A
+
+- [x] dash.beginShape(), dash.endShape()
     - [x] dash.vertex()
     - [x] properly continue dashes over kinks with native corners
     - [x] Add CLOSE to endShape
@@ -30,22 +32,34 @@
     + https://pomax.github.io/bezierinfo/
     + https://gamedev.stackexchange.com/questions/5373/moving-ships-between-two-planets-along-a-bezier-missing-some-equations-for-acce/5427#5427
 
-- [ ] dash.bezier()
-    - [ ] Try out Pomax' Gauss-Lagrande approximation for arc length
-    - [ ] dash.bezierVertex()
+- [x] dash.bezier()
+- [ ] Create a protected array for curve parameters, just like the vertices one used for beginShape()
+- [ ] Change bezier() to the above
+- [ ] Change arc() to the above
+- [ ] Add linear interpolation of parameters for arcs
+- [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
 
-
-- [ ] dash.curve()
-    - [ ] dash.curveVertex()
-
-
-- [ ] Implement dash.mode()
-    - [ ] Design which modes are there and how they work  
+- [ ] Publication
+    - [ ] Document methods a la javadoc
+    - [ ] Write examples
+    - [ ] Write a nice Readme for the github page
+    - [ ] Decide where I am going to host this... 
+    - [ ] Rethink package name
+    - [ ] Remove dev package from javadoc exports and compilation
+    - [ ] Go over library.properties and make sure things are in the right place
+    - [ ] Create a dashedlines.zip + dashedlines.txt (copy of library.properties) 
+    - [ ] Licensing?
 
 
 
 ## SOON
-- [x] At some point, implement 'offset' or something so that animations like this are possible: https://www.youtube.com/watch?v=8uZgU3f8p9A
+- [ ] Try out Pomax' Gauss-Lagrande approximation for arc length
+- [ ] dash.bezierVertex()
+- [ ] dash.curve()
+- [ ] dash.curveVertex()
+- [ ] Implement dash.mode()
+- [ ] Design which modes are there and how they work  
+
 - [ ] Respond to this: https://forum.processing.org/two/discussion/comment/93993/#Comment_93993
 - [ ] Expand methods to 3D
 - [ ] Add rounded corners to rect() (need quadraticVertex implementation, which needs bezierVertex impl...)

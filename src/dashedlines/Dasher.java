@@ -28,9 +28,10 @@ public class Dasher {
 	}
 
 	/**
-	 * Sets the lengths of the dash pattern in pixels. 
+	 * Sets the lengths of the dash pattern in pixels.
 	 * 
-	 * @param d1 Dash length (cloned as gap length)
+	 * @param d1
+	 *            Dash length (cloned as gap length)
 	 */
 	public void pattern(float d1) {
 		dashPattern = new float[2];
@@ -38,12 +39,14 @@ public class Dasher {
 		dashPattern[1] = d1;
 		updateDashPatternLength();
 	}
-	
+
 	/**
 	 * Sets the lengths of the dash pattern in pixels.
 	 * 
-	 * @param d1 Dash length
-	 * @param d2 Gap length
+	 * @param d1
+	 *            Dash length
+	 * @param d2
+	 *            Gap length
 	 */
 	public void pattern(float d1, float d2) {
 		dashPattern = new float[2];
@@ -55,10 +58,14 @@ public class Dasher {
 	/**
 	 * Sets the lengths of the dash pattern in pixels.
 	 * 
-	 * @param d1 Dash length
-	 * @param d2 Gap length
-	 * @param d3 Dash length
-	 * @param d4 Gap length
+	 * @param d1
+	 *            Dash length
+	 * @param d2
+	 *            Gap length
+	 * @param d3
+	 *            Dash length
+	 * @param d4
+	 *            Gap length
 	 */
 	public void pattern(float d1, float d2, float d3, float d4) {
 		dashPattern = new float[4];
@@ -68,40 +75,55 @@ public class Dasher {
 		dashPattern[3] = d4;
 		updateDashPatternLength();
 	}
-	
+
 	/**
 	 * Sets the lengths of the dash pattern in pixels.
 	 * 
-	 * @param ds Array of dash-gap-dash... lengths
+	 * @param ds
+	 *            Array of dash-gap-dash... lengths
 	 */
 	public void pattern(float[] ds) {
 		int len = ds.length;
-		if (len == 0) return;		
-		
+		if (len == 0)
+			return;
+
 		if (ds.length % 2 == 1) {
 			len++;
 		}
-		
+
 		// Avoid references
 		float[] temp = new float[len];
 		System.arraycopy(ds, 0, temp, 0, ds.length);
-				
+
 		if (ds.length % 2 == 1) {
 			ds[len - 1] = ds[len - 2];
 		}
 		dashPattern = ds;
 		updateDashPatternLength();
 	}
-	
+
 	/**
 	 * Sets the initial offset along the curve at which the pattern will start.
 	 * 
-	 * @param off Offset distance in pixels
+	 * @param off
+	 *            Offset distance in pixels
 	 */
 	public void offset(float off) {
 		offset = off;
 	}
 
+	/**
+	 * Draws a dashed line between two points.
+	 * 
+	 * @param x1
+	 *            X-coordinate of the first point
+	 * @param y1
+	 *            Y-coordinate of the first point
+	 * @param x2
+	 *            X-coordinate of the second point
+	 * @param y2
+	 *            Y-coordinate of the second point
+	 */
 	public void line(float x1, float y1, float x2, float y2) {
 
 		//		// Compute theta parameters for start-ends of dashes and gaps
@@ -166,12 +188,19 @@ public class Dasher {
 		this.endShapeImpl(PApplet.OPEN);
 	}
 
+	/**
+	 * Draws a dashed rectangle. Uses the same signature for a, b, c, d as
+	 * Processing's native implementation, and is sensible to rectMode() status.
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 */
 	public void rect(float a, float b, float c, float d) {
-		int rectMode = g.rectMode;
-
 		// From Processing's core
 		float hradius, vradius;
-		switch (rectMode) {
+		switch (g.rectMode) {
 		case PApplet.CORNERS:
 			break;
 		case PApplet.CORNER:
@@ -217,6 +246,37 @@ public class Dasher {
 
 	}
 
+	/**
+	 * Draws a dashed triangle from three points.
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 */
+	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
+		// Using core's B+V+E for proper dash continuity calcs
+		this.beginShapeImpl();
+		this.vertexImpl(x1, y1);
+		this.vertexImpl(x2, y2);
+		this.vertexImpl(x3, y3);
+		this.endShapeImpl(PApplet.CLOSE);
+	}
+
+	/**
+	 * Draws a dashed quad from four points.
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @param x4
+	 * @param y4
+	 */
 	public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 		// Using core's B+V+E for proper dash continuity calcs
 		this.beginShapeImpl();
@@ -227,47 +287,68 @@ public class Dasher {
 		this.endShapeImpl(PApplet.CLOSE);
 	}
 
-	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-		// Using core's B+V+E for proper dash continuity calcs
-		this.beginShapeImpl();
-		this.vertexImpl(x1, y1);
-		this.vertexImpl(x2, y2);
-		this.vertexImpl(x3, y3);
-		this.endShapeImpl(PApplet.CLOSE);
-	}
 
+	/**
+	 * Draws a dashed ellipse. Uses the same signature for a, b, c, d as
+	 * Processing's native implementation, and is sensible to ellipseMode()
+	 * status. BEWARE! Dashed ellipses are expensive to compute, use with
+	 * caution ;)
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 */
 	public void ellipse(float a, float b, float c, float d) {
 		this.arc(a, b, c, d, 0, PApplet.TAU, 0);
 	}
 
-	// Create a dashed arc using Processing same function signature
-	// (note that start/stop here refer to the THETA parameter, NOT THE POLAR
-	// ANGLE)
+	/**
+	 * Draws a dashed arc. Uses the same signature for a, b, c, d, start, stop,
+	 * as Processing's native implementation, and is sensible to ellipseMode()
+	 * status. BEWARE! Dashed arcs are expensive to compute, use with caution ;)
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @param start
+	 * @param stop
+	 */
 	public void arc(float a, float b, float c, float d, float start, float stop) {
 		this.arc(a, b, c, d, start, stop, 0);
 	}
 
-	// Create a dashed arc using Processing same function signature
-	// (note that start/stop here refer to the THETA parameter, NOT THE POLAR
-	// ANGLE)
+	/**
+	 * Draws a dashed arc. Uses the same signature for a, b, c, d, start, stop,
+	 * mode as Processing's native implementation, and is sensible to
+	 * ellipseMode() status. BEWARE! Dashed arcs are expensive to compute, use
+	 * with caution ;)
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @param start
+	 * @param stop
+	 * @param mode
+	 */
 	public void arc(float a, float b, float c, float d, float start, float stop, int mode) {
-		int ellipseMode = g.ellipseMode;
-
 		// From Processing's core, CORNER-oriented vars
 		float x = a;
 		float y = b;
 		float w = c;
 		float h = d;
 
-		if (ellipseMode == PApplet.CORNERS) {
+		if (g.ellipseMode == PApplet.CORNERS) {
 			w = c - a;
 			h = d - b;
-		} else if (ellipseMode == PApplet.RADIUS) {
+		} else if (g.ellipseMode == PApplet.RADIUS) {
 			x = a - c;
 			y = b - d;
 			w = c * 2;
 			h = d * 2;
-		} else if (ellipseMode == PApplet.DIAMETER) { // == CENTER
+		} else if (g.ellipseMode == PApplet.DIAMETER) { // == CENTER
 			x = a - c / 2f;
 			y = b - d / 2f;
 		}
@@ -283,7 +364,7 @@ public class Dasher {
 		}
 		float w2 = 0.5f * w, h2 = 0.5f * h;
 
-		// make sure the loop will exit before starting while
+		// Make sure the loop will exit before starting while
 		if (!Float.isInfinite(start) && !Float.isInfinite(stop)) {
 			// ignore equal and degenerate cases
 			if (stop > start) {
@@ -397,15 +478,29 @@ public class Dasher {
 	// however using start/stop as POLAR ANGLES, not THETA parameters.
 	// This is not consistent with Processing's implementation,
 	// but just feels right geometrically... ;)
-	public void arcPolar(float a, float b, float c, float d, float start, float stop, int mode) {
 
-		int ellipseMode = g.ellipseMode;
+	/**
+	 * Draws a dashed arc. As opposed to Processing's native implementation,
+	 * which uses start and stop as the parameter along the arc, this method
+	 * uses start and stop as the polar angles that define the boundaries of the
+	 * arc. This is not consistent with Processing's implementation, but just
+	 * feels right geometrically... ;)
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @param start
+	 * @param stop
+	 * @param mode
+	 */
+	public void arcPolar(float a, float b, float c, float d, float start, float stop, int mode) {
 		float w = c;
 		float h = d;
-		if (ellipseMode == PApplet.CORNERS) {
+		if (g.ellipseMode == PApplet.CORNERS) {
 			w = c - a;
 			h = d - b;
-		} else if (ellipseMode == PApplet.RADIUS) {
+		} else if (g.ellipseMode == PApplet.RADIUS) {
 			w = c * 2;
 			h = d * 2;
 		}
@@ -425,17 +520,30 @@ public class Dasher {
 		this.arc(a, b, c, d, thetaStart, thetaStop, mode);
 	}
 
-
+	/**
+	 * Starts a dashed shape. Same as Processing's native beginShape().
+	 */
 	public void beginShape() {
 		this.beginShape(PApplet.POLYGON);
 	}
 
+	/**
+	 * Starts a dashed shape. Same as Processing's native beginShape().
+	 * 
+	 * @param kind
+	 */
 	public void beginShape(int kind) {
 		this.beganShape = true;
 		this.vertexCount = 0;
 		this.shape = kind;
 	}
 
+	/**
+	 * Adds a vertex to the current shape.
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public void vertex(float x, float y) {
 
 		if (!this.beganShape) {
@@ -533,13 +641,20 @@ public class Dasher {
 	}
 
 
-
 	// @TODO: Implement vertex(x, y, z) and vertex(float[] v)
 
+	/**
+	 * End current dashed shape.
+	 */
 	public void endShape() {
 		this.endShape(PApplet.OPEN);
 	}
 
+	/**
+	 * End current dashed shape.
+	 * 
+	 * @param mode
+	 */
 	public void endShape(int mode) {
 		if (this.shape == PApplet.POLYGON) {
 			this.beginShapeImpl();
@@ -555,7 +670,19 @@ public class Dasher {
 
 
 
-
+	/**
+	 * Draws a dashed cubic Bézier curve. BEWARE! Dashed curves are expensive to
+	 * compute, use with caution ;)
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @param x4
+	 * @param y4
+	 */
 	public void bezier(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 
 		FloatList ts = new FloatList();
@@ -1173,8 +1300,8 @@ public class Dasher {
 	 * @param x4
 	 * @param y4
 	 */
-	protected void subCubicBezier(float a, float b, float x1, float y1, float x2, float y2, float x3, float y3, float x4,
-			float y4) {
+	protected void subCubicBezier(float a, float b, float x1, float y1, float x2, float y2, float x3, float y3,
+			float x4, float y4) {
 		if (a > b) {
 			float tmp = a;
 			a = b;

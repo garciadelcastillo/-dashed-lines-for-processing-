@@ -46,7 +46,7 @@ And voilà!
 ## Features
 Dashed Lines for Processing provides a Processing-like API to draw the same basic or complex shapes you would natively, but with dashed strokes. It computes stroke segments based on your `pattern` choice, and adapts the drawing to a best-fit situation. This is specially useful for animation:
 
-![Dashed Line](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/dashed_line.png "Dashed Line")
+![Dashed Line](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/dashed_line.gif "Dashed Line")
 
 
 

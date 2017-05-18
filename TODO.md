@@ -48,8 +48,8 @@
     - [x] Remove dev package from javadoc exports 
     - [ ] and compilation
     - [x] Create a dashedlines.zip + dashedlines.txt (copy of library.properties) 
+    - [x] Go over library.properties and make sure things are in the right place
     - [ ] Write a nice Readme for the github page
-    - [ ] Go over library.properties and make sure things are in the right place
     - [ ] Licensing?
 
 

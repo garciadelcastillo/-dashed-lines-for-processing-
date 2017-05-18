@@ -1,6 +1,6 @@
 # Dashed Lines for Processing
 
-Couldn't be any simpler: just a [Processing](http://processing.org) library to draw geometry with dashed strokes!
+Couldn't be any simpler, just a [Processing](http://processing.org) library to draw geometry with dashed strokes!
 
 ### Installation
 You can install the library from Processing's Contribution Manager.
@@ -128,11 +128,14 @@ dash.endShape(CLOSE);
 ```
 ![TRIANGLES Shape](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/shape_triangles.gif "TRIANGLES Shape")
 
+## Contribute
+There is still [a lot to do](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/TODO.md), so if you have some time, and are excited about computational geometry, feel free to fork and contribute, [report bugs](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/issues) or [submit feature requests](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/issues).
 
+Also, if you found this library useful and did something cool with it, send it my way! I am always happy to hear about cool projects people are working on.
 
+## Acknowledgments
+My deepest gratitude to all the folks at the [Processing Foundation](https://processing.org/) and the great [community](https://processing.org/reference/libraries/) that make this project so special and awesome.
 
+Thanks to [Nono](https://github.com/nonoesp) for having pushed me to stick my head out of the books and make something useful, for once!
 
-
-
-- Contribute: link to TODO list
-- Acknowledgments
+Kuddos to [Pomax](https://github.com/Pomax) for his amazing [Primer on Bézier Curves](https://pomax.github.io/bezierinfo/), it was incredibly helpful for the math behind these curves.

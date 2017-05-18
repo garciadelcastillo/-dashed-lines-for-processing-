@@ -9,7 +9,7 @@ Alternatively, you can extract the distribution file on your Processing's sketch
 
 Still having trouble? [Read this](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library).
 
-### Hello Dash
+## Hello Dash
 Let's take a look at a basic example on how to draw a simple dashed line now:
 
 ```java
@@ -43,8 +43,16 @@ And voilà!
 ![Hello Dash!](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/hello_dash.png "Hello Dash!")
 
 
+## Features
+Dashed Lines for Processing provides a Processing-like API to draw the same basic or complex shapes you would natively, but with dashed strokes. It computes stroke segments based on your `pattern` choice, and adapts the drawing to a best-fit situation. This is specially useful for animation:
 
-Drawing dashed lines is now as easy as instantiating a DashedLines object in your sketch, and using it
+![Dashed Line](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/dashed_line.png "Dashed Line")
+
+
+
+
+For example, for 2D primitives:
+
 
 
 

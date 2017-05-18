@@ -1,5 +1,7 @@
 # Dashed Lines for Processing
 
+![Dashed Line](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/dashed_line.gif "Dashed Line")
+
 Couldn't be any simpler, just a [Processing](http://processing.org) library to draw geometry with dashed strokes!
 
 ### Installation

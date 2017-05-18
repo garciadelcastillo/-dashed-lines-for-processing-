@@ -40,7 +40,7 @@
 - [ ] Dashes are not continuous in arcs with modes. Fix
 - [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
 
-- [ ] Publication
+- [x] Publication
     - [x] Document methods a la javadoc
     - [x] Rethink package name
     - [x] Write examples
@@ -49,8 +49,8 @@
     - [ ] and compilation
     - [x] Create a dashedlines.zip + dashedlines.txt (copy of library.properties) 
     - [x] Go over library.properties and make sure things are in the right place
-    - [ ] Write a nice Readme for the github page
-    - [ ] Licensing?
+    - [x] Write a nice Readme for the github page
+    - [x] Licensing --> MIT
 
 
 

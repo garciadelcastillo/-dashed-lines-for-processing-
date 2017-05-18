@@ -226,6 +226,7 @@ ${line}
  			<fileset dir="${project.tmp}/${project.name}/src" defaultexcludes="yes">
 			<!-- add packages to be added to reference. -->
 				<include name="**/*"/>
+ 				<exclude name="**/dev/*" />
 			</fileset>
 	 	</javadoc>
 	</target>

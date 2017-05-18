@@ -482,7 +482,7 @@ public class DashedLines {
 	// but just feels right geometrically... ;)
 	
 	/**
-	 * Draws a dashed arc. As opposed to Processing's native implementation,
+	 * Draws a dashed arc from polar angles. As opposed to Processing's native implementation,
 	 * which uses start and stop as the parameter along the arc, this method
 	 * uses start and stop as the polar angles that define the boundaries of the
 	 * arc. This is not consistent with Processing's implementation, but just
@@ -500,7 +500,7 @@ public class DashedLines {
 	}
 	
 	/**
-	 * Draws a dashed arc. As opposed to Processing's native implementation,
+	 * Draws a dashed arc from polar angles. As opposed to Processing's native implementation,
 	 * which uses start and stop as the parameter along the arc, this method
 	 * uses start and stop as the polar angles that define the boundaries of the
 	 * arc. This is not consistent with Processing's implementation, but just

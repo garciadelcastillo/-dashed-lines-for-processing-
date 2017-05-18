@@ -81,12 +81,14 @@ dist += 1;
 ```
 ![2D Primitives](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/2d_primitives.gif "2D Primitives")
 
-For Bézier curves:
+For **Bézier curves**:
 
 ```java
 noFill();
 dash.bezier(n[0].x, n[0].y, n[1].x, n[1].y, n[2].x, n[2].y, n[3].x, n[3].y);
 ```
+![Bezier Curve](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/bezier_curve.gif "Bezier Curve")
+
 
 
 

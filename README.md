@@ -84,20 +84,55 @@ dist += 1;
 For **Bézier curves**:
 
 ```java
+dash.pattern(30, 10);
+
 noFill();
 dash.bezier(n[0].x, n[0].y, n[1].x, n[1].y, n[2].x, n[2].y, n[3].x, n[3].y);
+
+dash.offset(dist);
+dist += 1;
 ```
 ![Bezier Curve](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/bezier_curve.gif "Bezier Curve")
 
+And for more **complex shapes**, you can use the `.beginShape()`, `.vertex()` and `.endShape()` methods:
+
+```java
+strokeCap(SQUARE);
+strokeJoin(BEVEL);
+dash.pattern(30, 10);
+
+// Start the shape with the .beginShape() method
+dash.beginShape();
+// Add vertices like you would in Processing
+for (int i = 0; i < n.length; i++) {
+  dash.vertex(n[i].x, n[i].y);
+}
+// Finish drawing the shape
+dash.endShape();
+
+dash.offset(dist);
+dist += 1;
+```
+![Open Shape](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/shape_open.gif "Open Shape")
+
+Or using any of Processing's **shape modes**:
+
+```java
+// Shapes accept all the same modes as Processing's native implementation:
+fill(255, 0, 0, 100);
+dash.beginShape(TRIANGLES);
+for (int i = 0; i < n.length; i++) {
+  dash.vertex(n[i].x, n[i].y);
+}
+dash.endShape(CLOSE);
+```
+![TRIANGLES Shape](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/shape_triangles.gif "TRIANGLES Shape")
 
 
 
 
 
-- Intro / Description
-- Installation
-- Hello Dash
-- Features: Processing-like API, inherited styling
-- More examples (gifs?)
+
+
 - Contribute: link to TODO list
 - Acknowledgments

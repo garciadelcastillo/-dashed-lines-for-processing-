@@ -9,13 +9,15 @@ public class DashedLines {
 	protected PApplet p;
 	protected PGraphics g;
 
+
+
+
 	//	██████╗ ██╗   ██╗██████╗ ██╗     ██╗ ██████╗     █████╗ ██████╗ ██╗
 	//	██╔══██╗██║   ██║██╔══██╗██║     ██║██╔════╝    ██╔══██╗██╔══██╗██║
 	//	██████╔╝██║   ██║██████╔╝██║     ██║██║         ███████║██████╔╝██║
 	//	██╔═══╝ ██║   ██║██╔══██╗██║     ██║██║         ██╔══██║██╔═══╝ ██║
 	//	██║     ╚██████╔╝██████╔╝███████╗██║╚██████╗    ██║  ██║██║     ██║
 	//	╚═╝      ╚═════╝ ╚═════╝ ╚══════╝╚═╝ ╚═════╝    ╚═╝  ╚═╝╚═╝     ╚═╝
-
 	/**
 	 * Main constructor, pass a reference to the current PApplet
 	 * 
@@ -478,7 +480,25 @@ public class DashedLines {
 	// however using start/stop as POLAR ANGLES, not THETA parameters.
 	// This is not consistent with Processing's implementation,
 	// but just feels right geometrically... ;)
-
+	
+	/**
+	 * Draws a dashed arc. As opposed to Processing's native implementation,
+	 * which uses start and stop as the parameter along the arc, this method
+	 * uses start and stop as the polar angles that define the boundaries of the
+	 * arc. This is not consistent with Processing's implementation, but just
+	 * feels right geometrically... ;)
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @param start
+	 * @param stop
+	 */
+	public void arcPolar(float a, float b, float c, float d, float start, float stop) {
+		this.arcPolar(a, b, c, d, start, stop, 0);
+	}
+	
 	/**
 	 * Draws a dashed arc. As opposed to Processing's native implementation,
 	 * which uses start and stop as the parameter along the arc, this method
@@ -772,6 +792,8 @@ public class DashedLines {
 		}
 		p.popStyle();
 	}
+
+
 
 
 
@@ -1331,7 +1353,6 @@ public class DashedLines {
 
 		p.bezier(sx1, sy1, sx2, sy2, sx3, sy3, sx4, sy4);
 	}
-
 
 
 

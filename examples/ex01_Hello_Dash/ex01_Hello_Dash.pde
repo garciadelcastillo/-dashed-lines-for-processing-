@@ -1,3 +1,11 @@
+/**
+ * HELLO DASH!
+ * A simple example to demonstrate basic setup and functionality. 
+ * 
+ * Dashed Lines for Processing, by Jose Luis Garcia del Castillo 2017
+ * https://github.com/garciadelcastillo/-dashed-lines-for-processing- 
+ */
+
 
 // Import the library
 import garciadelcastillo.dashedlines.*;

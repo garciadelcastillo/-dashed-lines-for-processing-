@@ -36,7 +36,8 @@
 - [ ] Create a protected array for curve parameters, just like the vertices one used for beginShape()
 - [ ] Change bezier() to the above
 - [ ] Change arc() to the above
-- [ ] Add linear interpolation of parameters for arcs
+- [ ] Add linear interpolation of parameters for arcs/ellipses
+- [ ] Dashes are not continuous in arcs with modes. Fix
 - [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
 
 - [ ] Publication

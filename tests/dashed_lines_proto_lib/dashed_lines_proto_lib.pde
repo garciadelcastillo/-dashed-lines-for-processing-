@@ -1,6 +1,6 @@
-import dashedlines.*;
+import garciadelcastillo.dashedlines.*;
 
-Dasher dash;
+DashedLines dash;
 
 Node n1, n2, n3, n4;
 
@@ -17,7 +17,7 @@ void setup() {
   n3 = new Node(width / 2 + 200, height / 2, 5);
   n4 = new Node(width / 2, height / 2 + 200, 4);
   
-  dash = new Dasher(this);
+  dash = new DashedLines(this);
 
   dash.pattern(20, 10, 5, 10);  // sets dash size and spacing in pixels
   

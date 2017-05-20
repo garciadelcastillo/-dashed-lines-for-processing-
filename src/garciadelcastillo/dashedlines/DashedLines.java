@@ -1,7 +1,6 @@
 package garciadelcastillo.dashedlines;
 
 import processing.core.*;
-import processing.data.*;
 
 public class DashedLines {
 
@@ -36,10 +35,7 @@ public class DashedLines {
 	 *            Dash length (cloned as gap length)
 	 */
 	public void pattern(float d1) {
-		dashPattern = new float[2];
-		dashPattern[0] = d1;
-		dashPattern[1] = d1;
-		updateDashPatternLength();
+		this.pattern(new float[] {d1, d1});
 	}
 
 	/**
@@ -51,10 +47,7 @@ public class DashedLines {
 	 *            Gap length
 	 */
 	public void pattern(float d1, float d2) {
-		dashPattern = new float[2];
-		dashPattern[0] = d1;
-		dashPattern[1] = d2;
-		updateDashPatternLength();
+		this.pattern(new float[] {d1, d2});
 	}
 
 	/**
@@ -70,12 +63,7 @@ public class DashedLines {
 	 *            Gap length
 	 */
 	public void pattern(float d1, float d2, float d3, float d4) {
-		dashPattern = new float[4];
-		dashPattern[0] = d1;
-		dashPattern[1] = d2;
-		dashPattern[2] = d3;
-		dashPattern[3] = d4;
-		updateDashPatternLength();
+		this.pattern(new float[] {d1, d2, d3, d4});
 	}
 
 	/**
@@ -85,14 +73,22 @@ public class DashedLines {
 	 *            Array of dash-gap-dash... lengths
 	 */
 	public void pattern(float[] ds) {
+		// Sanity
 		int len = ds.length;
 		if (len == 0)
 			return;
+		// Check if any value is negative
+		for (int i = 0; i < ds.length; i++) {
+			if (ds[i] < 0) {
+				this.warning("Gap-dash lengths cannot be negative, this call to 'pattern()' will have no effect.");
+				return;
+			}
+		}
 
 		if (ds.length % 2 == 1) {
 			len++;
 		}
-
+		
 		// Avoid references
 		float[] temp = new float[len];
 		System.arraycopy(ds, 0, temp, 0, ds.length);
@@ -773,6 +769,10 @@ public class DashedLines {
 	 */
 	protected void log(Object foo) {
 		PApplet.println(foo);
+	}
+	
+	protected void warning(String msg) {
+		PApplet.println("DASHED-LINES WARNING: " + msg);
 	}
 
 	/**

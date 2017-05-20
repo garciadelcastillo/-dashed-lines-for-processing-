@@ -553,7 +553,6 @@ public class DashedLines {
 	 */
 	public void bezier(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 
-		//		FloatList ts = new FloatList();
 		parameterCount = 0;
 		int id = 0;
 		float t = 0;
@@ -563,6 +562,7 @@ public class DashedLines {
 		PVector pt = new PVector();
 		float nextL = 0;
 		boolean dash = false;
+		boolean movePt = true;
 
 		if (g.fill == true) {
 			p.pushStyle();
@@ -590,39 +590,39 @@ public class DashedLines {
 				dash = !dash;
 			}
 		}
-
+		
+		// Setup params for first iteration
 		if (nextL <= 0) {
 			nextL += dashPattern[id % dashPattern.length];
 			id++;
 			dash = !dash;
 		}
-
-
 		// If at this point dash == true, then start drawing and add a vertex
 		if (dash) {
-			//			ts.append(0);
 			parameters[parameterCount] = 0;
 			parameterCount++;
 		}
 
-		float d;
+		float d, nt, it;
 		while (t < 1) {
 			t += dt;
-			if (t > 1)
+			if (t > 1) {
 				t = 1;
+			}
 			pt = this.pointOnCubicBezier(t, x1, y1, x2, y2, x3, y3, x4, y4);
 			d = PApplet.dist(p0.x, p0.y, pt.x, pt.y);
 			run += d;
-			p0 = pt;
-
+//			p0 = pt;
+			movePt = true;
+			
 			if (run >= nextL) {
 				// Just changed dash state, adjust accordingly
 				dash = !dash;
 
 				// Interpolate for a better approximation
-				float nt = (nextL + d - run) / d;
-				//				ts.append(t - dt + nt * dt);
-				parameters[parameterCount] = t - dt + nt * dt;
+				nt = (nextL + d - run) / d;
+				it = t - dt + nt * dt;
+				parameters[parameterCount] = it;
 				parameterCount++;
 				if (parameterCount == parameters.length) {
 					this.doubleParametersArray();
@@ -631,12 +631,21 @@ public class DashedLines {
 				// Move on to next pattern segment
 				nextL += dashPattern[id % dashPattern.length];
 				id++;
+				
+				// If jumped over more than one target dist, go back and try again
+				if (nextL <= run) {
+					run -= d;
+					t -= dt;
+					movePt = false;
+				}
+			}
+			if (movePt) {
+				p0 = pt;
 			}
 		}
 
 		// Close unfinished dash
 		if (dash) {
-			//			ts.append(1);
 			parameters[parameterCount] = 1;
 			parameterCount++;
 			if (parameterCount == parameters.length) {
@@ -647,10 +656,7 @@ public class DashedLines {
 		// Draw bezier curves between those parameters
 		p.pushStyle();
 		p.noFill();
-		//		int len = ts.size();
-		//		for (int i = 0; i < len; i += 2) {
 		for (int i = 0; i < parameterCount; i += 2) {
-			//			this.subCubicBezier(ts.get(i), ts.get(i + 1), x1, y1, x2, y2, x3, y3, x4, y4);
 			this.subCubicBezier(parameters[i], parameters[i + 1], x1, y1, x2, y2, x3, y3, x4, y4);
 		}
 		p.popStyle();
@@ -667,10 +673,10 @@ public class DashedLines {
 	//	██║     ██║  ██║██║ ╚████╔╝ ██║  ██║   ██║   ███████╗
 	//	╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝  ╚═╝  ╚═╝   ╚═╝   ╚══════╝
 	/**
-	 * Parameter increment at which the arc will be sampled. A value of 0.005f
+	 * Parameter increment at which the arc will be sampled. A value of 0.02f
 	 * results in TAU/0.02f ~ 314 samples.
 	 */
-	protected float ARC_DIFFERENTIAL_PRECISION = 0.05f;
+	protected float ARC_DIFFERENTIAL_PRECISION = 0.1f;  // after added linear interpolation in arcImpl, this value can be reduced
 
 	/**
 	 * Parameter increment at which Bézier curves will be sampled. A value of
@@ -1039,7 +1045,8 @@ public class DashedLines {
 					} else {
 						nextL -= dashPatternLength * (int) (offset / dashPatternLength); // note offset is negative, so adding positive increment
 					}
-
+					
+					// Move nextL to first position after 0
 					while (nextL < 0) {
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
@@ -1056,8 +1063,6 @@ public class DashedLines {
 				if (dash) {
 					parameters[parameterCount] = t;
 					parameterCount++;
-					if (parameterCount == parameters.length)
-						this.doubleParametersArray();
 				}
 
 				// Compute dash t params
@@ -1072,19 +1077,19 @@ public class DashedLines {
 						// Rough interpolation for smoother result
 						nt = (nextL + dist - run) / dist;
 						it = t + nt * dt;
-						it = it > stop ? stop : it;
+						it = it > stop ? stop : it;  // cap at end
 						parameters[parameterCount] = it;
 						parameterCount++;
 						if (parameterCount == parameters.length)
 							this.doubleParametersArray();
 						nextL += dashPattern[id % dashPattern.length];
-
+						id++;
+						
 						// If jumped over more than one target dist, go back and try again
 						if (nextL <= run) {
 							run -= dist;
 							t -= dt;
 						}
-						id++;
 					}
 					t += dt;
 				}
@@ -1116,12 +1121,8 @@ public class DashedLines {
 							y + h2 + h2 * (float) Math.sin(start));
 				}
 
+				// Draw individual arcs
 				for (int i = 0; i < parameterCount; i += 2) {
-//					if (i == parameterCount - 1) {
-//						p.arc(x, y, w, h, parameters[i], stop);
-//					} else {
-//						p.arc(x, y, w, h, parameters[i], parameters[i + 1]);
-//					}
 					p.arc(x, y, w, h, parameters[i], parameters[i + 1]);
 				}
 

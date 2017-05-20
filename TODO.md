@@ -3,10 +3,11 @@
 ## REV 0003
 - [x] Create a protected array for curve parameters, just like the vertices one used for beginShape()
 - [x] Change bezier() to the above
-- [ ] Change arc() to the above
-- [ ] Add linear interpolation of parameters for arcs/ellipses
-- [ ] Dashes are not continuous in arcs with modes. Fix
+- [x] Change arc() to the above
+- [x] Add linear interpolation of parameters for arcs/ellipses --> they can now be computed faster! :)
 - [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
+- [ ] Dashes are not continuous in arcs with modes. Fix
+- [ ] Negative values in `pattern()` lead to infinite loops and badness. Prevent
 
 ## REV 0002
 - [x] Remove dev packages from project

@@ -1,5 +1,11 @@
 
----
+## DASHED LINES 0.0.2 (REV 002) - 20 May 2017
+
+Fixing noob mistakes.
+
++ Removed all the annoying development packages from the project.
+
+
 ## DASHED LINES 0.0.1 (REV 001) - 19 May 2017
 
 First version of Dashed Lines for Processing is out! https://github.com/garciadelcastillo/-dashed-lines-for-processing-

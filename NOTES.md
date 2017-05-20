@@ -1,5 +1,6 @@
 
 
+
 2017.05.11
 - Some Wolphram Alpha notations for deriving the split arc of a cubic bezier curve:
      
@@ -26,3 +27,8 @@
     -a^3 - (b - a) a^2 - 3 (a + (b - a)/3) + 3 (a^2 + 2/3 (b - a) a) + 1 | 3 (a + (b - a)/3) - 6 (a^2 + 2/3 (b - a) a) + 3 (a^3 + (b - a) a^2) | 3 (a^2 + 2/3 (b - a) a) - 3 (a^3 + (b - a) a^2) | a^3 + (b - a) a^2
     -a^3 - 2 (b - a) a^2 - (b - a)^2 a - 3 (a + (2 (b - a))/3) + 3 (a^2 + 4/3 (b - a) a + 1/3 (b - a)^2) + 1 | 3 (a + (2 (b - a))/3) - 6 (a^2 + 4/3 (b - a) a + 1/3 (b - a)^2) + 3 (a^3 + 2 (b - a) a^2 + (b - a)^2 a) | 3 (a^2 + 4/3 (b - a) a + 1/3 (b - a)^2) - 3 (a^3 + 2 (b - a) a^2 + (b - a)^2 a) | a^3 + 2 (b - a) a^2 + (b - a)^2 a
     -a^3 - 3 (b - a) a^2 - 3 (b - a)^2 a - (b - a)^3 - 3 b + 3 (a^2 + 2 (b - a) a + (b - a)^2) + 1 | 3 b - 6 (a^2 + 2 (b - a) a + (b - a)^2) + 3 (a^3 + 3 (b - a) a^2 + 3 (b - a)^2 a + (b - a)^3) | 3 (a^2 + 2 (b - a) a + (b - a)^2) - 3 (a^3 + 3 (b - a) a^2 + 3 (b - a)^2 a + (b - a)^3) | a^3 + 3 (b - a) a^2 + 3 (b - a)^2 a + (b - a)^3)
+
+
+---
+- Matrix multiplication notation in WAplha:
+    {{1,0,0},{1,0.5,0},{1,1,1}}.{{1,x,x^2},{0,(1-x),(2*x*(1-x))},{0,0,(1-x)^2}}.{{1,0,0},{-2,2,0},{1,-2,1}}

@@ -1,7 +1,6 @@
 # TODO LIST
 
-## REV 0002
-- [x] Remove dev packages from project
+## REV 0003
 - [ ] Create a protected array for curve parameters, just like the vertices one used for beginShape()
 - [ ] Change bezier() to the above
 - [ ] Change arc() to the above
@@ -9,10 +8,11 @@
 - [ ] Dashes are not continuous in arcs with modes. Fix
 - [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
 
+## REV 0002
+- [x] Remove dev packages from project
 
 
-
-## IMMEDIATE
+## REV 00001
 - [x] Implement variable dash pattern on all methods
 - [x] Rename dashes to dashPattern
 - [x] Implement CHORD + PIE modes on arcs...
@@ -59,7 +59,7 @@
     - [x] Licensing --> MIT
 
 
-
+---
 ## SOON
 - [ ] Try out Pomax' Gauss-Lagrande approximation for arc length
 - [ ] dash.curve()
@@ -79,8 +79,3 @@
 - [ ] Review JAVA2D's way of doing dashed lines natively: 
     * https://github.com/processing/processing/issues/4207
     * https://docs.oracle.com/javase/8/javafx/api/javafx/scene/canvas/GraphicsContext.html#setLineDashes-double...-
-
-
-## NOTES:
-- Matrix multiplication notation in WAplha:
-    {{1,0,0},{1,0.5,0},{1,1,1}}.{{1,x,x^2},{0,(1-x),(2*x*(1-x))},{0,0,(1-x)^2}}.{{1,0,0},{-2,2,0},{1,-2,1}}

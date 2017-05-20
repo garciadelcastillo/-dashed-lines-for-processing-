@@ -127,63 +127,6 @@ public class DashedLines {
 	 *            Y-coordinate of the second point
 	 */
 	public void line(float x1, float y1, float x2, float y2) {
-
-		//		// Compute theta parameters for start-ends of dashes and gaps
-		//		// TODO: precompute the size of the array and create it as an array right away
-		//		FloatList ts = new FloatList();
-		//		int id = 0;
-		//		float run = 0;
-		//		float t = 0;
-		//		float len = PApplet.dist(x1, y1, x2, y2);
-		//
-		//		// If there is ofsset, precompute first t
-		//		if (offset != 0) {
-		//			// p.println("testing offset");
-		//			run += offset;
-		//
-		//			// Adjust run to be less than one dashPatternLength behind 0
-		//			if (run > 0) {
-		//				run -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
-		//			} else {
-		//				// note offset is negative, so adding positive increment
-		//				run -= dashPatternLength * (int) (offset / dashPatternLength);
-		//			}
-		//
-		//			// Now process the chunk before t = 0
-		//			while (run < 0) {
-		//				run += dashPattern[id % dashPattern.length];
-		//				id++;
-		//				// if past t = 0 and at the end point of a dash, add t = 0
-		//				if (run >= 0 && id % 2 == 1) {
-		//					ts.append(0);
-		//				}
-		//			}
-		//		}
-		//
-		//		while (run < len) {
-		//			t = run / len;
-		//			ts.append(t);
-		//			run += dashPattern[id % dashPattern.length];
-		//			id++;
-		//		}
-		//
-		//		// If last t was the startpoint of a dash, close it at the end of the line
-		//		if (id % 2 == 1) {
-		//			ts.append(1);
-		//		}
-		//
-		//		float[] tsA = ts.array(); // TODO: improve the list-array situation
-		//
-		//		// Draw dashes
-		//		p.pushStyle();
-		//		float dx = x2 - x1;
-		//		float dy = y2 - y1;
-		//		for (int i = 0; i < tsA.length; i += 2) {
-		//			p.line(x1 + tsA[i] * dx, y1 + tsA[i] * dy, x1 + tsA[i + 1] * dx, y1 + tsA[i + 1] * dy);
-		//		}
-		//		p.popStyle();
-
-		// Let's try for a while relying on polyshape
 		this.beginShapeImpl();
 		this.vertexImpl(x1, y1);
 		this.vertexImpl(x2, y2);
@@ -364,129 +307,21 @@ public class DashedLines {
 			y += h;
 			h = -h;
 		}
-		float w2 = 0.5f * w, h2 = 0.5f * h;
 
-		// Make sure the loop will exit before starting while
-		if (!Float.isInfinite(start) && !Float.isInfinite(stop)) {
-			// ignore equal and degenerate cases
-			if (stop > start) {
-				// make sure that we're starting at a useful point
-				while (start < 0) {
-					start += PApplet.TAU;
-					stop += PApplet.TAU;
-				}
-
-				if (stop - start > PApplet.TAU) {
-					// don't change start, it is visible in PIE mode
-					stop = start + PApplet.TAU;
-				}
-
-				// Compute theta parameters for start-ends of dashes and gaps
-				FloatList ts = new FloatList(); // TODO: precompute the size of the t array and create it as an array directly
-				int id = 0;
-				float run = 0;
-				float t = start;
-				float dt = ARC_DIFFERENTIAL_PRECISION;
-				float len = ellipseArcLength(w2, h2, start, stop, dt);
-				float nextL = 0;
-				float nextT = 0;
-
-				// If there is ofsset, precompute first t
-				if (offset != 0) {
-					nextL += offset;
-
-					// Adjust run to be less than one dashPatternLength behind 0
-					if (nextL > 0) {
-						nextL -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
-					} else {
-						// note offset is negative, so adding positive increment
-						nextL -= dashPatternLength * (int) (offset / dashPatternLength);
-					}
-					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt);
-
-					// Process the chunk before t = start
-					// This method is not very optimal, but oh well, stupid ellipse geometry... :P
-					while (nextT <= start) {
-						nextL += dashPattern[id % dashPattern.length];
-						id++;
-						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt); // compute from start to avoid accumulated imprecision
-					}
-					if (id % 2 == 1) {
-						ts.append(start);
-					}
-
-					// Set the params off to run regular dashing
-					run = nextL;
-					t = nextT;
-				}
-
-				// Compute dash t params
-				while (run < len) {
-					run += ellipseArcDifferential(w2, h2, t, dt);
-					if ((int) run >= nextL) {
-						ts.append(t);
-						nextL += dashPattern[id % dashPattern.length];
-						id++;
-					}
-					t += dt;
-				}
-
-				// This should be optimized...
-				float[] tsA = ts.array();
-
-				// Draw the fill part
-				p.pushStyle();
-				p.noStroke();
-				p.ellipseMode(PApplet.CORNER); // all correct vars are already calculated, so why not use them...? :)
-				p.arc(x, y, w, h, start, stop, mode);
-				p.popStyle();
-
-				// Draw dashes
-				p.pushStyle();
-				p.noFill();
-				p.ellipseMode(PApplet.CORNER);
-
-				// If PIE mode, draw center-start line
-				if (mode == PApplet.PIE) {
-					this.line(x + w2, y + h2, x + w2 + w2 * (float) Math.cos(start),
-							y + h2 + h2 * (float) Math.sin(start));
-				}
-
-				// Arc dashes
-				for (int i = 0; i < tsA.length; i += 2) {
-					if (i == tsA.length - 1) {
-						p.arc(x, y, w, h, tsA[i], stop);
-					} else {
-						p.arc(x, y, w, h, tsA[i], tsA[i + 1]);
-					}
-				}
-
-				// If PIE, draw end-center line,
-				// else if CHORD draw end-start line.
-				if (mode == PApplet.PIE) {
-					this.line(x + w2 + w2 * (float) Math.cos(stop), y + h2 + h2 * (float) Math.sin(stop), x + w2,
-							y + h2);
-				} else if (mode == PApplet.CHORD) {
-					this.line(x + w2 + w2 * (float) Math.cos(stop), y + h2 + h2 * (float) Math.sin(stop),
-							x + w2 + w2 * (float) Math.cos(start), y + h2 + h2 * (float) Math.sin(start));
-				}
-
-				p.popStyle();
-			}
-		}
+		this.arcImpl(x, y, w, h, start, stop, mode);
 	}
 
 	// Create a dashed arc using Processing same function signature,
 	// however using start/stop as POLAR ANGLES, not THETA parameters.
 	// This is not consistent with Processing's implementation,
 	// but just feels right geometrically... ;)
-	
+
 	/**
-	 * Draws a dashed arc from polar angles. As opposed to Processing's native implementation,
-	 * which uses start and stop as the parameter along the arc, this method
-	 * uses start and stop as the polar angles that define the boundaries of the
-	 * arc. This is not consistent with Processing's implementation, but just
-	 * feels right geometrically... ;)
+	 * Draws a dashed arc from polar angles. As opposed to Processing's native
+	 * implementation, which uses start and stop as the parameter along the arc,
+	 * this method uses start and stop as the polar angles that define the
+	 * boundaries of the arc. This is not consistent with Processing's
+	 * implementation, but just feels right geometrically... ;)
 	 * 
 	 * @param a
 	 * @param b
@@ -498,13 +333,13 @@ public class DashedLines {
 	public void arcPolar(float a, float b, float c, float d, float start, float stop) {
 		this.arcPolar(a, b, c, d, start, stop, 0);
 	}
-	
+
 	/**
-	 * Draws a dashed arc from polar angles. As opposed to Processing's native implementation,
-	 * which uses start and stop as the parameter along the arc, this method
-	 * uses start and stop as the polar angles that define the boundaries of the
-	 * arc. This is not consistent with Processing's implementation, but just
-	 * feels right geometrically... ;)
+	 * Draws a dashed arc from polar angles. As opposed to Processing's native
+	 * implementation, which uses start and stop as the parameter along the arc,
+	 * this method uses start and stop as the polar angles that define the
+	 * boundaries of the arc. This is not consistent with Processing's
+	 * implementation, but just feels right geometrically... ;)
 	 * 
 	 * @param a
 	 * @param b
@@ -515,29 +350,44 @@ public class DashedLines {
 	 * @param mode
 	 */
 	public void arcPolar(float a, float b, float c, float d, float start, float stop, int mode) {
+
+		// From Processing's core, CORNER-oriented vars
+		float x = a;
+		float y = b;
 		float w = c;
 		float h = d;
+
 		if (g.ellipseMode == PApplet.CORNERS) {
 			w = c - a;
 			h = d - b;
 		} else if (g.ellipseMode == PApplet.RADIUS) {
+			x = a - c;
+			y = b - d;
 			w = c * 2;
 			h = d * 2;
+		} else if (g.ellipseMode == PApplet.DIAMETER) { // == CENTER
+			x = a - c / 2f;
+			y = b - d / 2f;
 		}
+
 		if (w < 0) { // undo negative width
+			x += w;
 			w = -w;
 		}
+
 		if (h < 0) { // undo negative height
+			y += h;
 			h = -h;
 		}
+
 		float w2 = 0.5f * w;
 		float h2 = 0.5f * h;
 
 		float thetaStart = ellipsePolarToTheta(w2, h2, start);
 		float thetaStop = ellipsePolarToTheta(w2, h2, stop);
 
-		log(thetaStart + " " + thetaStop);
-		this.arc(a, b, c, d, thetaStart, thetaStop, mode);
+		//		log(thetaStart + " " + thetaStop);
+		this.arcImpl(x, y, w, h, thetaStart, thetaStop, mode);
 	}
 
 	/**
@@ -881,6 +731,21 @@ public class DashedLines {
 	 */
 	protected int vertexCountImpl;
 
+	/**
+	 * Default number of curve parameters to initialize the buffers
+	 */
+	protected static final int DEFAULT_PARAMETERS = 512;
+
+	/**
+	 * Array of curve parameter values.
+	 */
+	protected float parameters[] = new float[DEFAULT_PARAMETERS];
+
+	/**
+	 * Amount of stored curve parameters.
+	 */
+	protected int parameterCount;
+
 
 	/**
 	 * A shortcut for dev purposes
@@ -1108,6 +973,135 @@ public class DashedLines {
 
 		return t;
 	}
+
+
+	/**
+	 * Internal implementation of arc(). TODO: test if it works
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @param start
+	 * @param stop
+	 * @param mode
+	 */
+	protected void arcImpl(float x, float y, float w, float h, float start, float stop, int mode) {
+
+		float w2 = 0.5f * w, h2 = 0.5f * h;
+
+		// Make sure the loop will exit before starting while
+		if (!Float.isInfinite(start) && !Float.isInfinite(stop)) {
+			// ignore equal and degenerate cases
+			if (stop > start) {
+				// make sure that we're starting at a useful point
+				while (start < 0) {
+					start += PApplet.TAU;
+					stop += PApplet.TAU;
+				}
+
+				if (stop - start > PApplet.TAU) {
+					// don't change start, it is visible in PIE mode
+					stop = start + PApplet.TAU;
+				}
+
+				// Compute theta parameters for start-ends of dashes and gaps
+				FloatList ts = new FloatList(); // TODO: precompute the size of the t array and create it as an array directly
+				int id = 0;
+				float run = 0;
+				float t = start;
+				float dt = ARC_DIFFERENTIAL_PRECISION;
+				float len = ellipseArcLength(w2, h2, start, stop, dt);
+				float nextL = 0;
+				float nextT = 0;
+
+				// If there is ofsset, precompute first t
+				if (offset != 0) {
+					nextL += offset;
+
+					// Adjust run to be less than one dashPatternLength behind 0
+					if (nextL > 0) {
+						nextL -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
+					} else {
+						// note offset is negative, so adding positive increment
+						nextL -= dashPatternLength * (int) (offset / dashPatternLength);
+					}
+					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt);
+
+					// Process the chunk before t = start
+					// This method is not very optimal, but oh well, stupid ellipse geometry... :P
+					while (nextT <= start) {
+						nextL += dashPattern[id % dashPattern.length];
+						id++;
+						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt); // compute from start to avoid accumulated imprecision
+					}
+					if (id % 2 == 1) {
+						ts.append(start);
+					}
+
+					// Set the params off to run regular dashing
+					run = nextL;
+					t = nextT;
+				}
+
+				// Compute dash t params
+				while (run < len) {
+					run += ellipseArcDifferential(w2, h2, t, dt);
+					if ((int) run >= nextL) {
+						ts.append(t);
+						nextL += dashPattern[id % dashPattern.length];
+						id++;
+					}
+					t += dt;
+				}
+
+				// This should be optimized...
+				float[] tsA = ts.array();
+
+				// Draw the fill part
+				p.pushStyle();
+				p.noStroke();
+				p.ellipseMode(PApplet.CORNER); // all correct vars are already calculated, so why not use them...? :)
+				p.arc(x, y, w, h, start, stop, mode);
+				p.popStyle();
+
+				// Draw dashes
+				p.pushStyle();
+				p.noFill();
+				p.ellipseMode(PApplet.CORNER);
+
+				// If PIE mode, draw center-start line
+				if (mode == PApplet.PIE) {
+					this.line(x + w2, y + h2, x + w2 + w2 * (float) Math.cos(start),
+							y + h2 + h2 * (float) Math.sin(start));
+				}
+
+				// Arc dashes
+				for (int i = 0; i < tsA.length; i += 2) {
+					if (i == tsA.length - 1) {
+						p.arc(x, y, w, h, tsA[i], stop);
+					} else {
+						p.arc(x, y, w, h, tsA[i], tsA[i + 1]);
+					}
+				}
+
+				// If PIE, draw end-center line,
+				// else if CHORD draw end-start line.
+				if (mode == PApplet.PIE) {
+					this.line(x + w2 + w2 * (float) Math.cos(stop), y + h2 + h2 * (float) Math.sin(stop), x + w2,
+							y + h2);
+				} else if (mode == PApplet.CHORD) {
+					this.line(x + w2 + w2 * (float) Math.cos(stop), y + h2 + h2 * (float) Math.sin(stop),
+							x + w2 + w2 * (float) Math.cos(start), y + h2 + h2 * (float) Math.sin(start));
+				}
+
+				p.popStyle();
+			}
+		}
+
+	}
+
+
 
 	/**
 	 * Internal implementation of beginShape+vertex+endShape. Will always draw a

@@ -1026,9 +1026,9 @@ public class DashedLines {
 				float dt = ARC_DIFFERENTIAL_PRECISION;
 				float len = ellipseArcLength(w2, h2, start, stop, dt);
 				float nextL = 0;
-				float nextT = 0;
+				//				float nextT = 0;
 				boolean dash = false;
-								
+
 				// If there is offset, precompute first t
 				if (offset != 0) {
 					nextL += offset;
@@ -1037,112 +1037,52 @@ public class DashedLines {
 					if (nextL > 0) {
 						nextL -= dashPatternLength * (1 + (int) (offset / dashPatternLength));
 					} else {
-						// note offset is negative, so adding positive increment
-						nextL -= dashPatternLength * (int) (offset / dashPatternLength);
+						nextL -= dashPatternLength * (int) (offset / dashPatternLength); // note offset is negative, so adding positive increment
 					}
-					nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt);
 
-					// Process the chunk before t = start
-					// This method is not very optimal, but oh well, stupid ellipse geometry... :P
-//					while (nextT <= start) {
-//						nextL += dashPattern[id % dashPattern.length];
-//						id++;
-//						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt); // compute from start to avoid accumulated imprecision
-//						dash = !dash;
-//					}
-					while(nextL < 0) {
+					while (nextL < 0) {
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
 						dash = !dash;
 					}
-//					if (id % 2 == 1) {
-////						ts.append(start);
-//						parameters[parameterCount] = start;
-//						parameterCount++;
-//						if (parameterCount == parameters.length) this.doubleParametersArray();
-//					}
-
-					// Set the params off to run regular dashing
-//					run = nextL;
-//					t = nextT;
 				}
-				
+
+				// Setup params for first iteration
 				if (nextL <= 0) {
 					nextL += dashPattern[id % dashPattern.length];
 					id++;
 					dash = !dash;
 				}
-				
 				if (dash) {
 					parameters[parameterCount] = t;
 					parameterCount++;
-					if (parameterCount == parameters.length) this.doubleParametersArray();
+					if (parameterCount == parameters.length)
+						this.doubleParametersArray();
 				}
 
 				// Compute dash t params
 				float dist, nt;
-				log("-----------------------");
-				log("-----------------------");
-				log("-----------------------");
-				log("len:" + len);
-				log("off:" + this.offset);
-				log("starting T:" + t);
 				while (run < len) {
 					dist = (float) ellipseArcDifferential(w2, h2, t, dt);
 					run += dist;
-					log("---");
-					log("t:" + t);
-					log("dist:" + dist);
-					log("run:" + run);
 					if (run >= nextL) {
-//						// Interpolate for a better approximation
-//						nt = (nextL + dist - run) / dist;
-//						//				ts.append(t - dt + nt * dt);
-////						parameters[parameterCount] = t - dt + nt * dt;
-//						
-////						nt = (nextL - (run - dist)) / dist;
-//						parameters[parameterCount] = t + nt * dt;
-//						log("---");
-//						log("nextL" + nextL);
-//						log("run:" + run);
-//						log("dist:" + dist);
-//						log("nt:" + nt);
-//						log("t:" + t);
-//						log("intT:" + parameters[parameterCount]);
-//						parameterCount++;
-//						if (parameterCount == parameters.length) {
-//							this.doubleParametersArray();
-//						}
-//						
-						
-//						ts.append(t);
-						
-						log("HIT!");
-						log("nextL:" + nextL);
-//						parameters[parameterCount] = t;
+						// Rough interpolation for smoother result
 						nt = (nextL + dist - run) / dist;
 						parameters[parameterCount] = t + nt * dt;
-						log("T:" + parameters[parameterCount]);
 						parameterCount++;
-						if (parameterCount == parameters.length) this.doubleParametersArray();
+						if (parameterCount == parameters.length)
+							this.doubleParametersArray();
 						nextL += dashPattern[id % dashPattern.length];
-						log("new nextL:" + nextL);
-						
+
 						// If jumped over more than one target dist, try again
 						if (nextL <= run) {
 							run -= dist;
 							t -= dt;
-							log("BACK! new run:" + run);
 						}
 						id++;
 					}
 					t += dt;
-					log("t:" + t);
-					
 				}
-
-				// This should be optimized...
-//				float[] tsA = ts.array();
 
 				// Draw the fill part
 				p.pushStyle();
@@ -1162,14 +1102,6 @@ public class DashedLines {
 							y + h2 + h2 * (float) Math.sin(start));
 				}
 
-				// Arc dashes
-//				for (int i = 0; i < tsA.length; i += 2) {
-//					if (i == tsA.length - 1) {
-//						p.arc(x, y, w, h, tsA[i], stop);
-//					} else {
-//						p.arc(x, y, w, h, tsA[i], tsA[i + 1]);
-//					}
-//				}
 				for (int i = 0; i < parameterCount; i += 2) {
 					if (i == parameterCount - 1) {
 						p.arc(x, y, w, h, parameters[i], stop);

@@ -7,7 +7,6 @@
 - [x] Add linear interpolation of parameters for arcs/ellipses --> they can now be computed faster! :)
 - [x] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
 - [x] Negative values in `pattern()` lead to infinite loops and badness. Prevent.
-- [ ] Dashes are not continuous in arcs with modes. Fix
 
 ## REV 0002
 - [x] Remove dev packages from project
@@ -68,6 +67,7 @@
 - [ ] dash.curveVertex()
 - [ ] Implement dash.mode()
 - [ ] Design which modes are there and how they work  
+- [ ] Dashes are not continuous in arcs with modes CHORD or PIE. Must figure out how to link growing parameters, and hopefuly the corner stroke into a continuous one with the kink.
 
 - [ ] Respond to this: https://forum.processing.org/two/discussion/comment/93993/#Comment_93993
 - [ ] Expand methods to 3D

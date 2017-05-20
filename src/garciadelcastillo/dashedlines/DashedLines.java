@@ -1061,20 +1061,25 @@ public class DashedLines {
 				}
 
 				// Compute dash t params
-				float dist, nt;
+				float dist, nt, it;
 				while (run < len) {
 					dist = (float) ellipseArcDifferential(w2, h2, t, dt);
 					run += dist;
 					if (run >= nextL) {
+						// Just changed dash state, adjust accordingly
+						dash = !dash;
+
 						// Rough interpolation for smoother result
 						nt = (nextL + dist - run) / dist;
-						parameters[parameterCount] = t + nt * dt;
+						it = t + nt * dt;
+						it = it > stop ? stop : it;
+						parameters[parameterCount] = it;
 						parameterCount++;
 						if (parameterCount == parameters.length)
 							this.doubleParametersArray();
 						nextL += dashPattern[id % dashPattern.length];
 
-						// If jumped over more than one target dist, try again
+						// If jumped over more than one target dist, go back and try again
 						if (nextL <= run) {
 							run -= dist;
 							t -= dt;
@@ -1083,6 +1088,15 @@ public class DashedLines {
 					}
 					t += dt;
 				}
+				
+				// Close unfinished dash
+				if (dash) {
+					parameters[parameterCount] = stop;
+					parameterCount++;
+					if (parameterCount == parameters.length)
+						this.doubleParametersArray();
+				}
+				
 
 				// Draw the fill part
 				p.pushStyle();
@@ -1103,11 +1117,12 @@ public class DashedLines {
 				}
 
 				for (int i = 0; i < parameterCount; i += 2) {
-					if (i == parameterCount - 1) {
-						p.arc(x, y, w, h, parameters[i], stop);
-					} else {
-						p.arc(x, y, w, h, parameters[i], parameters[i + 1]);
-					}
+//					if (i == parameterCount - 1) {
+//						p.arc(x, y, w, h, parameters[i], stop);
+//					} else {
+//						p.arc(x, y, w, h, parameters[i], parameters[i + 1]);
+//					}
+					p.arc(x, y, w, h, parameters[i], parameters[i + 1]);
 				}
 
 				// If PIE, draw end-center line,

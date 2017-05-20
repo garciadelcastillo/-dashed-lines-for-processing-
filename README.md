@@ -12,7 +12,7 @@ Alternatively, you can extract the distribution file on your Processing's sketch
 Still having trouble? [Read this](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library).
 
 ## Hello Dash
-Let's take a look at a basic example on how to draw a simple dashed line now:
+Let's take a look at a basic example on how to draw a simple dashed line:
 
 ```java
 // Import the library
@@ -46,7 +46,7 @@ And voilà!
 
 
 ## Features
-Dashed Lines for Processing provides a **Processing-like API** to draw the same basic or complex shapes you would natively, but with **dashed strokes**. It computes stroke segments based on your `pattern` choice, and adapts the drawing to a best-fit situation. This is specially useful for animation:
+Dashed Lines for Processing provides a **Processing-like API** to draw the same basic or complex shapes you would natively, but with **dashed strokes**. It computes stroke segments based on your `pattern` choice, and adapts the drawing to a best-fit solution. This is specially useful for example for animations:
 
 ```java
 dash.pattern(20, 10);
@@ -55,7 +55,7 @@ dash.line(n1.x, n1.y, n2.x, n2.y);
 
 ![Dashed Line](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/dashed_line.gif "Dashed Line")
 
-Dashed Lines contains methods to draw ~~all~~ _(under development, gaps here and there)_ types of geometry that you would normally do in Processing. They **inherit Processing's styles**, such as `stroke()`, `fill()`, `strokeWeight()` and shape modes like `rectMode()`. Additionally, it provides some options to **customize the dash-gap `pattern()`** or to add `offset()` to the pattern for **'walking ants' effect** on animations.
+Dashed Lines contains methods to draw ~~all~~ _(under development, still kinks here and there)_ types of geometry that you would normally do in Processing. It inherits **inherit Processing's styles**, such as `stroke()`, `fill()`, `strokeWeight()` and **shape modes** like `rectMode()`. Additionally, it provides some options to **customize the dash-gap `pattern()`** or to add `offset()` to the pattern for **'walking ants' effect** on animations.
 
 For example, for **2D primitives**:
 
@@ -96,7 +96,7 @@ dist += 1;
 ```
 ![Bezier Curve](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/bezier_curve.gif "Bezier Curve")
 
-And for more **complex shapes**, you can use the `.beginShape()`, `.vertex()` and `.endShape()` methods:
+And for more **complex shapes**, you can use the `.beginShape()`, `.vertex()` and `.endShape()` interface, just like you would in Processing! :)
 
 ```java
 strokeCap(SQUARE);
@@ -117,7 +117,7 @@ dist += 1;
 ```
 ![Open Shape](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/shape_open.gif "Open Shape")
 
-Or using any of Processing's **shape modes**:
+Including the option to use any of Processing's **shape modes**:
 
 ```java
 // Shapes accept all the same modes as Processing's native implementation:
@@ -131,9 +131,9 @@ dash.endShape(CLOSE);
 ![TRIANGLES Shape](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/assets/shape_triangles.gif "TRIANGLES Shape")
 
 ## Contribute
-There is still [a lot to do](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/TODO.md), so if you have some time, and are excited about computational geometry, feel free to fork and contribute, [report bugs](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/issues) or [submit feature requests](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/issues).
+There is still [a lot to do](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/blob/master/TODO.md), so if you have some time and are excited about computational geometry, feel free to fork and contribute, [report bugs](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/issues) or [submit feature requests](https://github.com/garciadelcastillo/-dashed-lines-for-processing-/issues).
 
-Also, if you found this library useful and did something cool with it, send it my way! I am always happy to hear about cool projects people are working on.
+Also, if you found this library useful and did something cool with it, send your creation my way! I am always happy to hear about cool projects people are working on.
 
 ## Acknowledgments
 My deepest gratitude to all the folks at the [Processing Foundation](https://processing.org/) and the great [community](https://processing.org/reference/libraries/) that make this project so special and awesome.

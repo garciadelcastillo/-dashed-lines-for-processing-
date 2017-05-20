@@ -98,9 +98,9 @@ public class DashedLines {
 		System.arraycopy(ds, 0, temp, 0, ds.length);
 
 		if (ds.length % 2 == 1) {
-			ds[len - 1] = ds[len - 2];
+			temp[len - 1] = temp[len - 2];
 		}
-		dashPattern = ds;
+		dashPattern = temp;
 		updateDashPatternLength();
 	}
 
@@ -425,9 +425,7 @@ public class DashedLines {
 
 		// Ran out of vertices in the buffer?
 		if (vertexCount == vertices.length) {
-			float temp[][] = new float[vertexCount << 1][VERTEX_FIELD_COUNT];
-			System.arraycopy(vertices, 0, temp, 0, vertexCount);
-			vertices = temp;
+			this.doubleVerticesArray();
 		}
 
 		vertices[vertexCount][PApplet.X] = x;
@@ -555,7 +553,8 @@ public class DashedLines {
 	 */
 	public void bezier(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 
-		FloatList ts = new FloatList();
+		//		FloatList ts = new FloatList();
+		parameterCount = 0;
 		int id = 0;
 		float t = 0;
 		float run = 0;
@@ -601,7 +600,9 @@ public class DashedLines {
 
 		// If at this point dash == true, then start drawing and add a vertex
 		if (dash) {
-			ts.append(0);
+			//			ts.append(0);
+			parameters[parameterCount] = 0;
+			parameterCount++;
 		}
 
 		float d;
@@ -620,7 +621,12 @@ public class DashedLines {
 
 				// Interpolate for a better approximation
 				float nt = (nextL + d - run) / d;
-				ts.append(t - dt + nt * dt);
+				//				ts.append(t - dt + nt * dt);
+				parameters[parameterCount] = t - dt + nt * dt;
+				parameterCount++;
+				if (parameterCount == parameters.length) {
+					this.doubleParametersArray();
+				}
 
 				// Move on to next pattern segment
 				nextL += dashPattern[id % dashPattern.length];
@@ -630,15 +636,22 @@ public class DashedLines {
 
 		// Close unfinished dash
 		if (dash) {
-			ts.append(1);
+			//			ts.append(1);
+			parameters[parameterCount] = 1;
+			parameterCount++;
+			if (parameterCount == parameters.length) {
+				this.doubleParametersArray();
+			}
 		}
 
 		// Draw bezier curves between those parameters
 		p.pushStyle();
 		p.noFill();
-		int len = ts.size();
-		for (int i = 0; i < len; i += 2) {
-			this.subCubicBezier(ts.get(i), ts.get(i + 1), x1, y1, x2, y2, x3, y3, x4, y4);
+		//		int len = ts.size();
+		//		for (int i = 0; i < len; i += 2) {
+		for (int i = 0; i < parameterCount; i += 2) {
+			//			this.subCubicBezier(ts.get(i), ts.get(i + 1), x1, y1, x2, y2, x3, y3, x4, y4);
+			this.subCubicBezier(parameters[i], parameters[i + 1], x1, y1, x2, y2, x3, y3, x4, y4);
 		}
 		p.popStyle();
 	}
@@ -657,7 +670,7 @@ public class DashedLines {
 	 * Parameter increment at which the arc will be sampled. A value of 0.005f
 	 * results in TAU/0.02f ~ 314 samples.
 	 */
-	protected float ARC_DIFFERENTIAL_PRECISION = 0.02f;
+	protected float ARC_DIFFERENTIAL_PRECISION = 0.05f;
 
 	/**
 	 * Parameter increment at which Bézier curves will be sampled. A value of
@@ -976,7 +989,7 @@ public class DashedLines {
 
 
 	/**
-	 * Internal implementation of arc(). TODO: test if it works
+	 * Internal implementation of arc().
 	 * 
 	 * @param x
 	 * @param y
@@ -1006,7 +1019,7 @@ public class DashedLines {
 				}
 
 				// Compute theta parameters for start-ends of dashes and gaps
-				FloatList ts = new FloatList(); // TODO: precompute the size of the t array and create it as an array directly
+				parameterCount = 0;
 				int id = 0;
 				float run = 0;
 				float t = start;
@@ -1014,8 +1027,9 @@ public class DashedLines {
 				float len = ellipseArcLength(w2, h2, start, stop, dt);
 				float nextL = 0;
 				float nextT = 0;
-
-				// If there is ofsset, precompute first t
+				boolean dash = false;
+								
+				// If there is offset, precompute first t
 				if (offset != 0) {
 					nextL += offset;
 
@@ -1030,33 +1044,105 @@ public class DashedLines {
 
 					// Process the chunk before t = start
 					// This method is not very optimal, but oh well, stupid ellipse geometry... :P
-					while (nextT <= start) {
+//					while (nextT <= start) {
+//						nextL += dashPattern[id % dashPattern.length];
+//						id++;
+//						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt); // compute from start to avoid accumulated imprecision
+//						dash = !dash;
+//					}
+					while(nextL < 0) {
 						nextL += dashPattern[id % dashPattern.length];
 						id++;
-						nextT = ellipseThetaFromArcLength(w2, h2, start, nextL, dt); // compute from start to avoid accumulated imprecision
+						dash = !dash;
 					}
-					if (id % 2 == 1) {
-						ts.append(start);
-					}
+//					if (id % 2 == 1) {
+////						ts.append(start);
+//						parameters[parameterCount] = start;
+//						parameterCount++;
+//						if (parameterCount == parameters.length) this.doubleParametersArray();
+//					}
 
 					// Set the params off to run regular dashing
-					run = nextL;
-					t = nextT;
+//					run = nextL;
+//					t = nextT;
+				}
+				
+				if (nextL <= 0) {
+					nextL += dashPattern[id % dashPattern.length];
+					id++;
+					dash = !dash;
+				}
+				
+				if (dash) {
+					parameters[parameterCount] = t;
+					parameterCount++;
+					if (parameterCount == parameters.length) this.doubleParametersArray();
 				}
 
 				// Compute dash t params
+				float dist, nt;
+				log("-----------------------");
+				log("-----------------------");
+				log("-----------------------");
+				log("len:" + len);
+				log("off:" + this.offset);
+				log("starting T:" + t);
 				while (run < len) {
-					run += ellipseArcDifferential(w2, h2, t, dt);
-					if ((int) run >= nextL) {
-						ts.append(t);
+					dist = (float) ellipseArcDifferential(w2, h2, t, dt);
+					run += dist;
+					log("---");
+					log("t:" + t);
+					log("dist:" + dist);
+					log("run:" + run);
+					if (run >= nextL) {
+//						// Interpolate for a better approximation
+//						nt = (nextL + dist - run) / dist;
+//						//				ts.append(t - dt + nt * dt);
+////						parameters[parameterCount] = t - dt + nt * dt;
+//						
+////						nt = (nextL - (run - dist)) / dist;
+//						parameters[parameterCount] = t + nt * dt;
+//						log("---");
+//						log("nextL" + nextL);
+//						log("run:" + run);
+//						log("dist:" + dist);
+//						log("nt:" + nt);
+//						log("t:" + t);
+//						log("intT:" + parameters[parameterCount]);
+//						parameterCount++;
+//						if (parameterCount == parameters.length) {
+//							this.doubleParametersArray();
+//						}
+//						
+						
+//						ts.append(t);
+						
+						log("HIT!");
+						log("nextL:" + nextL);
+//						parameters[parameterCount] = t;
+						nt = (nextL + dist - run) / dist;
+						parameters[parameterCount] = t + nt * dt;
+						log("T:" + parameters[parameterCount]);
+						parameterCount++;
+						if (parameterCount == parameters.length) this.doubleParametersArray();
 						nextL += dashPattern[id % dashPattern.length];
+						log("new nextL:" + nextL);
+						
+						// If jumped over more than one target dist, try again
+						if (nextL <= run) {
+							run -= dist;
+							t -= dt;
+							log("BACK! new run:" + run);
+						}
 						id++;
 					}
 					t += dt;
+					log("t:" + t);
+					
 				}
 
 				// This should be optimized...
-				float[] tsA = ts.array();
+//				float[] tsA = ts.array();
 
 				// Draw the fill part
 				p.pushStyle();
@@ -1077,11 +1163,18 @@ public class DashedLines {
 				}
 
 				// Arc dashes
-				for (int i = 0; i < tsA.length; i += 2) {
-					if (i == tsA.length - 1) {
-						p.arc(x, y, w, h, tsA[i], stop);
+//				for (int i = 0; i < tsA.length; i += 2) {
+//					if (i == tsA.length - 1) {
+//						p.arc(x, y, w, h, tsA[i], stop);
+//					} else {
+//						p.arc(x, y, w, h, tsA[i], tsA[i + 1]);
+//					}
+//				}
+				for (int i = 0; i < parameterCount; i += 2) {
+					if (i == parameterCount - 1) {
+						p.arc(x, y, w, h, parameters[i], stop);
 					} else {
-						p.arc(x, y, w, h, tsA[i], tsA[i + 1]);
+						p.arc(x, y, w, h, parameters[i], parameters[i + 1]);
 					}
 				}
 
@@ -1120,9 +1213,7 @@ public class DashedLines {
 	 */
 	protected void vertexImpl(float x, float y) {
 		if (vertexCountImpl == verticesImpl.length) {
-			float temp[][] = new float[vertexCountImpl << 1][VERTEX_FIELD_COUNT];
-			System.arraycopy(verticesImpl, 0, temp, 0, vertexCountImpl);
-			verticesImpl = temp;
+			this.doubleVerticesImplArray();
 		}
 
 		verticesImpl[vertexCountImpl][PApplet.X] = x;
@@ -1346,6 +1437,24 @@ public class DashedLines {
 		sy4 = -mb3 * y1 + 3 * b * mb2 * y2 - 3 * b2 * mb * y3 + b3 * y4;
 
 		p.bezier(sx1, sy1, sx2, sy2, sx3, sy3, sx4, sy4);
+	}
+
+	private void doubleVerticesArray() {
+		float temp[][] = new float[vertexCount << 1][VERTEX_FIELD_COUNT];
+		System.arraycopy(vertices, 0, temp, 0, vertexCount);
+		vertices = temp;
+	}
+
+	private void doubleVerticesImplArray() {
+		float temp[][] = new float[vertexCountImpl << 1][VERTEX_FIELD_COUNT];
+		System.arraycopy(verticesImpl, 0, temp, 0, vertexCountImpl);
+		verticesImpl = temp;
+	}
+
+	private void doubleParametersArray() {
+		float temp[] = new float[parameterCount << 1];
+		System.arraycopy(parameters, 0, temp, 0, parameterCount);
+		parameters = temp;
 	}
 
 

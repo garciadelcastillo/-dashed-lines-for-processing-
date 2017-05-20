@@ -1,8 +1,8 @@
 # TODO LIST
 
 ## REV 0003
-- [ ] Create a protected array for curve parameters, just like the vertices one used for beginShape()
-- [ ] Change bezier() to the above
+- [x] Create a protected array for curve parameters, just like the vertices one used for beginShape()
+- [x] Change bezier() to the above
 - [ ] Change arc() to the above
 - [ ] Add linear interpolation of parameters for arcs/ellipses
 - [ ] Dashes are not continuous in arcs with modes. Fix

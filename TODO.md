@@ -1,5 +1,17 @@
 # TODO LIST
 
+## REV 0002
+- [x] Remove dev packages from project
+- [ ] Create a protected array for curve parameters, just like the vertices one used for beginShape()
+- [ ] Change bezier() to the above
+- [ ] Change arc() to the above
+- [ ] Add linear interpolation of parameters for arcs/ellipses
+- [ ] Dashes are not continuous in arcs with modes. Fix
+- [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
+
+
+
+
 ## IMMEDIATE
 - [x] Implement variable dash pattern on all methods
 - [x] Rename dashes to dashPattern
@@ -33,13 +45,6 @@
     + https://gamedev.stackexchange.com/questions/5373/moving-ships-between-two-planets-along-a-bezier-missing-some-equations-for-acce/5427#5427
 
 - [x] dash.bezier()
-- [ ] Remove dev packages from project
-- [ ] Create a protected array for curve parameters, just like the vertices one used for beginShape()
-- [ ] Change bezier() to the above
-- [ ] Change arc() to the above
-- [ ] Add linear interpolation of parameters for arcs/ellipses
-- [ ] Dashes are not continuous in arcs with modes. Fix
-- [ ] For default 10-10 pattern, there are a lot of glitches in large beziers. Adjust dt precision based on a super rough approximated length, and/or how small the minimum dash/gap param is?
 
 - [x] Publication
     - [x] Document methods a la javadoc
@@ -57,8 +62,8 @@
 
 ## SOON
 - [ ] Try out Pomax' Gauss-Lagrande approximation for arc length
-- [ ] dash.bezierVertex()
 - [ ] dash.curve()
+- [ ] dash.bezierVertex()
 - [ ] dash.curveVertex()
 - [ ] Implement dash.mode()
 - [ ] Design which modes are there and how they work  

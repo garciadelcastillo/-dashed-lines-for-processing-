@@ -33,6 +33,7 @@
     + https://gamedev.stackexchange.com/questions/5373/moving-ships-between-two-planets-along-a-bezier-missing-some-equations-for-acce/5427#5427
 
 - [x] dash.bezier()
+- [ ] Remove dev packages from project
 - [ ] Create a protected array for curve parameters, just like the vertices one used for beginShape()
 - [ ] Change bezier() to the above
 - [ ] Change arc() to the above

@@ -1,5 +1,11 @@
 # TODO LIST
 
+## REV 0004
+- [ ] P2D renderer doesn't work for `shapeImpl`
+- [ ] Same for P3D
+- [ ] CLOSED shapes don't properly wrap the last dash around if necessary 
+- [ ] Change version updating to MINOR updates.
+
 ## REV 0003
 - [x] Create a protected array for curve parameters, just like the vertices one used for beginShape()
 - [x] Change bezier() to the above

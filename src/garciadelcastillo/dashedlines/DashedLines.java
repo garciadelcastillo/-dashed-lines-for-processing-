@@ -4,7 +4,7 @@ import processing.core.*;
 
 public class DashedLines {
 
-	protected final static String VERSION = "##library.prettyVersion##";
+	public final static String VERSION = "0.4.0";
 	protected PApplet p;
 	protected PGraphics g;
 

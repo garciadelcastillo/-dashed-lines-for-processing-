@@ -5,7 +5,7 @@ Some beautiful curve refinements.
 + `arc()` end parameters are now linearly interpolated, resulting in smoother and nicer arcs.
 + Fixed glitch in `bezier()` that caused it to go crazy on small resolution queries. 
 + Prevent users from entering negative values in `pattern()` and crashing the whole thing. 
-+ A bunch of internal optimizations.
++ A bunch of internal optimizations, resulting in faster and cleaner dashes ;)
 
 ## DASHED LINES 0.0.2 (REV 002) - 20 May 2017
 

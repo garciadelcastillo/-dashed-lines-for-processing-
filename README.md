@@ -141,3 +141,5 @@ My deepest gratitude to all the folks at the [Processing Foundation](https://pro
 Thanks to [Nono](https://github.com/nonoesp) for having pushed me to stick my head out of the books and make something useful, for once!
 
 Kuddos to [Pomax](https://github.com/Pomax) for his amazing [Primer on Bézier Curves](https://pomax.github.io/bezierinfo/), it was incredibly helpful for the math behind these curves.
+
+If you do something cool with this, tweet me! [@garciadelcast](https://twitter.com/garciadelcast)
